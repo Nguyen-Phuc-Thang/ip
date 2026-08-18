@@ -30,10 +30,13 @@ public class Magnus {
         System.out.print(greeting);
         System.out.println(divider);
 
-        // Chat loop
+        // Chat resources
         Scanner scanner = new Scanner(System.in);
         String command = scanner.nextLine();
+        String[] tasks = new String[100];
+        int numOfTasks = 0;
 
+        // Chat loop
         while (true) {
             System.out.println(indent + divider);
 
@@ -44,8 +47,18 @@ public class Magnus {
                 break;
             }
 
-            System.out.println(indent + command);
-
+            // List case
+            if (command.compareTo("list") == 0) {
+                for (int i = 0; i < numOfTasks; i++) {
+                    System.out.print(indent);
+                    System.out.print(i + 1);
+                    System.out.println(". " + tasks[i]);
+                }
+            } else { // Other cases
+                tasks[numOfTasks] = command;
+                numOfTasks++;
+                System.out.println(indent + "Added: " + command);
+            }
             System.out.println(indent + divider);
             command = scanner.nextLine();
         }
