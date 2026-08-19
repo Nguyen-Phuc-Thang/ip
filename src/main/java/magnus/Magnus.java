@@ -3,7 +3,6 @@ package magnus;
 import java.util.Scanner;
 
 import magnus.command.CommandRouter;
-import magnus.task.Task;
 import magnus.task.TaskList;
 
 public class Magnus {
@@ -27,8 +26,6 @@ public class Magnus {
                 Hello! I'm Magnus.
                 How can I help you today?
                 """;
-        
-        String exit = "Goodbye. See you soon!";
 
         // Greeting
         System.out.println(divider);
@@ -59,7 +56,7 @@ public class Magnus {
         }
 
         System.out.println(indent + divider); 
-        
+
         // Exit
         scanner.close();
     }

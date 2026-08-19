@@ -26,7 +26,9 @@ public class CommandRouter {
             put("list", new ListCommand(tasks));
             put("mark", new MarkCommand(tasks));
             put("unmark", new UnmarkCommand(tasks));
-            put("add", new AddTaskCommand(tasks));
+            put("todo", new ToDoCommand(tasks));
+            put("deadline", new DeadlineCommand(tasks));
+            put("event", new EventCommand(tasks));
         }};
         
         this.parser = new Parser();
@@ -41,7 +43,7 @@ public class CommandRouter {
      */
     public void route(String userInput) {
         // Parse user input
-        String[] parsedCommand = parser.parse(userInput);    
+        String[] parsedCommand = parser.parse(userInput);
         String command = parsedCommand[0];
         String[] args = Arrays.copyOfRange(parsedCommand, 1, parsedCommand.length);
 
