@@ -47,7 +47,7 @@ public class Task {
      * @return {@code "X"} if the task is complete; an empty string otherwise.
      */
     private String getStatusIcon() {
-        return this.isDone ? "X" : "";
+        return this.isDone ? "X" : " ";
     }
 
     /**
