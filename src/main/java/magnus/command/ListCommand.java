@@ -24,6 +24,7 @@ public class ListCommand implements Command {
      */
     @Override
     public void execute(String[] args) {
+        System.out.println("\tHere's your task list:\n");
         tasks.printTasks();
     }
 }

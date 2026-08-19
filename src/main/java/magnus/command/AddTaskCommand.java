@@ -28,5 +28,6 @@ public class AddTaskCommand implements Command {
     public void execute(String[] args) {
         String taskDescription = args[0];
         tasks.addTask(new Task(taskDescription));
+        System.out.println("\tadded: " + taskDescription);
     }
 }

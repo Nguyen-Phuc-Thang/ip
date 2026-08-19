@@ -26,6 +26,17 @@ public class TaskList {
     }
 
     /**
+     * Returns the task at the specified zero-based index.
+     *
+     * @param index The zero-based index of the task to return.
+     * @return The task at the specified index.
+     * @throws IndexOutOfBoundsException If the index is outside the task list.
+     */
+    public Task getTask(int index) {
+        return this.tasks.get(index);
+    }
+
+    /**
      * Marks the task at the specified zero-based index as completed.
      *
      * @param index The zero-based index of the task to mark.
@@ -50,7 +61,7 @@ public class TaskList {
      */
     public void printTasks() {
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(String.format("%d. %s", i + 1, this.tasks.get(i)));
+            System.out.println(String.format("\t%d. %s", i + 1, this.tasks.get(i)));
         }
     }
 }

@@ -22,13 +22,12 @@ public class UnmarkCommand implements Command {
      * as incomplete.
      *
      * @param args The command arguments, with the task index at index 0.
-     * @throws ArrayIndexOutOfBoundsException If no task index is supplied.
-     * @throws NumberFormatException If the supplied task index is not an integer.
-     * @throws IndexOutOfBoundsException If the task index is outside the task list.
      */
     @Override
     public void execute(String[] args) {
-        int taskIndex = Integer.parseInt(args[0]);
+        int taskIndex = Integer.parseInt(args[0]) - 1;
         this.tasks.markTaskAsUndone(taskIndex);
+        System.out.println("\tAlright, I've unmarked this task:\n");
+        System.out.println("\t" + this.tasks.getTask(taskIndex));
     }
 }

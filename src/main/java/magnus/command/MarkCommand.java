@@ -21,13 +21,12 @@ public class MarkCommand implements Command {
      * Marks the task at the zero-based index given by the first command argument.
      *
      * @param args The command arguments, with the task index at index 0.
-     * @throws ArrayIndexOutOfBoundsException If no task index is supplied.
-     * @throws NumberFormatException If the supplied task index is not an integer.
-     * @throws IndexOutOfBoundsException If the task index is outside the task list.
      */
     @Override
     public void execute(String[] args) {
-        int taskIndex = Integer.parseInt(args[0]);
+        int taskIndex = Integer.parseInt(args[0]) - 1;
         this.tasks.markTaskAsDone(taskIndex);
+        System.out.println("\tBrilliant!! I've marked this task as completed:\n");
+        System.out.println("\t" + this.tasks.getTask(taskIndex));
     }
 }
