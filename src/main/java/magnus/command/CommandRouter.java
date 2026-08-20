@@ -31,6 +31,7 @@ public class CommandRouter {
             put("todo", new ToDoCommand(tasks));
             put("deadline", new DeadlineCommand(tasks));
             put("event", new EventCommand(tasks));
+            put("delete", new DeleteCommand(tasks));
         }};
         
         this.parser = new Parser();
