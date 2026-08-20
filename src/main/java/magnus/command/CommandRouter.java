@@ -10,8 +10,7 @@ import magnus.task.TaskList;
 
 /**
  * Routes user input to the appropriate command for execution.
- * Recognized command words are matched to their corresponding commands, while
- * unrecognized input is treated as the description of a new task.
+ * Recognized command words are matched to their corresponding commands.
  */
 public class CommandRouter {
     HashMap<String, Command> commands;
@@ -38,10 +37,11 @@ public class CommandRouter {
     }
 
     /**
-     * Parses the user input and executes the matching command. If the first token
-     * is not a recognized command word, the entire input is added as a new task.
+     * Parses the user input and executes the command identified by its first token.
      *
      * @param userInput The raw user input to route.
+     * @throws CommandNotFoundException If the first token is not a recognized command word.
+     * @throws MagnusException If the matching command cannot be executed.
      * @throws ArrayIndexOutOfBoundsException If the input is blank.
      */
     public void route(String userInput) throws MagnusException {
@@ -54,7 +54,7 @@ public class CommandRouter {
         if (this.commands.containsKey(command)) {
             this.commands.get(command).execute(args);
         } else {
-            throw new CommandNotFoundException("Sorry, I don't know what you mean by '" + command + "'");
+            throw new CommandNotFoundException("\tSorry, I don't know what you mean by '" + command + "'");
         }
     }   
 }
