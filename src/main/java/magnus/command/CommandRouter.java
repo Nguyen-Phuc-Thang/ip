@@ -1,7 +1,8 @@
 package magnus.command;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.Map;
 
 import magnus.exception.CommandNotFoundException;
 import magnus.exception.MagnusException;
@@ -13,8 +14,8 @@ import magnus.task.TaskList;
  * Recognized command words are matched to their corresponding commands.
  */
 public class CommandRouter {
-    HashMap<String, Command> commands;
-    Parser parser;
+    private final Map<CommandType, Command> commands;
+    private final Parser parser;
 
     /**
      * Creates a command router whose commands operate on the specified task list.
@@ -22,17 +23,15 @@ public class CommandRouter {
      * @param tasks The task list used by commands that manage tasks.
      */
     public CommandRouter(TaskList tasks) {
-        // Initialize commands list
-        this.commands = new HashMap<>() {{
-            put("bye", new ExitCommand());
-            put("list", new ListCommand(tasks));
-            put("mark", new MarkCommand(tasks));
-            put("unmark", new UnmarkCommand(tasks));
-            put("todo", new ToDoCommand(tasks));
-            put("deadline", new DeadlineCommand(tasks));
-            put("event", new EventCommand(tasks));
-            put("delete", new DeleteCommand(tasks));
-        }};
+        this.commands = new EnumMap<>(CommandType.class);
+        this.commands.put(CommandType.BYE, new ExitCommand());
+        this.commands.put(CommandType.LIST, new ListCommand(tasks));
+        this.commands.put(CommandType.MARK, new MarkCommand(tasks));
+        this.commands.put(CommandType.UNMARK, new UnmarkCommand(tasks));
+        this.commands.put(CommandType.TODO, new ToDoCommand(tasks));
+        this.commands.put(CommandType.DEADLINE, new DeadlineCommand(tasks));
+        this.commands.put(CommandType.EVENT, new EventCommand(tasks));
+        this.commands.put(CommandType.DELETE, new DeleteCommand(tasks));
         
         this.parser = new Parser();
     }
@@ -48,14 +47,17 @@ public class CommandRouter {
     public void route(String userInput) throws MagnusException {
         // Parse user input
         String[] parsedCommand = parser.parse(userInput);
-        String command = parsedCommand[0];
+        String commandKeyword = parsedCommand[0];
         String[] args = Arrays.copyOfRange(parsedCommand, 1, parsedCommand.length);
 
-        // Route commands
-        if (this.commands.containsKey(command)) {
-            this.commands.get(command).execute(args);
-        } else {
-            throw new CommandNotFoundException("\tSorry, I don't know what you mean by '" + command + "'");
+        CommandType commandType;
+        try {
+            commandType = CommandType.fromKeyword(commandKeyword);
+        } catch (IllegalArgumentException exception) {
+            throw new CommandNotFoundException(
+                    "\tSorry, I don't know what you mean by '" + commandKeyword + "'");
         }
+
+        this.commands.get(commandType).execute(args);
     }   
 }
