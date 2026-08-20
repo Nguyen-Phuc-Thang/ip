@@ -35,6 +35,18 @@ public class TaskList {
     }
 
     /**
+     * Removes and returns the task at the specified zero-based index.
+     * Tasks after the removed task are shifted one position toward the start of the list.
+     *
+     * @param index The zero-based index of the task to remove.
+     * @return The task that was removed.
+     * @throws IndexOutOfBoundsException If the index is outside the task list.
+     */
+    public Task removeTask(int index) {
+        return this.tasks.remove(index);
+    }
+
+    /**
      * Returns the task at the specified zero-based index.
      *
      * @param index The zero-based index of the task to return.
