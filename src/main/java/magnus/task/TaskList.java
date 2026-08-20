@@ -17,6 +17,15 @@ public class TaskList {
     }
 
     /**
+     * Returns the number of tasks in this task list.
+     *
+     * @return The number of stored tasks.
+     */
+    public int getLength() {
+        return this.tasks.size();
+    }
+
+    /**
      * Adds a task to the end of this task list.
      *
      * @param task The task to add.
