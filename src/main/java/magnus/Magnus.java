@@ -3,6 +3,7 @@ package magnus;
 import java.util.Scanner;
 
 import magnus.command.CommandRouter;
+import magnus.exception.MagnusException;
 import magnus.task.TaskList;
 
 public class Magnus {
@@ -45,7 +46,11 @@ public class Magnus {
             // Start of result
             System.out.println(indent + divider);
 
-            router.route(userInput);
+            try {
+                router.route(userInput);
+            } catch (MagnusException exception) {
+                System.out.println(exception.getMessage());
+            }
 
             if (userInput.equals("bye")) {
                 break;

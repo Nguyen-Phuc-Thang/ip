@@ -2,6 +2,9 @@ package magnus.command;
 
 import java.util.Arrays;
 import java.util.HashMap;
+
+import magnus.exception.CommandNotFoundException;
+import magnus.exception.MagnusException;
 import magnus.parser.Parser;
 import magnus.task.TaskList;
 
@@ -41,7 +44,7 @@ public class CommandRouter {
      * @param userInput The raw user input to route.
      * @throws ArrayIndexOutOfBoundsException If the input is blank.
      */
-    public void route(String userInput) {
+    public void route(String userInput) throws MagnusException {
         // Parse user input
         String[] parsedCommand = parser.parse(userInput);
         String command = parsedCommand[0];
@@ -51,7 +54,7 @@ public class CommandRouter {
         if (this.commands.containsKey(command)) {
             this.commands.get(command).execute(args);
         } else {
-            this.commands.get("add").execute(new String[]{userInput});
+            throw new CommandNotFoundException("Sorry, I don't know what you mean by '" + command + "'");
         }
     }   
 }
