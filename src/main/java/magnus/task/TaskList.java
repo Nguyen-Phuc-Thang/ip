@@ -3,17 +3,24 @@ package magnus.task;
 import java.util.ArrayList;
 import java.util.List;
 
+import magnus.exception.StorageException;
+import magnus.storage.Storage;
+
 /**
  * Stores and manages the tasks in Magnus's task list.
  */
 public class TaskList {
-    private List<Task> tasks;
+    private static final String DEFAULT_DATA_FILE_PATH = "./data/magnus.txt";
+
+    private final List<Task> tasks;
+    private final Storage storage;
 
     /**
      * Creates an empty task list.
      */
     public TaskList() {
         this.tasks = new ArrayList<>();
+        this.storage = new Storage(DEFAULT_DATA_FILE_PATH);
     }
 
     /**
@@ -30,8 +37,9 @@ public class TaskList {
      *
      * @param task The task to add.
      */
-    public void addTask(Task task) {
+    public void addTask(Task task) throws StorageException {
         this.tasks.add(task);
+        saveTasks();
     }
 
     /**
@@ -42,8 +50,10 @@ public class TaskList {
      * @return The task that was removed.
      * @throws IndexOutOfBoundsException If the index is outside the task list.
      */
-    public Task removeTask(int index) {
-        return this.tasks.remove(index);
+    public Task removeTask(int index) throws StorageException {
+        Task removedTask = this.tasks.remove(index);
+        saveTasks();
+        return removedTask;
     }
 
     /**
@@ -63,8 +73,9 @@ public class TaskList {
      * @param index The zero-based index of the task to mark.
      * @throws IndexOutOfBoundsException If the index is outside the task list.
      */
-    public void markTaskAsDone(int index) {
+    public void markTaskAsDone(int index) throws StorageException {
         this.tasks.get(index).markAsDone();
+        saveTasks();
     }
 
     /**
@@ -73,8 +84,9 @@ public class TaskList {
      * @param index The zero-based index of the task to mark.
      * @throws IndexOutOfBoundsException If the index is outside the task list.
      */
-    public void markTaskAsUndone(int index) {
+    public void markTaskAsUndone(int index) throws StorageException {
         this.tasks.get(index).markAsUndone();
+        saveTasks();
     }
 
     /**
@@ -84,5 +96,9 @@ public class TaskList {
         for (int i = 0; i < tasks.size(); i++) {
             System.out.println(String.format("\t%d. %s", i + 1, this.tasks.get(i)));
         }
+    }
+
+    private void saveTasks() throws StorageException {
+        this.storage.saveTasks(this.tasks);
     }
 }

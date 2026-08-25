@@ -1,5 +1,6 @@
 package magnus.command;
 
+import magnus.exception.MagnusException;
 import magnus.task.Task;
 import magnus.task.TaskList;
 
@@ -25,7 +26,7 @@ public class AddTaskCommand implements Command {
      * @throws ArrayIndexOutOfBoundsException If no task description is supplied.
      */
     @Override
-    public void execute(String[] args) {
+    public void execute(String[] args) throws MagnusException {
         String taskDescription = args[0];
         tasks.addTask(new Task(taskDescription));
         System.out.println("\tadded: " + taskDescription);

@@ -41,6 +41,14 @@ public class Task {
         this.isDone = false;
     }
 
+    public String toDataString() {
+        return String.format("T,%d,%s", getStatusNumber(), this.description);
+    }
+
+    protected int getStatusNumber() {
+        return this.isDone ? 1 : 0;
+    }
+
     /**
      * Returns the icon representing this task's completion status.
      *

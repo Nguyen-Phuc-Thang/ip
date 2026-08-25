@@ -20,6 +20,12 @@ public class EventTask extends Task {
         this.end = end;
     }
 
+    @Override
+    public String toDataString() {
+        return String.format("E,%d,%s,%s-%s",
+                getStatusNumber(), getDescription(), this.start, this.end);
+    }
+
     /**
      * Returns a string representation containing the event-task marker, completion status,
      * description, start time, and end time.

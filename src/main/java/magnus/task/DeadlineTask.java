@@ -17,6 +17,12 @@ public class DeadlineTask extends Task {
         this.deadline = deadline;
     }
 
+    @Override
+    public String toDataString() {
+        return String.format("D,%d,%s,%s",
+                getStatusNumber(), getDescription(), this.deadline);
+    }
+
     /**
      * Returns a string representation containing the deadline-task marker, completion status,
      * description, and deadline.
