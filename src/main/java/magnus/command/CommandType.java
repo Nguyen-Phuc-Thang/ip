@@ -39,7 +39,7 @@ public enum CommandType {
      */
     public static CommandType fromKeyword(String keyword) {
         for (CommandType type : values()) {
-            if (type.keyword.equals(keyword)) {
+            if (type.keyword.equalsIgnoreCase(keyword)) {
                 return type;
             }
         }

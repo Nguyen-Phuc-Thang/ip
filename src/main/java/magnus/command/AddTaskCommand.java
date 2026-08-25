@@ -1,5 +1,6 @@
 package magnus.command;
 
+import magnus.exception.CommandSyntaxException;
 import magnus.exception.MagnusException;
 import magnus.task.Task;
 import magnus.task.TaskList;
@@ -27,6 +28,9 @@ public class AddTaskCommand implements Command {
      */
     @Override
     public void execute(String[] args) throws MagnusException {
+        if (args.length != 1 || args[0].isBlank()) {
+            throw new CommandSyntaxException("\tInvalid syntax! Please give me one task description.");
+        }
         String taskDescription = args[0];
         tasks.addTask(new Task(taskDescription));
         System.out.println("\tadded: " + taskDescription);

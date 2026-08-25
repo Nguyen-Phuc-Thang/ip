@@ -1,5 +1,7 @@
 package magnus.command;
 
+import magnus.exception.CommandSyntaxException;
+
 /**
  * Displays Magnus's farewell message.
  */
@@ -15,10 +17,14 @@ public class ExitCommand implements Command {
     /**
      * Prints the farewell message to standard output.
      *
-     * @param args The command arguments, which are ignored.
+     * @param args The command arguments.
      */
     @Override
-    public void execute(String[] args) {
+    public void execute(String[] args) throws CommandSyntaxException {
+        if (args.length > 0) {
+            throw new CommandSyntaxException("\tInvalid syntax! The bye command does not accept arguments.\n"
+                    + "\tUsage: bye");
+        }
         System.out.println(EXIT_TEXT);
     }
 }

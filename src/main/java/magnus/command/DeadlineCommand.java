@@ -30,13 +30,18 @@ public class DeadlineCommand implements Command {
     public void execute(String[] args) throws MagnusException {
 
         // Missing arguments
-        if (args.length == 0) {
+        if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me the task description.\n"
                     + "\tUsage: deadline <task description> /by <task deadline>");
         }
 
-        if (args.length == 1) {
+        if (args.length == 1 || args[1].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me the task deadline.\n"
+                    + "\tUsage: deadline <task description> /by <task deadline>");
+        }
+
+        if (args.length > 2) {
+            throw new CommandSyntaxException("\tInvalid syntax! The deadline command requires one /by field.\n"
                     + "\tUsage: deadline <task description> /by <task deadline>");
         }
 

@@ -1,5 +1,6 @@
 package magnus;
 
+import java.nio.file.Path;
 import java.util.Scanner;
 
 import magnus.command.CommandRouter;
@@ -9,7 +10,7 @@ import magnus.storage.Storage;
 import magnus.task.TaskList;
 
 public class Magnus {
-    private static final String DATA_FILE_PATH = "./data/magnus.txt";
+    private static final Path DATA_FILE_PATH = Path.of("data", "magnus.txt");
 
     public static void main(String[] args) {
 
@@ -48,36 +49,36 @@ public class Magnus {
             return;
         }
 
-        Scanner scanner = new Scanner(System.in);
-        CommandRouter router = new CommandRouter(tasks);
+        try (Scanner scanner = new Scanner(System.in)) {
+            CommandRouter router = new CommandRouter(tasks);
 
-        // Chat loop
-        while (true) {
-            String userInput = scanner.nextLine();
+            // Chat loop
+            while (scanner.hasNextLine()) {
+                String userInput = scanner.nextLine();
+                boolean shouldExit = false;
 
-            // Start of result
-            System.out.println(indent + divider);
+                // Start of result
+                System.out.println(indent + divider);
 
-            try {
-                CommandType commandType = router.route(userInput);
-                if (commandType.changesTaskList()) {
-                    storage.saveTasks(tasks.getTasks());
+                try {
+                    CommandType commandType = router.route(userInput);
+                    if (commandType.changesTaskList()) {
+                        storage.saveTasks(tasks.getTasks());
+                    }
+                    shouldExit = commandType == CommandType.BYE;
+                } catch (MagnusException exception) {
+                    System.out.println(exception.getMessage());
                 }
-            } catch (MagnusException exception) {
-                System.out.println(exception.getMessage());
-            }
 
-            if (userInput.equals("bye")) {
-                break;
-            }
+                if (shouldExit) {
+                    break;
+                }
 
-            // End of result
-            System.out.println(indent + divider);
+                // End of result
+                System.out.println(indent + divider);
+            }
         }
 
-        System.out.println(indent + divider); 
-
-        // Exit
-        scanner.close();
+        System.out.println(indent + divider);
     }
 }

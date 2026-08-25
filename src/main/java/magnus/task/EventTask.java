@@ -22,8 +22,13 @@ public class EventTask extends Task {
 
     @Override
     public String toDataString() {
-        return String.format("E,%d,%s,%s-%s",
-                getStatusNumber(), getDescription(), this.start, this.end);
+        String eventTime = escapeEventTimePart(this.start) + "-" + escapeEventTimePart(this.end);
+        return String.format("E,%d,%s,%s",
+                getStatusNumber(), encodeDataField(getDescription()), encodeDataField(eventTime));
+    }
+
+    private String escapeEventTimePart(String eventTimePart) {
+        return eventTimePart.replace("\\", "\\\\").replace("-", "\\-");
     }
 
     /**

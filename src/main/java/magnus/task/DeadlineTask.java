@@ -20,7 +20,7 @@ public class DeadlineTask extends Task {
     @Override
     public String toDataString() {
         return String.format("D,%d,%s,%s",
-                getStatusNumber(), getDescription(), this.deadline);
+                getStatusNumber(), encodeDataField(getDescription()), encodeDataField(this.deadline));
     }
 
     /**

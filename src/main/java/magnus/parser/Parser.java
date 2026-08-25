@@ -26,7 +26,7 @@ public class Parser {
         }
 
         String[] arguments = commandAndArguments[1]
-                .split("\\s+/(?:by|from|to)\\s+");
+                .split("(?:^|\\s+)/(?:by|from|to)(?:\\s+|$)", -1);
         String[] parsedInput = new String[arguments.length + 1];
         parsedInput[0] = commandAndArguments[0];
         System.arraycopy(arguments, 0, parsedInput, 1, arguments.length);

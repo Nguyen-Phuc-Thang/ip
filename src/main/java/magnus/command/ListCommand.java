@@ -1,5 +1,6 @@
 package magnus.command;
 
+import magnus.exception.CommandSyntaxException;
 import magnus.task.TaskList;
 
 /**
@@ -20,10 +21,14 @@ public class ListCommand implements Command {
     /**
      * Prints every task in the task list to standard output.
      *
-     * @param args The command arguments, which are ignored.
+     * @param args The command arguments.
      */
     @Override
-    public void execute(String[] args) {
+    public void execute(String[] args) throws CommandSyntaxException {
+        if (args.length > 0) {
+            throw new CommandSyntaxException("\tInvalid syntax! The list command does not accept arguments.\n"
+                    + "\tUsage: list");
+        }
         System.out.println("\tHere's your task list:\n");
         tasks.printTasks();
     }
