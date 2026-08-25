@@ -20,6 +20,17 @@ public class EventTask extends Task {
         this.end = end;
     }
 
+    @Override
+    public String toDataString() {
+        String eventTime = escapeEventTimePart(this.start) + "-" + escapeEventTimePart(this.end);
+        return String.format("E,%d,%s,%s",
+                getStatusNumber(), encodeDataField(getDescription()), encodeDataField(eventTime));
+    }
+
+    private String escapeEventTimePart(String eventTimePart) {
+        return eventTimePart.replace("\\", "\\\\").replace("-", "\\-");
+    }
+
     /**
      * Returns a string representation containing the event-task marker, completion status,
      * description, start time, and end time.

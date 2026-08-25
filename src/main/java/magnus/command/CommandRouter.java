@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import magnus.exception.CommandNotFoundException;
+import magnus.exception.CommandSyntaxException;
 import magnus.exception.MagnusException;
 import magnus.parser.Parser;
 import magnus.task.TaskList;
@@ -44,9 +45,12 @@ public class CommandRouter {
      * @throws MagnusException If the matching command cannot be executed.
      * @throws ArrayIndexOutOfBoundsException If the input is blank.
      */
-    public void route(String userInput) throws MagnusException {
+    public CommandType route(String userInput) throws MagnusException {
         // Parse user input
         String[] parsedCommand = parser.parse(userInput);
+        if (parsedCommand.length == 0) {
+            throw new CommandSyntaxException("\tPlease enter a command.");
+        }
         String commandKeyword = parsedCommand[0];
         String[] args = Arrays.copyOfRange(parsedCommand, 1, parsedCommand.length);
 
@@ -59,5 +63,6 @@ public class CommandRouter {
         }
 
         this.commands.get(commandType).execute(args);
+        return commandType;
     }   
 }

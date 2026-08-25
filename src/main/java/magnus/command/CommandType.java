@@ -4,24 +4,30 @@ package magnus.command;
  * Identifies the commands supported by Magnus and their user-facing keywords.
  */
 public enum CommandType {
-    BYE("bye"),
-    LIST("list"),
-    MARK("mark"),
-    UNMARK("unmark"),
-    TODO("todo"),
-    DEADLINE("deadline"),
-    EVENT("event"),
-    DELETE("delete");
+    BYE("bye", false),
+    LIST("list", false),
+    MARK("mark", true),
+    UNMARK("unmark", true),
+    TODO("todo", true),
+    DEADLINE("deadline", true),
+    EVENT("event", true),
+    DELETE("delete", true);
 
     private final String keyword;
+    private final boolean changesTaskList;
 
     /**
      * Creates a command type with the keyword entered by users.
      *
      * @param keyword The command's user-facing keyword.
      */
-    CommandType(String keyword) {
+    CommandType(String keyword, boolean changesTaskList) {
         this.keyword = keyword;
+        this.changesTaskList = changesTaskList;
+    }
+
+    public boolean changesTaskList() {
+        return this.changesTaskList;
     }
 
     /**
@@ -33,7 +39,7 @@ public enum CommandType {
      */
     public static CommandType fromKeyword(String keyword) {
         for (CommandType type : values()) {
-            if (type.keyword.equals(keyword)) {
+            if (type.keyword.equalsIgnoreCase(keyword)) {
                 return type;
             }
         }

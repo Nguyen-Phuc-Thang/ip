@@ -31,13 +31,18 @@ public class EventCommand implements Command {
     public void execute(String[] args) throws MagnusException {
 
         // Missing arguments
-        if (args.length == 0) {
+        if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me the task description.\n"
                     + "\tUsage: event <task description> /from <start time> /to <end time>");
         }
 
-        if (args.length == 1 || args.length == 2) {
+        if (args.length < 3 || args[1].isBlank() || args[2].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me the task start and end time.\n"
+                    + "\tUsage: event <task description> /from <start time> /to <end time>");
+        }
+
+        if (args.length > 3) {
+            throw new CommandSyntaxException("\tInvalid syntax! The event command requires one /from and /to field.\n"
                     + "\tUsage: event <task description> /from <start time> /to <end time>");
         }
 

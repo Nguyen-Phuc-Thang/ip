@@ -41,6 +41,25 @@ public class Task {
         this.isDone = false;
     }
 
+    public String toDataString() {
+        return String.format("T,%d,%s", getStatusNumber(), encodeDataField(this.description));
+    }
+
+    protected int getStatusNumber() {
+        return this.isDone ? 1 : 0;
+    }
+
+    protected String encodeDataField(String field) {
+        if (field.contains("\n") || field.contains("\r")) {
+            throw new IllegalArgumentException("Task fields cannot contain line breaks");
+        }
+        if (!field.contains(",") && !field.contains("\"")) {
+            return field;
+        }
+
+        return "\"" + field.replace("\"", "\"\"") + "\"";
+    }
+
     /**
      * Returns the icon representing this task's completion status.
      *

@@ -7,13 +7,18 @@ import java.util.List;
  * Stores and manages the tasks in Magnus's task list.
  */
 public class TaskList {
-    private List<Task> tasks;
+    private final List<Task> tasks;
 
-    /**
-     * Creates an empty task list.
-     */
     public TaskList() {
         this.tasks = new ArrayList<>();
+    }
+
+    public TaskList(List<Task> tasks) {
+        this.tasks = new ArrayList<>(tasks);
+    }
+
+    public List<Task> getTasks() {
+        return List.copyOf(this.tasks);
     }
 
     /**

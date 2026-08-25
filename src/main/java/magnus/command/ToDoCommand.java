@@ -35,6 +35,11 @@ public class ToDoCommand implements Command {
                     + "\tUsage: todo <task description>");
         }
 
+        if (args.length > 1) {
+            throw new CommandSyntaxException("\tInvalid syntax! The todo command accepts one description.\n"
+                    + "\tUsage: todo <task description>");
+        }
+
         String taskDescription = args[0];
         ToDoTask newTask = new ToDoTask(taskDescription);
         tasks.addTask(newTask);

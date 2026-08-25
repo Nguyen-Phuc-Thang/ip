@@ -12,4 +12,8 @@ public class MagnusException extends Exception {
     public MagnusException(String message) {
         super(message);
     }
+
+    public MagnusException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
