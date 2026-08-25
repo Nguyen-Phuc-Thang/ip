@@ -15,12 +15,9 @@ public class TaskList {
     private final List<Task> tasks;
     private final Storage storage;
 
-    /**
-     * Creates an empty task list.
-     */
-    public TaskList() {
-        this.tasks = new ArrayList<>();
+    public TaskList() throws StorageException {
         this.storage = new Storage(DEFAULT_DATA_FILE_PATH);
+        this.tasks = new ArrayList<>(this.storage.loadTasks());
     }
 
     /**

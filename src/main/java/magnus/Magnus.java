@@ -35,8 +35,15 @@ public class Magnus {
         System.out.println(divider);
 
         // Chat resources
+        TaskList tasks;
+        try {
+            tasks = new TaskList();
+        } catch (MagnusException exception) {
+            System.out.println(exception.getMessage());
+            return;
+        }
+
         Scanner scanner = new Scanner(System.in);
-        TaskList tasks = new TaskList();
         CommandRouter router = new CommandRouter(tasks);
 
         // Chat loop
