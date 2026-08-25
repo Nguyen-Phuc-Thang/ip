@@ -44,7 +44,7 @@ public class CommandRouter {
      * @throws MagnusException If the matching command cannot be executed.
      * @throws ArrayIndexOutOfBoundsException If the input is blank.
      */
-    public void route(String userInput) throws MagnusException {
+    public CommandType route(String userInput) throws MagnusException {
         // Parse user input
         String[] parsedCommand = parser.parse(userInput);
         String commandKeyword = parsedCommand[0];
@@ -59,5 +59,6 @@ public class CommandRouter {
         }
 
         this.commands.get(commandType).execute(args);
+        return commandType;
     }   
 }

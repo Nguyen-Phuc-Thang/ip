@@ -3,10 +3,14 @@ package magnus;
 import java.util.Scanner;
 
 import magnus.command.CommandRouter;
+import magnus.command.CommandType;
 import magnus.exception.MagnusException;
+import magnus.storage.Storage;
 import magnus.task.TaskList;
 
 public class Magnus {
+    private static final String DATA_FILE_PATH = "./data/magnus.txt";
+
     public static void main(String[] args) {
 
         // Chat decorations
@@ -35,9 +39,10 @@ public class Magnus {
         System.out.println(divider);
 
         // Chat resources
+        Storage storage = new Storage(DATA_FILE_PATH);
         TaskList tasks;
         try {
-            tasks = new TaskList();
+            tasks = new TaskList(storage.loadTasks());
         } catch (MagnusException exception) {
             System.out.println(exception.getMessage());
             return;
@@ -54,7 +59,10 @@ public class Magnus {
             System.out.println(indent + divider);
 
             try {
-                router.route(userInput);
+                CommandType commandType = router.route(userInput);
+                if (commandType.changesTaskList()) {
+                    storage.saveTasks(tasks.getTasks());
+                }
             } catch (MagnusException exception) {
                 System.out.println(exception.getMessage());
             }
