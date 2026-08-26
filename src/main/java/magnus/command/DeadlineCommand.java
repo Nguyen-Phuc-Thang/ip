@@ -32,22 +32,28 @@ public class DeadlineCommand implements Command {
         // Missing arguments
         if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me the task description.\n"
-                    + "\tUsage: deadline <task description> /by <task deadline>");
+                    + "\tUsage: deadline <task description> /by <dd/MM/yyyy HHmm>");
         }
 
         if (args.length == 1 || args[1].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me the task deadline.\n"
-                    + "\tUsage: deadline <task description> /by <task deadline>");
+                    + "\tUsage: deadline <task description> /by <dd/MM/yyyy HHmm>");
         }
 
         if (args.length > 2) {
             throw new CommandSyntaxException("\tInvalid syntax! The deadline command requires one /by field.\n"
-                    + "\tUsage: deadline <task description> /by <task deadline>");
+                    + "\tUsage: deadline <task description> /by <dd/MM/yyyy HHmm>");
         }
 
         String taskDescription = args[0];
         String taskDeadline = args[1];
-        DeadlineTask newTask = new DeadlineTask(taskDescription, taskDeadline);
+        DeadlineTask newTask;
+        try {
+            newTask = new DeadlineTask(taskDescription, taskDeadline);
+        } catch (IllegalArgumentException exception) {
+            throw new CommandSyntaxException(
+                    "\tInvalid deadline time! Enter deadline time in dd/MM/yyyy HHmm format, for example 02/09/2026 1500.");
+        }
         tasks.addTask(newTask);
 
         System.out.println("\tI've added this Deadline task:\n");
