@@ -6,6 +6,7 @@ package magnus.command;
 public enum CommandType {
     BYE("bye", false),
     LIST("list", false),
+    LIST_DEADLINE("list_deadline", false),
     MARK("mark", true),
     UNMARK("unmark", true),
     TODO("todo", true),

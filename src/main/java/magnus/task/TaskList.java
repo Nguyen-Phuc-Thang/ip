@@ -1,5 +1,6 @@
 package magnus.task;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,14 @@ public class TaskList {
 
     public List<Task> getTasks() {
         return List.copyOf(this.tasks);
+    }
+
+    public TaskList filterTaskOnDate(LocalDate date) {
+        List<Task> filteredTasks = this.tasks.stream()
+                .filter(task -> task instanceof DeadlineTask deadlineTask
+                        && deadlineTask.getDeadline().toLocalDate().equals(date))
+                .toList();
+        return new TaskList(filteredTasks);
     }
 
     /**
