@@ -7,7 +7,7 @@ import java.util.Map;
 import magnus.exception.CommandNotFoundException;
 import magnus.exception.CommandSyntaxException;
 import magnus.exception.MagnusException;
-import magnus.parser.Parser;
+import magnus.parser.CommandParser;
 import magnus.task.TaskList;
 
 /**
@@ -16,7 +16,7 @@ import magnus.task.TaskList;
  */
 public class CommandRouter {
     private final Map<CommandType, Command> commands;
-    private final Parser parser;
+    private final CommandParser parser;
 
     /**
      * Creates a command router whose commands operate on the specified task list.
@@ -36,7 +36,7 @@ public class CommandRouter {
         this.commands.put(CommandType.EVENT, new EventCommand(tasks));
         this.commands.put(CommandType.DELETE, new DeleteCommand(tasks));
         
-        this.parser = new Parser();
+        this.parser = new CommandParser();
     }
 
     /**

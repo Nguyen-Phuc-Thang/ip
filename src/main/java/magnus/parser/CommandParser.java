@@ -5,7 +5,7 @@ package magnus.parser;
  * Task fields are separated by the {@code /by}, {@code /from}, and {@code /to}
  * keywords, while spaces within a field are preserved.
  */
-public class Parser {
+public class CommandParser {
 
     /**
      * Splits user input into a command followed by its argument fields. The first
