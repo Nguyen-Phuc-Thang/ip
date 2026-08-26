@@ -1,4 +1,4 @@
-package magnus.parser;
+package magnus.storage;
 
 import java.util.ArrayList;
 import java.util.List;
