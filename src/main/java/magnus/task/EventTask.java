@@ -4,15 +4,18 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
  * Represents a task that occurs between specified start and end times.
  */
 public class EventTask extends Task {
-    private static final DateTimeFormatter EVENT_TIME_FORMATTER = DateTimeFormatter
+    private static final DateTimeFormatter STORAGE_FORMATTER = DateTimeFormatter
             .ofPattern("dd/MM/uuuu HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
+    private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter
+            .ofPattern("MMM dd, uuuu HH:mm", Locale.ENGLISH);
 
     private final LocalDateTime start;
     private final LocalDateTime end;
@@ -76,7 +79,7 @@ public class EventTask extends Task {
         }
 
         try {
-            return LocalDateTime.parse(eventTime, EVENT_TIME_FORMATTER);
+            return LocalDateTime.parse(eventTime, STORAGE_FORMATTER);
         } catch (DateTimeParseException exception) {
             throw new IllegalArgumentException(
                     fieldName + " must use format dd/MM/yyyy HHmm and contain a valid date and time",
@@ -90,13 +93,23 @@ public class EventTask extends Task {
      * @param eventTime The event time to format.
      * @return The formatted event time.
      */
-    private String formatEventTime(LocalDateTime eventTime) {
-        return eventTime.format(EVENT_TIME_FORMATTER);
+    private String formatForStorage(LocalDateTime eventTime) {
+        return eventTime.format(STORAGE_FORMATTER);
+    }
+
+    /**
+     * Formats an event time for display with an English abbreviated month.
+     *
+     * @param eventTime The event time to format.
+     * @return The display-formatted event time.
+     */
+    private String formatForDisplay(LocalDateTime eventTime) {
+        return eventTime.format(DISPLAY_FORMATTER);
     }
 
     @Override
     public String toDataString() {
-        String eventTime = formatEventTime(this.start) + "-" + formatEventTime(this.end);
+        String eventTime = formatForStorage(this.start) + "-" + formatForStorage(this.end);
         return String.format("E,%d,%s,%s",
                 getStatusNumber(), encodeDataField(getDescription()), encodeDataField(eventTime));
     }
@@ -110,6 +123,6 @@ public class EventTask extends Task {
     @Override
     public String toString() {
         return String.format("[E]%s (from: %s to: %s)", super.toString(),
-                formatEventTime(this.start), formatEventTime(this.end));
+                formatForDisplay(this.start), formatForDisplay(this.end));
     }
 }

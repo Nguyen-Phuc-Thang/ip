@@ -4,15 +4,18 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
  * Represents a task that must be completed by a specified deadline.
  */
 public class DeadlineTask extends Task {
-    private static final DateTimeFormatter DEADLINE_FORMATTER = DateTimeFormatter
+    private static final DateTimeFormatter STORAGE_FORMATTER = DateTimeFormatter
             .ofPattern("dd/MM/uuuu HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
+    private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter
+            .ofPattern("MMM dd, uuuu HH:mm", Locale.ENGLISH);
 
     private final LocalDateTime deadline;
 
@@ -61,7 +64,7 @@ public class DeadlineTask extends Task {
         }
 
         try {
-            return LocalDateTime.parse(deadline, DEADLINE_FORMATTER);
+            return LocalDateTime.parse(deadline, STORAGE_FORMATTER);
         } catch (DateTimeParseException exception) {
             throw new IllegalArgumentException(
                     "deadline must use format dd/MM/yyyy HHmm and contain a valid date and time",
@@ -74,14 +77,23 @@ public class DeadlineTask extends Task {
      *
      * @return The formatted deadline.
      */
-    private String getFormattedDeadline() {
-        return this.deadline.format(DEADLINE_FORMATTER);
+    private String getStorageDeadline() {
+        return this.deadline.format(STORAGE_FORMATTER);
+    }
+
+    /**
+     * Formats the deadline for display with an English abbreviated month.
+     *
+     * @return The display-formatted deadline.
+     */
+    private String getDisplayDeadline() {
+        return this.deadline.format(DISPLAY_FORMATTER);
     }
 
     @Override
     public String toDataString() {
         return String.format("D,%d,%s,%s",
-                getStatusNumber(), encodeDataField(getDescription()), encodeDataField(getFormattedDeadline()));
+                getStatusNumber(), encodeDataField(getDescription()), encodeDataField(getStorageDeadline()));
     }
 
     /**
@@ -92,6 +104,6 @@ public class DeadlineTask extends Task {
      */
     @Override
     public String toString() {
-        return String.format("[D]%s (by: %s)", super.toString(), getFormattedDeadline());
+        return String.format("[D]%s (by: %s)", super.toString(), getDisplayDeadline());
     }
 }
