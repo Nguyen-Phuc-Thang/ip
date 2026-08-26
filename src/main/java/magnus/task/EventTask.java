@@ -2,20 +2,20 @@ package magnus.task;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 import java.util.Locale;
 import java.util.Objects;
+
+import magnus.parser.DateTimeParser;
 
 /**
  * Represents a task that occurs between specified start and end times.
  */
 public class EventTask extends Task {
     private static final DateTimeFormatter STORAGE_FORMATTER = DateTimeFormatter
-            .ofPattern("dd/MM/uuuu HHmm")
-            .withResolverStyle(ResolverStyle.STRICT);
+            .ofPattern("dd/MM/uuuu HHmm");
     private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter
             .ofPattern("MMM dd, uuuu HH:mm", Locale.ENGLISH);
+    private static final DateTimeParser DATE_TIME_PARSER = new DateTimeParser();
 
     private final LocalDateTime start;
     private final LocalDateTime end;
@@ -29,8 +29,8 @@ public class EventTask extends Task {
      */
     public EventTask(String description, String start, String end) {
         super(description);
-        this.start = parseEventTime(start, "start time");
-        this.end = parseEventTime(end, "end time");
+        this.start = DATE_TIME_PARSER.parseDateTime(start, "start time");
+        this.end = DATE_TIME_PARSER.parseDateTime(end, "end time");
     }
 
     /**
@@ -62,29 +62,6 @@ public class EventTask extends Task {
      */
     public LocalDateTime getEnd() {
         return this.end;
-    }
-
-    /**
-     * Parses an event time using the required {@code dd/MM/yyyy HHmm} input format.
-     * Strict resolution rejects impossible dates and times, such as 31 February or 2400.
-     *
-     * @param eventTime The event time text to parse.
-     * @param fieldName The name used to identify this event time in an error message.
-     * @return The parsed event time.
-     * @throws IllegalArgumentException If the event time is null, malformed, or invalid.
-     */
-    private static LocalDateTime parseEventTime(String eventTime, String fieldName) {
-        if (eventTime == null) {
-            throw new IllegalArgumentException(fieldName + " cannot be null");
-        }
-
-        try {
-            return LocalDateTime.parse(eventTime, STORAGE_FORMATTER);
-        } catch (DateTimeParseException exception) {
-            throw new IllegalArgumentException(
-                    fieldName + " must use format dd/MM/yyyy HHmm and contain a valid date and time",
-                    exception);
-        }
     }
 
     /**

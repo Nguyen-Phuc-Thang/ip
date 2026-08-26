@@ -1,22 +1,18 @@
 package magnus.command;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 
 import magnus.exception.CommandSyntaxException;
+import magnus.parser.DateTimeParser;
 import magnus.task.TaskList;
 
 /**
  * Displays deadline tasks that fall on a specified date.
  */
 public class ListDeadlineCommand implements Command {
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter
-            .ofPattern("dd/MM/uuuu")
-            .withResolverStyle(ResolverStyle.STRICT);
-
     private final TaskList tasks;
+    private final DateTimeParser dateTimeParser;
 
     /**
      * Creates a command that filters the specified task list by deadline date.
@@ -25,6 +21,7 @@ public class ListDeadlineCommand implements Command {
      */
     public ListDeadlineCommand(TaskList tasks) {
         this.tasks = tasks;
+        this.dateTimeParser = new DateTimeParser();
     }
 
     /**
@@ -48,7 +45,7 @@ public class ListDeadlineCommand implements Command {
 
         LocalDate date;
         try {
-            date = LocalDate.parse(args[0], DATE_FORMATTER);
+            date = this.dateTimeParser.parseDate(args[0]);
         } catch (DateTimeParseException exception) {
             throw new CommandSyntaxException(
                     "\tInvalid date! Enter the date in dd/MM/yyyy format, for example 20/09/2026.");

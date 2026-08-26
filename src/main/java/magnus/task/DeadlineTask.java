@@ -2,20 +2,20 @@ package magnus.task;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 import java.util.Locale;
 import java.util.Objects;
+
+import magnus.parser.DateTimeParser;
 
 /**
  * Represents a task that must be completed by a specified deadline.
  */
 public class DeadlineTask extends Task {
     private static final DateTimeFormatter STORAGE_FORMATTER = DateTimeFormatter
-            .ofPattern("dd/MM/uuuu HHmm")
-            .withResolverStyle(ResolverStyle.STRICT);
+            .ofPattern("dd/MM/uuuu HHmm");
     private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter
             .ofPattern("MMM dd, uuuu HH:mm", Locale.ENGLISH);
+    private static final DateTimeParser DATE_TIME_PARSER = new DateTimeParser();
 
     private final LocalDateTime deadline;
 
@@ -27,7 +27,7 @@ public class DeadlineTask extends Task {
      */
     public DeadlineTask(String description, String deadline) {
         super(description);
-        this.deadline = parseDeadline(deadline);
+        this.deadline = DATE_TIME_PARSER.parseDateTime(deadline, "deadline");
     }
 
     /**
@@ -48,28 +48,6 @@ public class DeadlineTask extends Task {
      */
     public LocalDateTime getDeadline() {
         return this.deadline;
-    }
-
-    /**
-     * Parses a deadline using the required {@code dd/MM/yyyy HHmm} input format.
-     * Strict resolution rejects impossible dates and times, such as 31 February or 2400.
-     *
-     * @param deadline The deadline text to parse.
-     * @return The parsed deadline.
-     * @throws IllegalArgumentException If the deadline is null, malformed, or invalid.
-     */
-    private static LocalDateTime parseDeadline(String deadline) {
-        if (deadline == null) {
-            throw new IllegalArgumentException("deadline cannot be null");
-        }
-
-        try {
-            return LocalDateTime.parse(deadline, STORAGE_FORMATTER);
-        } catch (DateTimeParseException exception) {
-            throw new IllegalArgumentException(
-                    "deadline must use format dd/MM/yyyy HHmm and contain a valid date and time",
-                    exception);
-        }
     }
 
     /**

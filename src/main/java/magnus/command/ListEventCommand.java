@@ -1,22 +1,18 @@
 package magnus.command;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 
 import magnus.exception.CommandSyntaxException;
+import magnus.parser.DateTimeParser;
 import magnus.task.TaskList;
 
 /**
  * Displays event tasks enclosed by a specified date range.
  */
 public class ListEventCommand implements Command {
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter
-            .ofPattern("dd/MM/uuuu")
-            .withResolverStyle(ResolverStyle.STRICT);
-
     private final TaskList tasks;
+    private final DateTimeParser dateTimeParser;
 
     /**
      * Creates a command that filters the specified task list by an inclusive date range.
@@ -25,6 +21,7 @@ public class ListEventCommand implements Command {
      */
     public ListEventCommand(TaskList tasks) {
         this.tasks = tasks;
+        this.dateTimeParser = new DateTimeParser();
     }
 
     /**
@@ -44,22 +41,19 @@ public class ListEventCommand implements Command {
             throw createInvalidArgumentCountException();
         }
 
-        String[] dateArguments = args[0].strip().split("\\s+");
-        if (dateArguments.length != 2) {
-            throw createInvalidArgumentCountException();
-        }
-
-        LocalDate startDate;
-        LocalDate endDate;
+        LocalDate[] dateRange;
         try {
-            startDate = LocalDate.parse(dateArguments[0], DATE_FORMATTER);
-            endDate = LocalDate.parse(dateArguments[1], DATE_FORMATTER);
+            dateRange = this.dateTimeParser.parseDateRange(args[0]);
         } catch (DateTimeParseException exception) {
             throw new CommandSyntaxException(
                     "\tInvalid date! Enter both dates in dd/MM/yyyy format, for example "
                             + "01/09/2026 30/09/2026.");
+        } catch (IllegalArgumentException exception) {
+            throw createInvalidArgumentCountException();
         }
 
+        LocalDate startDate = dateRange[0];
+        LocalDate endDate = dateRange[1];
         if (startDate.isAfter(endDate)) {
             throw new CommandSyntaxException(
                     "\tInvalid date range! The start date must be before or equal to the end date.");
