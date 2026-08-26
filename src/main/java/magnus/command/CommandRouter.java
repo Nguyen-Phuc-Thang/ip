@@ -28,6 +28,7 @@ public class CommandRouter {
         this.commands.put(CommandType.BYE, new ExitCommand());
         this.commands.put(CommandType.LIST, new ListCommand(tasks));
         this.commands.put(CommandType.LIST_DEADLINE, new ListDeadlineCommand(tasks));
+        this.commands.put(CommandType.LIST_EVENT, new ListEventCommand(tasks));
         this.commands.put(CommandType.MARK, new MarkCommand(tasks));
         this.commands.put(CommandType.UNMARK, new UnmarkCommand(tasks));
         this.commands.put(CommandType.TODO, new ToDoCommand(tasks));

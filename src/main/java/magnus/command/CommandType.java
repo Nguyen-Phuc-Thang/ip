@@ -7,6 +7,7 @@ public enum CommandType {
     BYE("bye", false),
     LIST("list", false),
     LIST_DEADLINE("list_deadline", false),
+    LIST_EVENT("list_event", false),
     MARK("mark", true),
     UNMARK("unmark", true),
     TODO("todo", true),

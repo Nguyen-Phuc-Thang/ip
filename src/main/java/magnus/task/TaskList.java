@@ -30,6 +30,15 @@ public class TaskList {
         return new TaskList(filteredTasks);
     }
 
+    public TaskList filterTaskWithinDateRange(LocalDate startDate, LocalDate endDate) {
+        List<Task> filteredTasks = this.tasks.stream()
+                .filter(task -> task instanceof EventTask eventTask
+                        && !eventTask.getStart().toLocalDate().isBefore(startDate)
+                        && !eventTask.getEnd().toLocalDate().isAfter(endDate))
+                .toList();
+        return new TaskList(filteredTasks);
+    }
+
     /**
      * Returns the number of tasks in this task list.
      *
