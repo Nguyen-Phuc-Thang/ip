@@ -8,36 +8,14 @@ import magnus.command.CommandType;
 import magnus.exception.MagnusException;
 import magnus.storage.Storage;
 import magnus.task.TaskList;
+import magnus.ui.UI;
 
 public class Magnus {
     private static final Path DATA_FILE_PATH = Path.of("data", "magnus.txt");
 
     public static void main(String[] args) {
-
-        // Chat decorations
-        String banner = """
-                ███╗   ███╗ █████╗  ██████╗ ███╗   ██╗██╗   ██╗███████╗
-                ████╗ ████║██╔══██╗██╔════╝ ████╗  ██║██║   ██║██╔════╝
-                ██╔████╔██║███████║██║  ███╗██╔██╗ ██║██║   ██║███████╗
-                ██║╚██╔╝██║██╔══██║██║   ██║██║╚██╗██║██║   ██║╚════██║
-                ██║ ╚═╝ ██║██║  ██║╚██████╔╝██║ ╚████║╚██████╔╝███████║
-                ╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
-                """;
-
-        String divider = "____________________________________________________________\n";
-        String indent = "\t";
-
-        // Greeting and exit text
-        String greeting = """
-                Hello! I'm Magnus.
-                How can I help you today?
-                """;
-
-        // Greeting
-        System.out.println(divider);
-        System.out.print(banner);
-        System.out.print(greeting);
-        System.out.println(divider);
+        UI ui = new UI();
+        ui.showWelcome();
 
         // Chat resources
         Storage storage = new Storage(DATA_FILE_PATH);
@@ -58,7 +36,7 @@ public class Magnus {
                 boolean shouldExit = false;
 
                 // Start of result
-                System.out.println(indent + divider);
+                ui.printDivider();
 
                 try {
                     CommandType commandType = router.route(userInput);
@@ -75,10 +53,10 @@ public class Magnus {
                 }
 
                 // End of result
-                System.out.println(indent + divider);
+                ui.printDivider();
             }
         }
 
-        System.out.println(indent + divider);
+        ui.printDivider();
     }
 }
