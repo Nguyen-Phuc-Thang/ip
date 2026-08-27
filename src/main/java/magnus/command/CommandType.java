@@ -12,6 +12,8 @@ public enum CommandType {
     LIST_DEADLINE("list_deadline", false),
     /** Displays event tasks within a specified date range. */
     LIST_EVENT("list_event", false),
+    /** Displays tasks whose descriptions contain a specified query. */
+    FIND("find", false),
     /** Marks a task as completed. */
     MARK("mark", true),
     /** Marks a task as incomplete. */
