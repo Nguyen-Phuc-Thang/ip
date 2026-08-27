@@ -8,6 +8,12 @@ package magnus.parser;
 public class CommandParser {
 
     /**
+     * Creates a parser for command-line input.
+     */
+    public CommandParser() {
+    }
+
+    /**
      * Splits user input into a command followed by its argument fields. The first
      * whitespace-separated word is the command, and {@code /by}, {@code /from},
      * and {@code /to} delimit any subsequent fields.

@@ -68,6 +68,11 @@ public class DeadlineTask extends Task {
         return this.deadline.format(DISPLAY_FORMATTER);
     }
 
+    /**
+     * Serializes this deadline task into the format used by persistent storage.
+     *
+     * @return The serialized deadline-task data.
+     */
     @Override
     public String toDataString() {
         return String.format("D,%d,%s,%s",

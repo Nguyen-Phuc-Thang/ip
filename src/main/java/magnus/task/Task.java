@@ -41,14 +41,31 @@ public class Task {
         this.isDone = false;
     }
 
+    /**
+     * Serializes this task into the format used by persistent storage.
+     *
+     * @return The serialized task data.
+     */
     public String toDataString() {
         return String.format("T,%d,%s", getStatusNumber(), encodeDataField(this.description));
     }
 
+    /**
+     * Returns the numeric completion status used by persistent storage.
+     *
+     * @return {@code 1} if the task is complete; {@code 0} otherwise.
+     */
     protected int getStatusNumber() {
         return this.isDone ? 1 : 0;
     }
 
+    /**
+     * Escapes a task field for safe storage in the comma-separated data format.
+     *
+     * @param field The field to encode.
+     * @return The encoded field, quoted when it contains commas or quotation marks.
+     * @throws IllegalArgumentException If the field contains a line break.
+     */
     protected String encodeDataField(String field) {
         if (field.contains("\n") || field.contains("\r")) {
             throw new IllegalArgumentException("Task fields cannot contain line breaks");

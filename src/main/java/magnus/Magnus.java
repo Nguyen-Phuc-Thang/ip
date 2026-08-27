@@ -10,9 +10,23 @@ import magnus.storage.Storage;
 import magnus.task.TaskList;
 import magnus.ui.UI;
 
+/**
+ * Starts Magnus and coordinates its user interface, commands, and persistent task storage.
+ */
 public class Magnus {
     private static final Path DATA_FILE_PATH = Path.of("data", "magnus.txt");
 
+    /**
+     * Creates a Magnus application instance.
+     */
+    public Magnus() {
+    }
+
+    /**
+     * Runs Magnus's command-line interaction loop.
+     *
+     * @param args Command-line arguments, which are currently ignored.
+     */
     public static void main(String[] args) {
         UI ui = new UI();
         ui.showWelcome();
