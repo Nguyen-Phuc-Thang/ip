@@ -96,6 +96,20 @@ public class TaskListTest {
     }
 
     @Test
+    public void filterTasksByDescription_mixedTasks_returnsCaseInsensitiveSubstringMatches() {
+        Task firstMatch = new ToDoTask("Read book");
+        Task nonMatch = new ToDoTask("submit report");
+        Task secondMatch = new DeadlineTask(
+                "return BOOK", LocalDateTime.of(2026, 6, 6, 18, 0));
+        TaskList tasks = new TaskList(List.of(firstMatch, nonMatch, secondMatch));
+
+        TaskList filteredTasks = tasks.filterTasksByDescription("book");
+
+        assertIterableEquals(List.of(firstMatch, secondMatch), filteredTasks.getTasks());
+        assertEquals(3, tasks.getLength());
+    }
+
+    @Test
     public void addTask_newTask_addsTaskAtEnd() {
         Task task1 = new ToDoTask("read book");
         Task task2 = new ToDoTask("return book");

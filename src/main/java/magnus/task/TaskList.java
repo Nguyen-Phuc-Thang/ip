@@ -3,6 +3,7 @@ package magnus.task;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Stores and manages the tasks in Magnus's task list.
@@ -35,6 +36,21 @@ public class TaskList {
                 .filter(task -> task instanceof EventTask eventTask
                         && !eventTask.getStart().toLocalDate().isBefore(startDate)
                         && !eventTask.getEnd().toLocalDate().isAfter(endDate))
+                .toList();
+        return new TaskList(filteredTasks);
+    }
+
+    /**
+     * Returns tasks whose descriptions contain the specified query, ignoring case.
+     * The matching tasks retain their original order.
+     *
+     * @param query The text to search for in task descriptions.
+     * @return A new task list containing the matching tasks.
+     */
+    public TaskList filterTasksByDescription(String query) {
+        String normalizedQuery = query.toLowerCase(Locale.ROOT);
+        List<Task> filteredTasks = this.tasks.stream()
+                .filter(task -> task.getDescription().toLowerCase(Locale.ROOT).contains(normalizedQuery))
                 .toList();
         return new TaskList(filteredTasks);
     }
