@@ -19,3 +19,20 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    ```
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+
+## Creating an executable fat JAR
+
+Ensure that JDK 25 is active, then run the Shadow plugin's `shadowJar` task from the project root:
+
+- macOS/Linux: `./gradlew shadowJar`
+- Windows: `gradlew.bat shadowJar`
+
+The task creates `build/libs/magnus.jar`. This is a fat JAR: it contains the application and its runtime dependencies, and its manifest identifies `magnus.Magnus` as the entry point.
+
+Run it from the project root with:
+
+```shell
+java -jar build/libs/magnus.jar
+```
+
+Running from the project root also ensures that Magnus reads and writes its task data at `data/magnus.txt`.
