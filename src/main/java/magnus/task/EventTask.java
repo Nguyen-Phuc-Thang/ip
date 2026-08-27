@@ -84,6 +84,11 @@ public class EventTask extends Task {
         return eventTime.format(DISPLAY_FORMATTER);
     }
 
+    /**
+     * Serializes this event task into the format used by persistent storage.
+     *
+     * @return The serialized event-task data.
+     */
     @Override
     public String toDataString() {
         String eventTime = formatForStorage(this.start) + "-" + formatForStorage(this.end);

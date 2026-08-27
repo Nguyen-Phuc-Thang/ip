@@ -64,6 +64,11 @@ public class ListEventCommand implements Command {
         filteredTasks.printTasks();
     }
 
+    /**
+     * Creates the syntax exception used when the command does not contain exactly two dates.
+     *
+     * @return An exception containing the expected command usage.
+     */
     private CommandSyntaxException createInvalidArgumentCountException() {
         return new CommandSyntaxException(
                 "\tInvalid syntax! The list_event command requires exactly two dates.\n"

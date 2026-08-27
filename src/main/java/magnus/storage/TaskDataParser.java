@@ -8,7 +8,23 @@ import magnus.task.EventTask;
 import magnus.task.Task;
 import magnus.task.ToDoTask;
 
+/**
+ * Converts serialized task records into task objects.
+ */
 public class TaskDataParser {
+    /**
+     * Creates a parser for serialized task records.
+     */
+    public TaskDataParser() {
+    }
+
+    /**
+     * Parses one serialized task record.
+     *
+     * @param line The serialized task record to parse.
+     * @return The task represented by the record.
+     * @throws IllegalArgumentException If the record is malformed or contains invalid task data.
+     */
     public Task parseTask(String line) {
         List<String> taskData = parseDataFields(line);
         if (taskData.size() < 2) {
@@ -46,6 +62,13 @@ public class TaskDataParser {
         return task;
     }
 
+    /**
+     * Splits a comma-separated task record while decoding quoted fields and escaped quotes.
+     *
+     * @param line The serialized task record.
+     * @return The decoded fields in their original order.
+     * @throws IllegalArgumentException If quotation marks are malformed.
+     */
     private List<String> parseDataFields(String line) {
         List<String> fields = new ArrayList<>();
         StringBuilder currentField = new StringBuilder();
@@ -95,6 +118,13 @@ public class TaskDataParser {
         return fields;
     }
 
+    /**
+     * Converts a stored numeric completion status into a boolean value.
+     *
+     * @param status The stored status, which must be {@code "0"} or {@code "1"}.
+     * @return {@code true} for a completed task; {@code false} for an incomplete task.
+     * @throws IllegalArgumentException If the status is not supported.
+     */
     private boolean parseStatus(String status) {
         if (status.equals("1")) {
             return true;
@@ -105,6 +135,14 @@ public class TaskDataParser {
         throw new IllegalArgumentException("invalid task status '" + status + "'");
     }
 
+    /**
+     * Verifies that a serialized record contains the expected number of fields.
+     *
+     * @param fields The parsed fields to validate.
+     * @param expectedCount The required number of fields.
+     * @param taskType The task type used in an error message.
+     * @throws IllegalArgumentException If the number of fields is incorrect.
+     */
     private void requireFieldCount(List<String> fields, int expectedCount, String taskType) {
         if (fields.size() != expectedCount) {
             throw new IllegalArgumentException(
@@ -112,6 +150,14 @@ public class TaskDataParser {
         }
     }
 
+    /**
+     * Verifies that a required serialized field contains non-whitespace text.
+     *
+     * @param field The field to validate.
+     * @param fieldName The field name used in an error message.
+     * @return The validated field.
+     * @throws IllegalArgumentException If the field is blank.
+     */
     private String requireNonBlank(String field, String fieldName) {
         if (field.isBlank()) {
             throw new IllegalArgumentException(fieldName + " cannot be blank");
@@ -119,6 +165,14 @@ public class TaskDataParser {
         return field;
     }
 
+    /**
+     * Separates a stored event-time field into its start and end values.
+     * Backslashes escape delimiter characters within either value.
+     *
+     * @param eventTimeData The serialized event-time field.
+     * @return A two-element array containing the start and end values.
+     * @throws IllegalArgumentException If the field is malformed or either value is blank.
+     */
     private String[] parseEventTime(String eventTimeData) {
         StringBuilder currentPart = new StringBuilder();
         String start = null;

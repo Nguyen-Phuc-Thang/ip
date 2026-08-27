@@ -43,9 +43,9 @@ public class CommandRouter {
      * Parses the user input and executes the command identified by its first token.
      *
      * @param userInput The raw user input to route.
+     * @return The type of command that was executed.
      * @throws CommandNotFoundException If the first token is not a recognized command word.
      * @throws MagnusException If the matching command cannot be executed.
-     * @throws ArrayIndexOutOfBoundsException If the input is blank.
      */
     public CommandType route(String userInput) throws MagnusException {
         // Parse user input
