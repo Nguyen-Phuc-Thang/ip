@@ -26,17 +26,17 @@ public enum CommandType {
     DELETE("delete", true);
 
     private final String keyword;
-    private final boolean changesTaskList;
+    private final boolean canChangeTaskList;
 
     /**
      * Creates a command type with the keyword entered by users.
      *
      * @param keyword The command's user-facing keyword.
-     * @param changesTaskList Whether executing the command can modify the task list.
+     * @param canChangeTaskList Whether executing the command can modify the task list.
      */
-    CommandType(String keyword, boolean changesTaskList) {
+    CommandType(String keyword, boolean canChangeTaskList) {
         this.keyword = keyword;
-        this.changesTaskList = changesTaskList;
+        this.canChangeTaskList = canChangeTaskList;
     }
 
     /**
@@ -44,18 +44,18 @@ public enum CommandType {
      *
      * @return {@code true} if the command can modify tasks; {@code false} otherwise.
      */
-    public boolean changesTaskList() {
-        return this.changesTaskList;
+    public boolean canChangeTaskList() {
+        return this.canChangeTaskList;
     }
 
     /**
-     * Returns the command type represented by the supplied keyword.
+     * Parses the command type represented by the supplied keyword.
      *
      * @param keyword The command keyword entered by the user.
      * @return The matching command type.
      * @throws IllegalArgumentException If the keyword does not identify a supported command.
      */
-    public static CommandType fromKeyword(String keyword) {
+    public static CommandType parseKeyword(String keyword) {
         for (CommandType type : values()) {
             if (type.keyword.equalsIgnoreCase(keyword)) {
                 return type;

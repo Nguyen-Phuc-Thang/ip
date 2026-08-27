@@ -9,7 +9,7 @@ import magnus.task.TaskList;
  * Adds event tasks to a task list.
  */
 public class EventCommand implements Command {
-    TaskList tasks;
+    private final TaskList tasks;
 
     /**
      * Creates a command that adds event tasks to the specified task list.
@@ -17,7 +17,7 @@ public class EventCommand implements Command {
      * @param tasks The task list to which event tasks are added.
      */
     public EventCommand(TaskList tasks) {
-        this.tasks = tasks;        
+        this.tasks = tasks;
     }
 
     /**

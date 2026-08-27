@@ -10,8 +10,7 @@ import magnus.task.TaskList;
  * Deletes tasks from a task list.
  */
 public class DeleteCommand implements Command {
-    
-    private TaskList tasks;
+    private final TaskList tasks;
 
     /**
      * Creates a command that deletes tasks from the specified task list.
@@ -57,7 +56,7 @@ public class DeleteCommand implements Command {
         if (taskNumber < 0 || taskNumber >= this.tasks.getLength()) {
             throw new TaskNotFoundException("\tSorry, I can't find this task number");
         }
-        
+
         Task removedTask = this.tasks.removeTask(taskNumber);
         System.out.println("\tBoooooom!!! I've made this task vanished:\n");
         System.out.println("\t" + removedTask);

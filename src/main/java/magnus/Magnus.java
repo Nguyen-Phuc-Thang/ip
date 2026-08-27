@@ -8,7 +8,7 @@ import magnus.command.CommandType;
 import magnus.exception.MagnusException;
 import magnus.storage.Storage;
 import magnus.task.TaskList;
-import magnus.ui.UI;
+import magnus.ui.Ui;
 
 /**
  * Starts Magnus and coordinates its user interface, commands, and persistent task storage.
@@ -28,7 +28,7 @@ public class Magnus {
      * @param args Command-line arguments, which are currently ignored.
      */
     public static void main(String[] args) {
-        UI ui = new UI();
+        Ui ui = new Ui();
         ui.showWelcome();
 
         // Chat resources
@@ -54,7 +54,7 @@ public class Magnus {
 
                 try {
                     CommandType commandType = router.route(userInput);
-                    if (commandType.changesTaskList()) {
+                    if (commandType.canChangeTaskList()) {
                         storage.saveTasks(tasks.getTasks());
                     }
                     shouldExit = commandType == CommandType.BYE;

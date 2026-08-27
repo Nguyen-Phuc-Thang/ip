@@ -3,8 +3,8 @@ package magnus.ui;
 /**
  * Displays Magnus's welcome message and output dividers on the command line.
  */
-public class UI {
-    private static final String BANNER = """
+public class Ui {
+    private static final String UI_BANNER = """
             ███╗   ███╗ █████╗  ██████╗ ███╗   ██╗██╗   ██╗███████╗
             ████╗ ████║██╔══██╗██╔════╝ ████╗  ██║██║   ██║██╔════╝
             ██╔████╔██║███████║██║  ███╗██╔██╗ ██║██║   ██║███████╗
@@ -12,17 +12,17 @@ public class UI {
             ██║ ╚═╝ ██║██║  ██║╚██████╔╝██║ ╚████║╚██████╔╝███████║
             ╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
             """;
-    private static final String GREETING = """
+    private static final String UI_GREETING = """
             Hello! I'm Magnus.
             How can I help you today?
             """;
-    private static final String DIVIDER = "____________________________________________________________";
-    private static final String INDENT = "\t";
+    private static final String UI_DIVIDER = "____________________________________________________________";
+    private static final String UI_INDENT = "\t";
 
     /**
      * Creates a command-line user interface.
      */
-    public UI() {
+    public Ui() {
     }
 
     /**
@@ -30,8 +30,8 @@ public class UI {
      */
     public void showWelcome() {
         printDivider("");
-        System.out.print(BANNER);
-        System.out.print(GREETING);
+        System.out.print(UI_BANNER);
+        System.out.print(UI_GREETING);
         printDivider("");
     }
 
@@ -39,7 +39,7 @@ public class UI {
      * Prints an indented divider followed by a blank line.
      */
     public void printDivider() {
-        printDivider(INDENT);
+        printDivider(UI_INDENT);
     }
 
     /**
@@ -48,7 +48,7 @@ public class UI {
      * @param prefix The text to print immediately before the divider.
      */
     private void printDivider(String prefix) {
-        System.out.println(prefix + DIVIDER);
+        System.out.println(prefix + UI_DIVIDER);
         System.out.println();
     }
 }

@@ -26,32 +26,32 @@ public class TaskDataParser {
      * @throws IllegalArgumentException If the record is malformed or contains invalid task data.
      */
     public Task parseTask(String line) {
-        List<String> taskData = parseDataFields(line);
-        if (taskData.size() < 2) {
+        List<String> taskDataFields = parseDataFields(line);
+        if (taskDataFields.size() < 2) {
             throw new IllegalArgumentException("missing task type or status");
         }
 
-        String taskType = taskData.get(0);
-        boolean isDone = parseStatus(taskData.get(1));
+        String taskType = taskDataFields.get(0);
+        boolean isDone = isDoneStatus(taskDataFields.get(1));
 
         Task task = switch (taskType) {
             case "T" -> {
-                requireFieldCount(taskData, 3, "to-do");
-                yield new ToDoTask(requireNonBlank(taskData.get(2), "description"));
+                requireFieldCount(taskDataFields, 3, "to-do");
+                yield new ToDoTask(requireNonBlank(taskDataFields.get(2), "description"));
             }
             case "D" -> {
-                requireFieldCount(taskData, 4, "deadline");
+                requireFieldCount(taskDataFields, 4, "deadline");
                 yield new DeadlineTask(
-                        requireNonBlank(taskData.get(2), "description"),
-                        requireNonBlank(taskData.get(3), "deadline"));
+                        requireNonBlank(taskDataFields.get(2), "description"),
+                        requireNonBlank(taskDataFields.get(3), "deadline"));
             }
             case "E" -> {
-                requireFieldCount(taskData, 4, "event");
-                String[] eventTime = parseEventTime(
-                        requireNonBlank(taskData.get(3), "event time"));
+                requireFieldCount(taskDataFields, 4, "event");
+                String[] eventTimes = parseEventTime(
+                        requireNonBlank(taskDataFields.get(3), "event time"));
                 yield new EventTask(
-                        requireNonBlank(taskData.get(2), "description"),
-                        eventTime[0], eventTime[1]);
+                        requireNonBlank(taskDataFields.get(2), "description"),
+                        eventTimes[0], eventTimes[1]);
             }
             default -> throw new IllegalArgumentException("unknown task type '" + taskType + "'");
         };
@@ -119,13 +119,13 @@ public class TaskDataParser {
     }
 
     /**
-     * Converts a stored numeric completion status into a boolean value.
+     * Returns whether a stored numeric completion status represents a completed task.
      *
      * @param status The stored status, which must be {@code "0"} or {@code "1"}.
      * @return {@code true} for a completed task; {@code false} for an incomplete task.
      * @throws IllegalArgumentException If the status is not supported.
      */
-    private boolean parseStatus(String status) {
+    private boolean isDoneStatus(String status) {
         if (status.equals("1")) {
             return true;
         }

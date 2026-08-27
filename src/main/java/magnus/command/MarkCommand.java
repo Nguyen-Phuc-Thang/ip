@@ -9,7 +9,7 @@ import magnus.task.TaskList;
  * Marks a task in a task list as completed.
  */
 public class MarkCommand implements Command {
-    private TaskList tasks;
+    private final TaskList tasks;
 
     /**
      * Creates a command that marks tasks in the specified task list.

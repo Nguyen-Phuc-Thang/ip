@@ -46,12 +46,12 @@ public class TaskListTest {
         Task task2 = new ToDoTask("return book");
         TaskList tasks = new TaskList(List.of(task1));
 
-        List<Task> snapshot = tasks.getTasks();
+        List<Task> snapshotTasks = tasks.getTasks();
         tasks.addTask(task2);
 
-        assertEquals(1, snapshot.size());
-        assertSame(task1, snapshot.get(0));
-        assertThrows(UnsupportedOperationException.class, () -> snapshot.add(task2));
+        assertEquals(1, snapshotTasks.size());
+        assertSame(task1, snapshotTasks.get(0));
+        assertThrows(UnsupportedOperationException.class, () -> snapshotTasks.add(task2));
     }
 
     @Test

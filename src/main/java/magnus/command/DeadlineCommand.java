@@ -9,7 +9,7 @@ import magnus.task.TaskList;
  * Adds deadline tasks to a task list.
  */
 public class DeadlineCommand implements Command {
-    TaskList tasks;
+    private final TaskList tasks;
 
     /**
      * Creates a command that adds deadline tasks to the specified task list.
@@ -17,7 +17,7 @@ public class DeadlineCommand implements Command {
      * @param tasks The task list to which deadline tasks are added.
      */
     public DeadlineCommand(TaskList tasks) {
-        this.tasks = tasks;        
+        this.tasks = tasks;
     }
 
     /**
@@ -52,7 +52,8 @@ public class DeadlineCommand implements Command {
             newTask = new DeadlineTask(taskDescription, taskDeadline);
         } catch (IllegalArgumentException exception) {
             throw new CommandSyntaxException(
-                    "\tInvalid deadline time! Enter deadline time in dd/MM/yyyy HHmm format, for example 02/09/2026 1500.");
+                    "\tInvalid deadline time! Enter deadline time in dd/MM/yyyy HHmm format, "
+                            + "for example 02/09/2026 1500.");
         }
         tasks.addTask(newTask);
 

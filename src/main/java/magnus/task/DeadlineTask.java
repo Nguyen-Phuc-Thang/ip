@@ -11,11 +11,11 @@ import magnus.parser.DateTimeParser;
  * Represents a task that must be completed by a specified deadline.
  */
 public class DeadlineTask extends Task {
-    private static final DateTimeFormatter STORAGE_FORMATTER = DateTimeFormatter
+    private static final DateTimeFormatter DEADLINE_STORAGE_FORMATTER = DateTimeFormatter
             .ofPattern("dd/MM/uuuu HHmm");
-    private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter
+    private static final DateTimeFormatter DEADLINE_DISPLAY_FORMATTER = DateTimeFormatter
             .ofPattern("MMM dd, uuuu HH:mm", Locale.ENGLISH);
-    private static final DateTimeParser DATE_TIME_PARSER = new DateTimeParser();
+    private static final DateTimeParser DEADLINE_PARSER = new DateTimeParser();
 
     private final LocalDateTime deadline;
 
@@ -27,7 +27,7 @@ public class DeadlineTask extends Task {
      */
     public DeadlineTask(String description, String deadline) {
         super(description);
-        this.deadline = DATE_TIME_PARSER.parseDateTime(deadline, "deadline");
+        this.deadline = DEADLINE_PARSER.parseDateTime(deadline, "deadline");
     }
 
     /**
@@ -56,7 +56,7 @@ public class DeadlineTask extends Task {
      * @return The formatted deadline.
      */
     private String getStorageDeadline() {
-        return this.deadline.format(STORAGE_FORMATTER);
+        return this.deadline.format(DEADLINE_STORAGE_FORMATTER);
     }
 
     /**
@@ -65,7 +65,7 @@ public class DeadlineTask extends Task {
      * @return The display-formatted deadline.
      */
     private String getDisplayDeadline() {
-        return this.deadline.format(DISPLAY_FORMATTER);
+        return this.deadline.format(DEADLINE_DISPLAY_FORMATTER);
     }
 
     /**

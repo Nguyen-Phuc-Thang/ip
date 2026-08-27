@@ -7,7 +7,7 @@ import magnus.task.TaskList;
  * Displays all tasks in a task list.
  */
 public class ListCommand implements Command {
-    private TaskList tasks;
+    private final TaskList tasks;
 
     /**
      * Creates a command that displays the specified task list.

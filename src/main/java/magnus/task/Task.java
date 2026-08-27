@@ -5,7 +5,7 @@ package magnus.task;
  * A newly created task is incomplete by default.
  */
 public class Task {
-    private String description;
+    private final String description;
     private boolean isDone;
 
     /**
@@ -96,5 +96,4 @@ public class Task {
     public String toString() {
         return String.format("[%s] %s", getStatusIcon(), this.description);
     }
-
 }

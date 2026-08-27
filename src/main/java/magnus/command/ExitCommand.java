@@ -6,7 +6,7 @@ import magnus.exception.CommandSyntaxException;
  * Displays Magnus's farewell message.
  */
 public class ExitCommand implements Command {
-    private static String EXIT_TEXT = "\tGoodbye. See you soon!";
+    private static final String EXIT_TEXT = "\tGoodbye. See you soon!";
 
     /**
      * Creates a command that displays Magnus's farewell message.
