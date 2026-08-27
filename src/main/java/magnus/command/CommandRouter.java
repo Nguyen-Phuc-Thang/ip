@@ -35,7 +35,7 @@ public class CommandRouter {
         this.commands.put(CommandType.DEADLINE, new DeadlineCommand(tasks));
         this.commands.put(CommandType.EVENT, new EventCommand(tasks));
         this.commands.put(CommandType.DELETE, new DeleteCommand(tasks));
-        
+
         this.parser = new CommandParser();
     }
 
@@ -43,22 +43,22 @@ public class CommandRouter {
      * Parses the user input and executes the command identified by its first token.
      *
      * @param userInput The raw user input to route.
+     * @return The type of command that was executed.
      * @throws CommandNotFoundException If the first token is not a recognized command word.
      * @throws MagnusException If the matching command cannot be executed.
-     * @throws ArrayIndexOutOfBoundsException If the input is blank.
      */
     public CommandType route(String userInput) throws MagnusException {
         // Parse user input
-        String[] parsedCommand = parser.parse(userInput);
-        if (parsedCommand.length == 0) {
+        String[] parsedCommandParts = parser.parse(userInput);
+        if (parsedCommandParts.length == 0) {
             throw new CommandSyntaxException("\tPlease enter a command.");
         }
-        String commandKeyword = parsedCommand[0];
-        String[] args = Arrays.copyOfRange(parsedCommand, 1, parsedCommand.length);
+        String commandKeyword = parsedCommandParts[0];
+        String[] args = Arrays.copyOfRange(parsedCommandParts, 1, parsedCommandParts.length);
 
         CommandType commandType;
         try {
-            commandType = CommandType.fromKeyword(commandKeyword);
+            commandType = CommandType.parseKeyword(commandKeyword);
         } catch (IllegalArgumentException exception) {
             throw new CommandNotFoundException(
                     "\tSorry, I don't know what you mean by '" + commandKeyword + "'");
@@ -66,5 +66,5 @@ public class CommandRouter {
 
         this.commands.get(commandType).execute(args);
         return commandType;
-    }   
+    }
 }

@@ -10,18 +10,37 @@ import java.util.List;
 public class TaskList {
     private final List<Task> tasks;
 
+    /**
+     * Creates an empty task list.
+     */
     public TaskList() {
         this.tasks = new ArrayList<>();
     }
 
+    /**
+     * Creates a task list containing a copy of the supplied tasks.
+     *
+     * @param tasks The tasks with which to initialize the list.
+     */
     public TaskList(List<Task> tasks) {
         this.tasks = new ArrayList<>(tasks);
     }
 
+    /**
+     * Returns an immutable snapshot of the tasks currently in this list.
+     *
+     * @return An immutable copy of the stored tasks.
+     */
     public List<Task> getTasks() {
         return List.copyOf(this.tasks);
     }
 
+    /**
+     * Returns the deadline tasks whose deadlines fall on the specified date.
+     *
+     * @param date The deadline date to match.
+     * @return A new task list containing the matching deadline tasks.
+     */
     public TaskList filterTaskOnDate(LocalDate date) {
         List<Task> filteredTasks = this.tasks.stream()
                 .filter(task -> task instanceof DeadlineTask deadlineTask
@@ -30,6 +49,13 @@ public class TaskList {
         return new TaskList(filteredTasks);
     }
 
+    /**
+     * Returns the event tasks fully enclosed by the inclusive date range.
+     *
+     * @param startDate The first date in the range.
+     * @param endDate The last date in the range.
+     * @return A new task list containing the matching event tasks.
+     */
     public TaskList filterTaskWithinDateRange(LocalDate startDate, LocalDate endDate) {
         List<Task> filteredTasks = this.tasks.stream()
                 .filter(task -> task instanceof EventTask eventTask

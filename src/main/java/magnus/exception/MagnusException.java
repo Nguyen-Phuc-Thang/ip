@@ -13,6 +13,12 @@ public class MagnusException extends Exception {
         super(message);
     }
 
+    /**
+     * Creates a Magnus exception with an explanatory message and underlying cause.
+     *
+     * @param message The detail message describing the error.
+     * @param cause The underlying cause of the error.
+     */
     public MagnusException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -9,7 +9,7 @@ import magnus.task.ToDoTask;
  * Adds to-do tasks to a task list.
  */
 public class ToDoCommand implements Command {
-    TaskList tasks;
+    private final TaskList tasks;
 
     /**
      * Creates a command that adds to-do tasks to the specified task list.
@@ -17,7 +17,7 @@ public class ToDoCommand implements Command {
      * @param tasks The task list to which to-do tasks are added.
      */
     public ToDoCommand(TaskList tasks) {
-        this.tasks = tasks;        
+        this.tasks = tasks;
     }
 
     /**

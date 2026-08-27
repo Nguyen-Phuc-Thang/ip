@@ -9,7 +9,7 @@ import magnus.task.TaskList;
  * Marks a task in a task list as incomplete.
  */
 public class UnmarkCommand implements Command {
-    private TaskList tasks;
+    private final TaskList tasks;
 
     /**
      * Creates a command that unmarks tasks in the specified task list.

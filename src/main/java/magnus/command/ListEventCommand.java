@@ -41,9 +41,9 @@ public class ListEventCommand implements Command {
             throw createInvalidArgumentCountException();
         }
 
-        LocalDate[] dateRange;
+        LocalDate[] dates;
         try {
-            dateRange = this.dateTimeParser.parseDateRange(args[0]);
+            dates = this.dateTimeParser.parseDateRange(args[0]);
         } catch (DateTimeParseException exception) {
             throw new CommandSyntaxException(
                     "\tInvalid date! Enter both dates in dd/MM/yyyy format, for example "
@@ -52,8 +52,8 @@ public class ListEventCommand implements Command {
             throw createInvalidArgumentCountException();
         }
 
-        LocalDate startDate = dateRange[0];
-        LocalDate endDate = dateRange[1];
+        LocalDate startDate = dates[0];
+        LocalDate endDate = dates[1];
         if (startDate.isAfter(endDate)) {
             throw new CommandSyntaxException(
                     "\tInvalid date range! The start date must be before or equal to the end date.");
@@ -64,6 +64,11 @@ public class ListEventCommand implements Command {
         filteredTasks.printTasks();
     }
 
+    /**
+     * Creates the syntax exception used when the command does not contain exactly two dates.
+     *
+     * @return An exception containing the expected command usage.
+     */
     private CommandSyntaxException createInvalidArgumentCountException() {
         return new CommandSyntaxException(
                 "\tInvalid syntax! The list_event command requires exactly two dates.\n"
