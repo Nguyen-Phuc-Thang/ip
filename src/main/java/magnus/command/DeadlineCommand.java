@@ -28,7 +28,7 @@ public class DeadlineCommand implements Command {
      * @throws CommandSyntaxException If either the task description or deadline is missing.
      */
     @Override
-    public String execute(String[] args) throws MagnusException {
+    public String execute(String... args) throws MagnusException {
 
         // Missing arguments
         if (args.length == 0 || args[0].isBlank()) {

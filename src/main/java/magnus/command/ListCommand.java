@@ -25,7 +25,7 @@ public class ListCommand implements Command {
      * @return A message containing every task in the task list.
      */
     @Override
-    public String execute(String[] args) throws CommandSyntaxException {
+    public String execute(String... args) throws CommandSyntaxException {
         if (args.length > 0) {
             throw new CommandSyntaxException("\tInvalid syntax! The list command does not accept arguments.\n"
                     + "\tUsage: list");

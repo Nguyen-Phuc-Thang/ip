@@ -32,7 +32,7 @@ public class ListDeadlineCommand implements Command {
      * @throws CommandSyntaxException If the date is missing, malformed, or invalid.
      */
     @Override
-    public String execute(String[] args) throws CommandSyntaxException {
+    public String execute(String... args) throws CommandSyntaxException {
         if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me a date.\n"
                     + "\tUsage: list_deadline <dd/MM/yyyy>");

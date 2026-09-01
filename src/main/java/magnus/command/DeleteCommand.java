@@ -31,7 +31,7 @@ public class DeleteCommand implements Command {
      * @throws TaskNotFoundException If the task number does not identify a task in the list.
      */
     @Override
-    public String execute(String[] args) throws MagnusException {
+    public String execute(String... args) throws MagnusException {
         // Missing task number
         if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please tell me the task number.\n"

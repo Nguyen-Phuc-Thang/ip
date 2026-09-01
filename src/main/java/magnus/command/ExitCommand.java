@@ -21,7 +21,7 @@ public class ExitCommand implements Command {
      * @return The farewell message.
      */
     @Override
-    public String execute(String[] args) throws CommandSyntaxException {
+    public String execute(String... args) throws CommandSyntaxException {
         if (args.length > 0) {
             throw new CommandSyntaxException("\tInvalid syntax! The bye command does not accept arguments.\n"
                     + "\tUsage: bye");

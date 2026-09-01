@@ -28,7 +28,7 @@ public class ToDoCommand implements Command {
      * @throws CommandSyntaxException If the task description is missing or blank.
      */
     @Override
-    public String execute(String[] args) throws MagnusException {
+    public String execute(String... args) throws MagnusException {
 
         // Missing task description
         if (args.length == 0 || args[0].isBlank()) {

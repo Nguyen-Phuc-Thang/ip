@@ -13,5 +13,5 @@ public interface Command {
      * @return The message describing the result of executing the command.
      * @throws MagnusException If the command cannot be executed with the supplied arguments.
      */
-    String execute(String[] args) throws MagnusException;
+    String execute(String... args) throws MagnusException;
 }

@@ -26,7 +26,7 @@ public class FindCommand implements Command {
      * @throws CommandSyntaxException If the query is missing, blank, or split into multiple fields.
      */
     @Override
-    public String execute(String[] args) throws CommandSyntaxException {
+    public String execute(String... args) throws CommandSyntaxException {
         if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me a search query.\n"
                     + "\tUsage: find <query>");

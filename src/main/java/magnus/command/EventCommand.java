@@ -29,7 +29,7 @@ public class EventCommand implements Command {
      * @throws CommandSyntaxException If the description, start time, or end time is missing.
      */
     @Override
-    public String execute(String[] args) throws MagnusException {
+    public String execute(String... args) throws MagnusException {
 
         // Missing arguments
         if (args.length == 0 || args[0].isBlank()) {
