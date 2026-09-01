@@ -14,6 +14,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import magnus.exception.MagnusException;
+import magnus.ui.Ui;
 
 /**
  * Displays the Magnus chat window and connects it to the command backend.
@@ -50,9 +51,18 @@ public class Main extends Application {
         stage.setMinWidth(WINDOW_WIDTH);
         stage.setMinHeight(WINDOW_HEIGHT);
         stage.setScene(scene);
+        showWelcomeMessages();
         stage.show();
 
         commandInput.requestFocus();
+    }
+
+    /**
+     * Displays the Magnus banner and greeting as the first bot messages.
+     */
+    private void showWelcomeMessages() {
+        messageList.getChildren().add(createMessageRow(Ui.getBanner(), false, "banner-message"));
+        messageList.getChildren().add(createMessageRow(Ui.getGreeting(), false));
     }
 
     /**
@@ -116,14 +126,17 @@ public class Main extends Application {
      *
      * @param message Text displayed inside the bubble.
      * @param isUserMessage Whether the message belongs to the user.
+     * @param additionalStyleClasses Extra CSS classes applied to the message bubble.
      * @return Row containing the aligned message bubble.
      */
-    private HBox createMessageRow(String message, boolean isUserMessage) {
+    private HBox createMessageRow(String message, boolean isUserMessage,
+            String... additionalStyleClasses) {
         Label messageBubble = new Label(message);
         messageBubble.setWrapText(true);
         messageBubble.setMaxWidth(MESSAGE_MAX_WIDTH);
         messageBubble.getStyleClass().addAll("message-bubble",
                 isUserMessage ? "user-message" : "bot-message");
+        messageBubble.getStyleClass().addAll(additionalStyleClasses);
 
         HBox messageRow = new HBox(messageBubble);
         messageRow.setAlignment(isUserMessage ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);

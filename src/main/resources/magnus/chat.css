@@ -40,6 +40,11 @@
     -fx-min-width: 80px;
 }
 
+.banner-message {
+    -fx-font-family: "Monospaced";
+    -fx-font-size: 10px;
+}
+
 .input-area {
     -fx-background-color: white;
     -fx-border-color: #c9e1ef;
