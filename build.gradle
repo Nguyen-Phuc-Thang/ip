@@ -49,7 +49,8 @@ test {
 }
 
 application {
-    mainClass = 'magnus.Magnus'
+    mainClass = 'magnus.Launcher'
+    applicationDefaultJvmArgs = ['--enable-native-access=javafx.graphics']
 }
 
 jar {
