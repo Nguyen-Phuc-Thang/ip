@@ -24,10 +24,11 @@ public class ToDoCommand implements Command {
      * Adds a to-do task whose description is the first command argument.
      *
      * @param args The command arguments, with the task description at index 0.
+     * @return A message describing the task that was added.
      * @throws CommandSyntaxException If the task description is missing or blank.
      */
     @Override
-    public void execute(String[] args) throws MagnusException {
+    public String execute(String[] args) throws MagnusException {
 
         // Missing task description
         if (args.length == 0 || args[0].isBlank()) {
@@ -44,7 +45,6 @@ public class ToDoCommand implements Command {
         ToDoTask newTask = new ToDoTask(taskDescription);
         tasks.addTask(newTask);
 
-        System.out.println("\tI've added this To-Do task:\n");
-        System.out.println("\t" + newTask);
+        return "\tI've added this To-Do task:\n\n\t" + newTask;
     }
 }

@@ -25,13 +25,14 @@ public class ListDeadlineCommand implements Command {
     }
 
     /**
-     * Parses the supplied date and prints all deadlines that fall on it.
+     * Parses the supplied date and formats all deadlines that fall on it.
      *
      * @param args The command arguments, containing exactly one date at index 0.
+     * @return A message containing the deadlines on the specified date.
      * @throws CommandSyntaxException If the date is missing, malformed, or invalid.
      */
     @Override
-    public void execute(String[] args) throws CommandSyntaxException {
+    public String execute(String[] args) throws CommandSyntaxException {
         if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me a date.\n"
                     + "\tUsage: list_deadline <dd/MM/yyyy>");
@@ -52,7 +53,6 @@ public class ListDeadlineCommand implements Command {
         }
 
         TaskList filteredTasks = this.tasks.filterTaskOnDate(date);
-        System.out.println("\tHere's your task list:\n");
-        filteredTasks.printTasks();
+        return "\tHere's your task list:\n\n" + filteredTasks.formatTasks();
     }
 }

@@ -25,13 +25,14 @@ public class ListEventCommand implements Command {
     }
 
     /**
-     * Parses the supplied date range and prints all events fully enclosed by it.
+     * Parses the supplied date range and formats all events fully enclosed by it.
      *
      * @param args The command arguments containing the start and end dates.
+     * @return A message containing the events within the specified date range.
      * @throws CommandSyntaxException If the dates are missing, malformed, invalid, or out of order.
      */
     @Override
-    public void execute(String[] args) throws CommandSyntaxException {
+    public String execute(String[] args) throws CommandSyntaxException {
         if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me a start date and an end date.\n"
                     + "\tUsage: list_event <dd/MM/yyyy> <dd/MM/yyyy>");
@@ -60,8 +61,7 @@ public class ListEventCommand implements Command {
         }
 
         TaskList filteredTasks = this.tasks.filterTaskWithinDateRange(startDate, endDate);
-        System.out.println("\tHere's your task list:\n");
-        filteredTasks.printTasks();
+        return "\tHere's your task list:\n\n" + filteredTasks.formatTasks();
     }
 
     /**

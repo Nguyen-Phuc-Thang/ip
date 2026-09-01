@@ -1,7 +1,7 @@
 package magnus.ui;
 
 /**
- * Displays Magnus's welcome message and output dividers on the command line.
+ * Provides Magnus's welcome messages and displays them on the command line.
  */
 public class Ui {
     private static final String UI_BANNER = """
@@ -23,6 +23,24 @@ public class Ui {
      * Creates a command-line user interface.
      */
     public Ui() {
+    }
+
+    /**
+     * Returns the banner shared by the command-line and graphical interfaces.
+     *
+     * @return The Magnus banner without a trailing line break.
+     */
+    public static String getBanner() {
+        return UI_BANNER.stripTrailing();
+    }
+
+    /**
+     * Returns the greeting shared by the command-line and graphical interfaces.
+     *
+     * @return The Magnus greeting without a trailing line break.
+     */
+    public static String getGreeting() {
+        return UI_GREETING.stripTrailing();
     }
 
     /**

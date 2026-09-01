@@ -24,12 +24,13 @@ public class MarkCommand implements Command {
      * Marks the task identified by the one-based task number in the first command argument.
      *
      * @param args The command arguments, with the one-based task number at index 0.
+     * @return A message describing the task that was marked as completed.
      * @throws CommandSyntaxException If the task number is missing, non-numeric, or accompanied
      *                                by extra arguments.
      * @throws TaskNotFoundException If the task number does not identify a task in the list.
      */
     @Override
-    public void execute(String[] args) throws MagnusException {
+    public String execute(String[] args) throws MagnusException {
         // Missing task number
         if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please tell me the task number.\n"
@@ -56,7 +57,7 @@ public class MarkCommand implements Command {
         }
 
         this.tasks.markTaskAsDone(taskNumber);
-        System.out.println("\tBrilliant!! I've marked this task as completed:\n");
-        System.out.println("\t" + this.tasks.getTask(taskNumber));
+        return "\tBrilliant!! I've marked this task as completed:\n\n\t"
+                + this.tasks.getTask(taskNumber);
     }
 }

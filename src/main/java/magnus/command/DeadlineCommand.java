@@ -24,10 +24,11 @@ public class DeadlineCommand implements Command {
      * Adds a deadline task using its description and deadline from the command arguments.
      *
      * @param args The command arguments, with the description at index 0 and deadline at index 1.
+     * @return A message describing the deadline task that was added.
      * @throws CommandSyntaxException If either the task description or deadline is missing.
      */
     @Override
-    public void execute(String[] args) throws MagnusException {
+    public String execute(String[] args) throws MagnusException {
 
         // Missing arguments
         if (args.length == 0 || args[0].isBlank()) {
@@ -57,7 +58,6 @@ public class DeadlineCommand implements Command {
         }
         tasks.addTask(newTask);
 
-        System.out.println("\tI've added this Deadline task:\n");
-        System.out.println("\t" + newTask);
+        return "\tI've added this Deadline task:\n\n\t" + newTask;
     }
 }

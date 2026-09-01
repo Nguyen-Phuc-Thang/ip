@@ -143,11 +143,15 @@ public class TaskList {
     }
 
     /**
-     * Prints all tasks to standard output as a one-based numbered list.
+     * Formats all tasks as a one-based numbered list.
+     *
+     * @return The formatted task list, or an empty string if there are no tasks.
      */
-    public void printTasks() {
+    public String formatTasks() {
+        List<String> formattedTasks = new ArrayList<>();
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(String.format("\t%d. %s", i + 1, this.tasks.get(i)));
+            formattedTasks.add(String.format("\t%d. %s", i + 1, this.tasks.get(i)));
         }
+        return String.join(System.lineSeparator(), formattedTasks);
     }
 }
