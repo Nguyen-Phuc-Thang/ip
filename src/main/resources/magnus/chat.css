@@ -45,6 +45,14 @@
     -fx-font-size: 10px;
 }
 
+.avatar {
+    -fx-background-color: white;
+    -fx-background-radius: 50%;
+    -fx-border-color: #b8d8eb;
+    -fx-border-radius: 50%;
+    -fx-border-width: 1px;
+}
+
 .input-area {
     -fx-background-color: white;
     -fx-border-color: #c9e1ef;
