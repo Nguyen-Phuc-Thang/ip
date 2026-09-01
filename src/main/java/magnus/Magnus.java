@@ -17,10 +17,63 @@ import magnus.ui.Ui;
 public class Magnus {
     private static final Path DATA_FILE_PATH = Path.of("data", "magnus.txt");
 
+    private final Storage storage;
+    private final TaskList tasks;
+    private final CommandRouter router;
+    private boolean isExitRequested;
+
     /**
-     * Creates a Magnus application instance.
+     * Creates a Magnus application using the default task data file.
+     *
+     * @throws MagnusException If the saved tasks cannot be loaded.
      */
-    public Magnus() {
+    public Magnus() throws MagnusException {
+        this(DATA_FILE_PATH);
+    }
+
+    /**
+     * Creates a Magnus application using the specified task data file.
+     *
+     * @param dataFilePath Path used to load and save tasks.
+     * @throws MagnusException If the saved tasks cannot be loaded.
+     */
+    public Magnus(Path dataFilePath) throws MagnusException {
+        this.storage = new Storage(dataFilePath);
+        this.tasks = new TaskList(this.storage.loadTasks());
+        this.router = new CommandRouter(this.tasks);
+        this.isExitRequested = false;
+    }
+
+    /**
+     * Processes one user command and returns its response message.
+     * Task changes are saved before a successful response is returned.
+     *
+     * @param userInput The raw command entered by the user.
+     * @return The command result message, or an error message if the command fails.
+     */
+    public String getResponse(String userInput) {
+        this.isExitRequested = false;
+
+        try {
+            CommandResult commandResult = this.router.route(userInput);
+            CommandType commandType = commandResult.commandType();
+            if (commandType.canChangeTaskList()) {
+                this.storage.saveTasks(this.tasks.getTasks());
+            }
+            this.isExitRequested = commandType == CommandType.BYE;
+            return commandResult.message();
+        } catch (MagnusException exception) {
+            return exception.getMessage();
+        }
+    }
+
+    /**
+     * Returns whether the latest successfully processed command requested an exit.
+     *
+     * @return {@code true} if the latest command was {@code bye}; otherwise {@code false}.
+     */
+    public boolean isExitRequested() {
+        return this.isExitRequested;
     }
 
     /**
@@ -32,40 +85,26 @@ public class Magnus {
         Ui ui = new Ui();
         ui.showWelcome();
 
-        // Chat resources
-        Storage storage = new Storage(DATA_FILE_PATH);
-        TaskList tasks;
+        Magnus magnus;
         try {
-            tasks = new TaskList(storage.loadTasks());
+            magnus = new Magnus();
         } catch (MagnusException exception) {
             System.out.println(exception.getMessage());
             return;
         }
 
         try (Scanner scanner = new Scanner(System.in)) {
-            CommandRouter router = new CommandRouter(tasks);
-
             // Chat loop
             while (scanner.hasNextLine()) {
                 String userInput = scanner.nextLine();
-                boolean shouldExit = false;
 
                 // Start of result
                 ui.printDivider();
 
-                try {
-                    CommandResult commandResult = router.route(userInput);
-                    CommandType commandType = commandResult.commandType();
-                    System.out.println(commandResult.message());
-                    if (commandType.canChangeTaskList()) {
-                        storage.saveTasks(tasks.getTasks());
-                    }
-                    shouldExit = commandType == CommandType.BYE;
-                } catch (MagnusException exception) {
-                    System.out.println(exception.getMessage());
-                }
+                String response = magnus.getResponse(userInput);
+                System.out.println(response);
 
-                if (shouldExit) {
+                if (magnus.isExitRequested()) {
                     break;
                 }
 
