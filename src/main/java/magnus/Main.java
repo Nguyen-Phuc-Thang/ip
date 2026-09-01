@@ -13,26 +13,31 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import magnus.exception.MagnusException;
 
 /**
- * Displays the frontend-only Magnus chat window.
+ * Displays the Magnus chat window and connects it to the command backend.
  */
 public class Main extends Application {
-    private static final int WINDOW_WIDTH = 640;
+    private static final int WINDOW_WIDTH = 840;
     private static final int WINDOW_HEIGHT = 600;
-    private static final int MESSAGE_MAX_WIDTH = 420;
+    private static final int MESSAGE_MAX_WIDTH = 600;
 
     private final VBox messageList = new VBox();
     private final ScrollPane chatScroll = new ScrollPane();
     private final TextField commandInput = new TextField();
+    private Magnus magnus;
 
     /**
      * Creates and displays the chat interface.
      *
      * @param stage Primary window supplied by JavaFX.
+     * @throws MagnusException If saved tasks cannot be loaded when the backend starts.
      */
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws MagnusException {
+        this.magnus = new Magnus();
+
         BorderPane root = new BorderPane();
         root.getStyleClass().add("app");
         root.setCenter(createConversationView());
@@ -88,7 +93,7 @@ public class Main extends Application {
     }
 
     /**
-     * Adds the user's command and a placeholder bot reply to the conversation.
+     * Sends the user's command to Magnus and displays the returned response.
      */
     private void submitCommand() {
         String command = commandInput.getText().trim();
@@ -97,8 +102,10 @@ public class Main extends Application {
         }
 
         messageList.getChildren().add(createMessageRow(command, true));
-        messageList.getChildren().add(createMessageRow("", false));
         commandInput.clear();
+
+        String response = this.magnus.getResponse(command);
+        messageList.getChildren().add(createMessageRow(response, false));
 
         // Layout must finish before the scroll position can move to the new bottom.
         Platform.runLater(() -> chatScroll.setVvalue(1.0));
