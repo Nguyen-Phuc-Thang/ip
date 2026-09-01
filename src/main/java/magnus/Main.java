@@ -148,6 +148,11 @@ public class Main extends Application {
         commandInput.clear();
 
         String response = this.magnus.getResponse(command);
+        if (this.magnus.isExitRequested()) {
+            Platform.exit();
+            return;
+        }
+
         messageList.getChildren().add(createMessageRow(response, false));
 
         // Layout must finish before the scroll position can move to the new bottom.
