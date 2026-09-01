@@ -3,6 +3,7 @@ package magnus;
 import java.nio.file.Path;
 import java.util.Scanner;
 
+import magnus.command.CommandResult;
 import magnus.command.CommandRouter;
 import magnus.command.CommandType;
 import magnus.exception.MagnusException;
@@ -53,7 +54,9 @@ public class Magnus {
                 ui.printDivider();
 
                 try {
-                    CommandType commandType = router.route(userInput);
+                    CommandResult commandResult = router.route(userInput);
+                    CommandType commandType = commandResult.commandType();
+                    System.out.println(commandResult.message());
                     if (commandType.canChangeTaskList()) {
                         storage.saveTasks(tasks.getTasks());
                     }

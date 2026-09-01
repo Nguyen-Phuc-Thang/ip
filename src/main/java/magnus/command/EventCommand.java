@@ -25,10 +25,11 @@ public class EventCommand implements Command {
      *
      * @param args The command arguments, with the description at index 0, start time at index 1,
      *             and end time at index 2.
+     * @return A message describing the event task that was added.
      * @throws CommandSyntaxException If the description, start time, or end time is missing.
      */
     @Override
-    public void execute(String[] args) throws MagnusException {
+    public String execute(String[] args) throws MagnusException {
 
         // Missing arguments
         if (args.length == 0 || args[0].isBlank()) {
@@ -59,7 +60,6 @@ public class EventCommand implements Command {
         }
         tasks.addTask(newTask);
 
-        System.out.println("\tI've added this Event task:\n");
-        System.out.println("\t" + newTask);
+        return "\tI've added this Event task:\n\n\t" + newTask;
     }
 }

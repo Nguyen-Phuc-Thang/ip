@@ -5,9 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -202,37 +199,17 @@ public class TaskListTest {
     }
 
     @Test
-    public void printTasks_multipleTasks_printsOneBasedNumberedList() {
+    public void formatTasks_multipleTasks_returnsOneBasedNumberedList() {
         Task task1 = new ToDoTask("read book");
         Task task2 = new ToDoTask("return book");
         task2.markAsDone();
         TaskList tasks = new TaskList(List.of(task1, task2));
         String expectedOutput = String.join(System.lineSeparator(),
                 "\t1. [T][ ] read book",
-                "\t2. [T][X] return book") + System.lineSeparator();
+                "\t2. [T][X] return book");
 
-        String output = capturePrintedTasks(tasks);
+        String output = tasks.formatTasks();
 
         assertEquals(expectedOutput, output);
-    }
-
-    /**
-     * Captures the standard output produced when the supplied task list is printed.
-     *
-     * @param tasks The task list to print.
-     * @return The captured output.
-     */
-    private String capturePrintedTasks(TaskList tasks) {
-        PrintStream originalOutput = System.out;
-        ByteArrayOutputStream capturedOutput = new ByteArrayOutputStream();
-
-        try (PrintStream testOutput = new PrintStream(capturedOutput, true, StandardCharsets.UTF_8)) {
-            System.setOut(testOutput);
-            tasks.printTasks();
-        } finally {
-            System.setOut(originalOutput);
-        }
-
-        return capturedOutput.toString(StandardCharsets.UTF_8);
     }
 }

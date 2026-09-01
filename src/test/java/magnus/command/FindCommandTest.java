@@ -3,9 +3,6 @@ package magnus.command;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,7 +18,7 @@ import magnus.task.ToDoTask;
  */
 public class FindCommandTest {
     @Test
-    public void execute_matchingQuery_printsMatchingTasksInOriginalOrder() throws CommandSyntaxException {
+    public void execute_matchingQuery_returnsMatchingTasksInOriginalOrder() throws CommandSyntaxException {
         ToDoTask firstMatch = new ToDoTask("read book");
         firstMatch.markAsDone();
         DeadlineTask secondMatch = new DeadlineTask(
@@ -34,9 +31,9 @@ public class FindCommandTest {
                 "\tHere are the results that match \"book\":",
                 "",
                 "\t1. [T][X] read book",
-                "\t2. [D][X] return book (by: Jun 06, 2026 18:00)") + System.lineSeparator();
+                "\t2. [D][X] return book (by: Jun 06, 2026 18:00)");
 
-        String output = captureOutput(() -> command.execute(new String[] { "book" }));
+        String output = command.execute(new String[] { "book" });
 
         assertEquals(expectedOutput, output);
     }
@@ -66,32 +63,4 @@ public class FindCommandTest {
         assertThrows(CommandSyntaxException.class, () -> command.execute(new String[] { "book", "tomorrow" }));
     }
 
-    /**
-     * Captures output produced by a command action.
-     *
-     * @param action The action whose output should be captured.
-     * @return The captured standard output.
-     * @throws CommandSyntaxException If the action rejects its arguments.
-     */
-    private String captureOutput(CommandAction action) throws CommandSyntaxException {
-        PrintStream originalOutput = System.out;
-        ByteArrayOutputStream capturedOutput = new ByteArrayOutputStream();
-
-        try (PrintStream testOutput = new PrintStream(capturedOutput, true, StandardCharsets.UTF_8)) {
-            System.setOut(testOutput);
-            action.run();
-        } finally {
-            System.setOut(originalOutput);
-        }
-
-        return capturedOutput.toString(StandardCharsets.UTF_8);
-    }
-
-    /**
-     * Represents a command action that may reject invalid syntax.
-     */
-    @FunctionalInterface
-    private interface CommandAction {
-        void run() throws CommandSyntaxException;
-    }
 }

@@ -15,16 +15,17 @@ public class ExitCommand implements Command {
     }
 
     /**
-     * Prints the farewell message to standard output.
+     * Creates the farewell message.
      *
      * @param args The command arguments.
+     * @return The farewell message.
      */
     @Override
-    public void execute(String[] args) throws CommandSyntaxException {
+    public String execute(String[] args) throws CommandSyntaxException {
         if (args.length > 0) {
             throw new CommandSyntaxException("\tInvalid syntax! The bye command does not accept arguments.\n"
                     + "\tUsage: bye");
         }
-        System.out.println(EXIT_TEXT);
+        return EXIT_TEXT;
     }
 }

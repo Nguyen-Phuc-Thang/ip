@@ -44,11 +44,11 @@ public class CommandRouter {
      * Parses the user input and executes the command identified by its first token.
      *
      * @param userInput The raw user input to route.
-     * @return The type of command that was executed.
+     * @return The type and user-facing message produced by the executed command.
      * @throws CommandNotFoundException If the first token is not a recognized command word.
      * @throws MagnusException If the matching command cannot be executed.
      */
-    public CommandType route(String userInput) throws MagnusException {
+    public CommandResult route(String userInput) throws MagnusException {
         // Parse user input
         String[] parsedCommandParts = parser.parse(userInput);
         if (parsedCommandParts.length == 0) {
@@ -65,7 +65,7 @@ public class CommandRouter {
                     "\tSorry, I don't know what you mean by '" + commandKeyword + "'");
         }
 
-        this.commands.get(commandType).execute(args);
-        return commandType;
+        String resultMessage = this.commands.get(commandType).execute(args);
+        return new CommandResult(commandType, resultMessage);
     }
 }

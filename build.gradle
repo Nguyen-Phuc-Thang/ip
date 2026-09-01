@@ -67,3 +67,11 @@ shadowJar {
 tasks.named('run', JavaExec) {
     standardInput = System.in
 }
+
+tasks.register('runCli', JavaExec) {
+    group = 'application'
+    description = 'Runs the command-line version of Magnus.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'magnus.Magnus'
+    standardInput = System.in
+}

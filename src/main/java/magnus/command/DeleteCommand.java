@@ -25,12 +25,13 @@ public class DeleteCommand implements Command {
      * Deletes the task identified by the one-based task number in the first command argument.
      *
      * @param args The command arguments, with the one-based task number at index 0.
+     * @return A message describing the task that was deleted.
      * @throws CommandSyntaxException If the task number is missing, non-numeric, or accompanied
      *                                by extra arguments.
      * @throws TaskNotFoundException If the task number does not identify a task in the list.
      */
     @Override
-    public void execute(String[] args) throws MagnusException {
+    public String execute(String[] args) throws MagnusException {
         // Missing task number
         if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please tell me the task number.\n"
@@ -58,7 +59,6 @@ public class DeleteCommand implements Command {
         }
 
         Task removedTask = this.tasks.removeTask(taskNumber);
-        System.out.println("\tBoooooom!!! I've made this task vanished:\n");
-        System.out.println("\t" + removedTask);
+        return "\tBoooooom!!! I've made this task vanished:\n\n\t" + removedTask;
     }
 }
