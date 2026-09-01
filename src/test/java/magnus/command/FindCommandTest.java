@@ -63,8 +63,7 @@ public class FindCommandTest {
     public void execute_multipleArgumentFields_throwsCommandSyntaxException() {
         FindCommand command = new FindCommand(new TaskList());
 
-        assertThrows(CommandSyntaxException.class,
-                () -> command.execute(new String[] { "book", "tomorrow" }));
+        assertThrows(CommandSyntaxException.class, () -> command.execute(new String[] { "book", "tomorrow" }));
     }
 
     /**
