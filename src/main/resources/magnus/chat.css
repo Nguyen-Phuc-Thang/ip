@@ -1,0 +1,78 @@
+.root {
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+}
+
+.app,
+.chat-scroll,
+.chat-scroll > .viewport,
+.message-list {
+    -fx-background-color: #dff2ff;
+}
+
+.chat-scroll {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.message-list {
+    -fx-padding: 20px;
+    -fx-spacing: 10px;
+}
+
+.message-bubble {
+    -fx-background-radius: 14px;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1px;
+    -fx-min-height: 42px;
+    -fx-padding: 10px 14px;
+}
+
+.user-message {
+    -fx-background-color: white;
+    -fx-border-color: #b8d8eb;
+    -fx-text-fill: #1f2937;
+}
+
+.bot-message {
+    -fx-background-color: #f8fcff;
+    -fx-border-color: #b8d8eb;
+    -fx-min-width: 80px;
+}
+
+.input-area {
+    -fx-background-color: white;
+    -fx-border-color: #c9e1ef;
+    -fx-border-width: 1px 0 0 0;
+    -fx-padding: 14px;
+    -fx-spacing: 10px;
+}
+
+.command-input {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-color: #b8d8eb;
+    -fx-border-radius: 8px;
+    -fx-padding: 10px 12px;
+}
+
+.command-input:focused {
+    -fx-border-color: #69bce8;
+}
+
+.send-button {
+    -fx-background-color: #9edcff;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-text-fill: #173b52;
+}
+
+.send-button:hover {
+    -fx-background-color: #82cffb;
+}
+
+.send-button:pressed {
+    -fx-background-color: #68c2f5;
+}
