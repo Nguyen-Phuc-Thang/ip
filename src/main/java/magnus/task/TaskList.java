@@ -24,6 +24,9 @@ public class TaskList {
      * @param tasks The tasks with which to initialize the list.
      */
     public TaskList(List<Task> tasks) {
+        assert tasks != null : "The initial task collection must not be null";
+        assert tasks.stream().noneMatch(task -> task == null)
+                : "The initial task collection must not contain null tasks";
         this.tasks = new ArrayList<>(tasks);
     }
 
@@ -58,6 +61,8 @@ public class TaskList {
      * @return A new task list containing the matching event tasks.
      */
     public TaskList filterTaskWithinDateRange(LocalDate startDate, LocalDate endDate) {
+        assert !startDate.isAfter(endDate)
+                : "The event filter requires an ordered date range";
         List<Task> filteredTasks = this.tasks.stream()
                 .filter(task -> task instanceof EventTask eventTask
                         && !eventTask.getStart().toLocalDate().isBefore(startDate)
@@ -96,6 +101,7 @@ public class TaskList {
      * @param task The task to add.
      */
     public void addTask(Task task) {
+        assert task != null : "A task list must not contain null tasks";
         this.tasks.add(task);
     }
 
