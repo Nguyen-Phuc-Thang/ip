@@ -52,6 +52,8 @@ public class ListEventCommand implements Command {
         } catch (IllegalArgumentException exception) {
             throw createInvalidArgumentCountException();
         }
+        assert dates.length == 2
+                : "The date range parser must return a start date and an end date";
 
         LocalDate startDate = dates[0];
         LocalDate endDate = dates[1];
@@ -59,6 +61,8 @@ public class ListEventCommand implements Command {
             throw new CommandSyntaxException(
                     "\tInvalid date range! The start date must be before or equal to the end date.");
         }
+        assert !startDate.isAfter(endDate)
+                : "A validated date range must be ordered before filtering";
 
         TaskList filteredTasks = this.tasks.filterTaskWithinDateRange(startDate, endDate);
         return "\tHere's your task list:\n\n" + filteredTasks.formatTasks();
