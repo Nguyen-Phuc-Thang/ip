@@ -7,6 +7,8 @@ import magnus.task.TaskList;
  * Displays tasks whose descriptions contain a specified query.
  */
 public class FindCommand implements Command {
+    private static final String USAGE_MESSAGE = "\tUsage: find <query>";
+
     private final TaskList tasks;
 
     /**
@@ -29,12 +31,12 @@ public class FindCommand implements Command {
     public String execute(String... args) throws CommandSyntaxException {
         if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me a search query.\n"
-                    + "\tUsage: find <query>");
+                    + USAGE_MESSAGE);
         }
 
         if (args.length > 1) {
             throw new CommandSyntaxException("\tInvalid syntax! The find command accepts one query.\n"
-                    + "\tUsage: find <query>");
+                    + USAGE_MESSAGE);
         }
 
         String query = args[0].strip();

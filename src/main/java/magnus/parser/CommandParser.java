@@ -6,6 +6,12 @@ package magnus.parser;
  * keywords, while spaces within a field are preserved.
  */
 public class CommandParser {
+    private static final String WHITESPACE_REGEX = "\\s+";
+    private static final String FIELD_DELIMITER_REGEX =
+            "(?:^|\\s+)/(?:by|from|to)(?:\\s+|$)";
+    private static final int COMMAND_AND_ARGUMENTS_SPLIT_LIMIT = 2;
+    private static final int COMMAND_ONLY_PART_COUNT = 1;
+    private static final int PRESERVE_ALL_FIELDS = -1;
 
     /**
      * Creates a parser for command-line input.
@@ -26,13 +32,14 @@ public class CommandParser {
             return new String[0];
         }
 
-        String[] commandAndArguments = userInput.strip().split("\\s+", 2);
-        if (commandAndArguments.length == 1) {
+        String[] commandAndArguments = userInput.strip()
+                .split(WHITESPACE_REGEX, COMMAND_AND_ARGUMENTS_SPLIT_LIMIT);
+        if (commandAndArguments.length == COMMAND_ONLY_PART_COUNT) {
             return commandAndArguments;
         }
 
         String[] arguments = commandAndArguments[1]
-                .split("(?:^|\\s+)/(?:by|from|to)(?:\\s+|$)", -1);
+                .split(FIELD_DELIMITER_REGEX, PRESERVE_ALL_FIELDS);
         String[] parsedTokens = new String[arguments.length + 1];
         parsedTokens[0] = commandAndArguments[0];
         System.arraycopy(arguments, 0, parsedTokens, 1, arguments.length);
