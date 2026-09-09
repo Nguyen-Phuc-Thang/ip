@@ -39,6 +39,8 @@ public class CommandRouter {
         this.commands.put(CommandType.DEADLINE, new DeadlineCommand(tasks));
         this.commands.put(CommandType.EVENT, new EventCommand(tasks));
         this.commands.put(CommandType.DELETE, new DeleteCommand(tasks));
+        assert this.commands.size() == CommandType.values().length
+                : "Every command type must have a registered command";
 
         this.parser = new CommandParser();
     }
@@ -68,7 +70,10 @@ public class CommandRouter {
                     "\tSorry, I don't know what you mean by '" + commandKeyword + "'");
         }
 
-        String resultMessage = this.commands.get(commandType).execute(commandArguments);
+        Command command = this.commands.get(commandType);
+        assert command != null : "The parsed command type must have a registered command";
+        String resultMessage = command.execute(commandArguments);
+        assert resultMessage != null : "A successful command must return a response message";
         return new CommandResult(commandType, resultMessage);
     }
 }

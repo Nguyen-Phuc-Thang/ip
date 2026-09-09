@@ -42,6 +42,8 @@ public class DateTimeParser {
         if (dateArguments.length != DATE_RANGE_ARGUMENT_COUNT) {
             throw new IllegalArgumentException("date range must contain exactly two dates");
         }
+        assert dateArguments.length == 2
+                : "A validated date range must contain exactly two dates";
 
         LocalDate startDate = parseDate(dateArguments[START_DATE_INDEX]);
         LocalDate endDate = parseDate(dateArguments[END_DATE_INDEX]);
