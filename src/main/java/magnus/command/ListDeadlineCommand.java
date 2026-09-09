@@ -11,6 +11,8 @@ import magnus.task.TaskList;
  * Displays deadline tasks that fall on a specified date.
  */
 public class ListDeadlineCommand implements Command {
+    private static final String USAGE_MESSAGE = "\tUsage: list_deadline <dd/MM/yyyy>";
+
     private final TaskList tasks;
     private final DateTimeParser dateTimeParser;
 
@@ -35,13 +37,13 @@ public class ListDeadlineCommand implements Command {
     public String execute(String... args) throws CommandSyntaxException {
         if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me a date.\n"
-                    + "\tUsage: list_deadline <dd/MM/yyyy>");
+                    + USAGE_MESSAGE);
         }
 
         if (args.length > 1) {
             throw new CommandSyntaxException(
                     "\tInvalid syntax! The list_deadline command requires exactly one date.\n"
-                            + "\tUsage: list_deadline <dd/MM/yyyy>");
+                            + USAGE_MESSAGE);
         }
 
         LocalDate date;
@@ -52,7 +54,7 @@ public class ListDeadlineCommand implements Command {
                     "\tInvalid date! Enter the date in dd/MM/yyyy format, for example 20/09/2026.");
         }
 
-        TaskList filteredTasks = this.tasks.filterTaskOnDate(date);
+        TaskList filteredTasks = this.tasks.filterDeadlinesOnDate(date);
         return "\tHere's your task list:\n\n" + filteredTasks.formatTasks();
     }
 }

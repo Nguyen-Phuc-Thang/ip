@@ -55,15 +55,7 @@ public class Storage {
                 if (line.isBlank()) {
                     continue;
                 }
-
-                try {
-                    tasks.add(this.taskDataParser.parseTask(line));
-                } catch (IllegalArgumentException exception) {
-                    throw new StorageException(
-                            "\tThe data file is corrupted at line " + lineNumber
-                                    + ": " + exception.getMessage(),
-                            exception);
-                }
+                tasks.add(parseTaskRecord(line, lineNumber));
             }
             return tasks;
         } catch (IOException exception) {
@@ -79,37 +71,83 @@ public class Storage {
      * @throws StorageException If the tasks cannot be serialized or the data file cannot be written.
      */
     public void saveTasks(List<Task> tasks) throws StorageException {
-        String fileContents;
+        String fileContents = serializeTasks(tasks);
         try {
-            fileContents = tasks.stream()
+            writeTaskData(fileContents);
+        } catch (IOException exception) {
+            throw new StorageException(
+                    "\tSorry, I could not save your tasks to: " + this.filePath, exception);
+        }
+    }
+
+    /**
+     * Parses one task record and adds its line number to malformed-data errors.
+     *
+     * @param line The serialized task record.
+     * @param lineNumber The one-based line number of the record.
+     * @return The parsed task.
+     * @throws StorageException If the record is malformed.
+     */
+    private Task parseTaskRecord(String line, int lineNumber) throws StorageException {
+        try {
+            return this.taskDataParser.parseTask(line);
+        } catch (IllegalArgumentException exception) {
+            throw new StorageException(
+                    "\tThe data file is corrupted at line " + lineNumber
+                            + ": " + exception.getMessage(),
+                    exception);
+        }
+    }
+
+    /**
+     * Serializes all tasks into the complete contents of the data file.
+     *
+     * @param tasks The tasks to serialize.
+     * @return The serialized file contents.
+     * @throws StorageException If a task cannot be serialized.
+     */
+    private String serializeTasks(List<Task> tasks) throws StorageException {
+        try {
+            return tasks.stream()
                     .map(this::serializeTask)
                     .collect(Collectors.joining(System.lineSeparator()));
         } catch (RuntimeException exception) {
             throw new StorageException("\tSorry, I could not prepare the tasks for saving.", exception);
         }
+    }
 
-        Path temporaryFile = null;
+    /**
+     * Writes complete task data through a temporary file before replacing the data file.
+     *
+     * @param fileContents The complete serialized task data.
+     * @throws IOException If the data file cannot be replaced.
+     */
+    private void writeTaskData(String fileContents) throws IOException {
+        Path parentDirectory = this.filePath.getParent();
+        if (parentDirectory != null) {
+            Files.createDirectories(parentDirectory);
+        }
+
+        Path temporaryDirectory = parentDirectory == null ? Path.of(".") : parentDirectory;
+        Path temporaryFile = Files.createTempFile(temporaryDirectory, "magnus-", ".tmp");
         try {
-            Path parentDirectory = this.filePath.getParent();
-            if (parentDirectory != null) {
-                Files.createDirectories(parentDirectory);
-            }
-
-            Path temporaryDirectory = parentDirectory == null ? Path.of(".") : parentDirectory;
-            temporaryFile = Files.createTempFile(temporaryDirectory, "magnus-", ".tmp");
             Files.writeString(temporaryFile, fileContents, StandardCharsets.UTF_8);
             replaceDataFile(temporaryFile);
-        } catch (IOException exception) {
-            throw new StorageException(
-                    "\tSorry, I could not save your tasks to: " + this.filePath, exception);
         } finally {
-            if (temporaryFile != null) {
-                try {
-                    Files.deleteIfExists(temporaryFile);
-                } catch (IOException ignored) {
-                    // The original save result is more important than temporary-file cleanup.
-                }
-            }
+            deleteTemporaryFile(temporaryFile);
+        }
+    }
+
+    /**
+     * Deletes a temporary file without replacing the result of the original save operation.
+     *
+     * @param temporaryFile The temporary file to delete.
+     */
+    private void deleteTemporaryFile(Path temporaryFile) {
+        try {
+            Files.deleteIfExists(temporaryFile);
+        } catch (IOException ignored) {
+            // The original save result is more important than temporary-file cleanup.
         }
     }
 

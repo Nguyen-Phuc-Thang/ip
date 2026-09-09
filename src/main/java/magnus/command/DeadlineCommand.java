@@ -9,6 +9,9 @@ import magnus.task.TaskList;
  * Adds deadline tasks to a task list.
  */
 public class DeadlineCommand implements Command {
+    private static final String USAGE_MESSAGE =
+            "\tUsage: deadline <task description> /by <dd/MM/yyyy HHmm>";
+
     private final TaskList tasks;
 
     /**
@@ -29,21 +32,19 @@ public class DeadlineCommand implements Command {
      */
     @Override
     public String execute(String... args) throws MagnusException {
-
-        // Missing arguments
         if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me the task description.\n"
-                    + "\tUsage: deadline <task description> /by <dd/MM/yyyy HHmm>");
+                    + USAGE_MESSAGE);
         }
 
         if (args.length == 1 || args[1].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me the task deadline.\n"
-                    + "\tUsage: deadline <task description> /by <dd/MM/yyyy HHmm>");
+                    + USAGE_MESSAGE);
         }
 
         if (args.length > 2) {
             throw new CommandSyntaxException("\tInvalid syntax! The deadline command requires one /by field.\n"
-                    + "\tUsage: deadline <task description> /by <dd/MM/yyyy HHmm>");
+                    + USAGE_MESSAGE);
         }
 
         String taskDescription = args[0];

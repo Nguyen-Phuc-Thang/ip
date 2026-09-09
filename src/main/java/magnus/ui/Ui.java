@@ -69,4 +69,13 @@ public class Ui {
         System.out.println(prefix + UI_DIVIDER);
         System.out.println();
     }
+
+    /**
+     * Prints a message followed by a line break.
+     *
+     * @param message The message to display.
+     */
+    public void showMessage(String message) {
+        System.out.println(message);
+    }
 }

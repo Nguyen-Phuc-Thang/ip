@@ -15,6 +15,9 @@ import magnus.task.TaskList;
  * Recognized command words are matched to their corresponding commands.
  */
 public class CommandRouter {
+    private static final int COMMAND_KEYWORD_INDEX = 0;
+    private static final int FIRST_ARGUMENT_INDEX = 1;
+
     private final Map<CommandType, Command> commands;
     private final CommandParser parser;
 
@@ -51,13 +54,13 @@ public class CommandRouter {
      * @throws MagnusException If the matching command cannot be executed.
      */
     public CommandResult route(String userInput) throws MagnusException {
-        // Parse user input
-        String[] parsedCommandParts = parser.parse(userInput);
+        String[] parsedCommandParts = this.parser.parse(userInput);
         if (parsedCommandParts.length == 0) {
             throw new CommandSyntaxException("\tPlease enter a command.");
         }
-        String commandKeyword = parsedCommandParts[0];
-        String[] args = Arrays.copyOfRange(parsedCommandParts, 1, parsedCommandParts.length);
+        String commandKeyword = parsedCommandParts[COMMAND_KEYWORD_INDEX];
+        String[] commandArguments = Arrays.copyOfRange(
+                parsedCommandParts, FIRST_ARGUMENT_INDEX, parsedCommandParts.length);
 
         CommandType commandType;
         try {
@@ -69,7 +72,7 @@ public class CommandRouter {
 
         Command command = this.commands.get(commandType);
         assert command != null : "The parsed command type must have a registered command";
-        String resultMessage = command.execute(args);
+        String resultMessage = command.execute(commandArguments);
         assert resultMessage != null : "A successful command must return a response message";
         return new CommandResult(commandType, resultMessage);
     }
