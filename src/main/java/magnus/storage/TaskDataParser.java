@@ -49,6 +49,8 @@ public class TaskDataParser {
                 requireFieldCount(taskDataFields, 4, "event");
                 String[] eventTimes = parseEventTime(
                         requireNonBlank(taskDataFields.get(3), "event time"));
+                assert eventTimes.length == 2
+                        : "An event-time field must produce a start time and an end time";
                 yield new EventTask(
                         requireNonBlank(taskDataFields.get(2), "description"),
                         eventTimes[0], eventTimes[1]);
