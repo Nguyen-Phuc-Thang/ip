@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 import magnus.exception.CommandSyntaxException;
+import magnus.parser.DateRange;
 import magnus.parser.DateTimeParser;
 import magnus.task.TaskList;
 
@@ -11,6 +12,9 @@ import magnus.task.TaskList;
  * Displays event tasks enclosed by a specified date range.
  */
 public class ListEventCommand implements Command {
+    private static final String USAGE_MESSAGE =
+            "\tUsage: list_event <dd/MM/yyyy> <dd/MM/yyyy>";
+
     private final TaskList tasks;
     private final DateTimeParser dateTimeParser;
 
@@ -35,33 +39,42 @@ public class ListEventCommand implements Command {
     public String execute(String... args) throws CommandSyntaxException {
         if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me a start date and an end date.\n"
-                    + "\tUsage: list_event <dd/MM/yyyy> <dd/MM/yyyy>");
+                    + USAGE_MESSAGE);
         }
 
         if (args.length > 1) {
-            throw createInvalidArgumentCountException();
+            throw createInvalidDateCountException();
         }
 
-        LocalDate[] dates;
-        try {
-            dates = this.dateTimeParser.parseDateRange(args[0]);
-        } catch (DateTimeParseException exception) {
-            throw new CommandSyntaxException(
-                    "\tInvalid date! Enter both dates in dd/MM/yyyy format, for example "
-                            + "01/09/2026 30/09/2026.");
-        } catch (IllegalArgumentException exception) {
-            throw createInvalidArgumentCountException();
-        }
-
-        LocalDate startDate = dates[0];
-        LocalDate endDate = dates[1];
+        DateRange dateRange = parseDateRange(args[0]);
+        LocalDate startDate = dateRange.startDate();
+        LocalDate endDate = dateRange.endDate();
         if (startDate.isAfter(endDate)) {
             throw new CommandSyntaxException(
                     "\tInvalid date range! The start date must be before or equal to the end date.");
         }
 
-        TaskList filteredTasks = this.tasks.filterTaskWithinDateRange(startDate, endDate);
+        TaskList filteredTasks = this.tasks.filterEventsWithinDateRange(startDate, endDate);
         return "\tHere's your task list:\n\n" + filteredTasks.formatTasks();
+    }
+
+    /**
+     * Parses the two dates supplied in one command argument.
+     *
+     * @param dateRange The start and end date text.
+     * @return The parsed date range.
+     * @throws CommandSyntaxException If the input does not contain two valid dates.
+     */
+    private DateRange parseDateRange(String dateRange) throws CommandSyntaxException {
+        try {
+            return this.dateTimeParser.parseDateRange(dateRange);
+        } catch (DateTimeParseException exception) {
+            throw new CommandSyntaxException(
+                    "\tInvalid date! Enter both dates in dd/MM/yyyy format, for example "
+                            + "01/09/2026 30/09/2026.");
+        } catch (IllegalArgumentException exception) {
+            throw createInvalidDateCountException();
+        }
     }
 
     /**
@@ -69,9 +82,9 @@ public class ListEventCommand implements Command {
      *
      * @return An exception containing the expected command usage.
      */
-    private CommandSyntaxException createInvalidArgumentCountException() {
+    private CommandSyntaxException createInvalidDateCountException() {
         return new CommandSyntaxException(
                 "\tInvalid syntax! The list_event command requires exactly two dates.\n"
-                        + "\tUsage: list_event <dd/MM/yyyy> <dd/MM/yyyy>");
+                        + USAGE_MESSAGE);
     }
 }

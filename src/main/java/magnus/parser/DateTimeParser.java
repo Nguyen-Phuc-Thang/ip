@@ -2,20 +2,15 @@ package magnus.parser;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 
 /**
  * Parses dates and date-times using Magnus's strict user-input formats.
  */
 public class DateTimeParser {
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter
-            .ofPattern("dd/MM/uuuu")
-            .withResolverStyle(ResolverStyle.STRICT);
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
-            .ofPattern("dd/MM/uuuu HHmm")
-            .withResolverStyle(ResolverStyle.STRICT);
+    private static final int DATE_RANGE_ARGUMENT_COUNT = 2;
+    private static final int START_DATE_INDEX = 0;
+    private static final int END_DATE_INDEX = 1;
 
     /**
      * Creates a parser for Magnus's supported date and date-time formats.
@@ -31,27 +26,26 @@ public class DateTimeParser {
      * @throws DateTimeParseException If the text is malformed or does not represent a valid date.
      */
     public LocalDate parseDate(String date) {
-        return LocalDate.parse(date, DATE_FORMATTER);
+        return LocalDate.parse(date, DateTimeFormats.DATE_FORMATTER);
     }
 
     /**
      * Parses exactly two whitespace-separated dates in {@code dd/MM/yyyy} format.
      *
      * @param dateRange The start and end dates to parse.
-     * @return A two-element array containing the parsed start and end dates.
+     * @return The parsed date range.
      * @throws IllegalArgumentException If the input does not contain exactly two dates.
      * @throws DateTimeParseException If either date is malformed or invalid.
      */
-    public LocalDate[] parseDateRange(String dateRange) {
+    public DateRange parseDateRange(String dateRange) {
         String[] dateArguments = dateRange.strip().split("\\s+");
-        if (dateArguments.length != 2) {
+        if (dateArguments.length != DATE_RANGE_ARGUMENT_COUNT) {
             throw new IllegalArgumentException("date range must contain exactly two dates");
         }
 
-        return new LocalDate[] {
-            parseDate(dateArguments[0]),
-            parseDate(dateArguments[1])
-        };
+        LocalDate startDate = parseDate(dateArguments[START_DATE_INDEX]);
+        LocalDate endDate = parseDate(dateArguments[END_DATE_INDEX]);
+        return new DateRange(startDate, endDate);
     }
 
     /**
@@ -68,7 +62,7 @@ public class DateTimeParser {
         }
 
         try {
-            return LocalDateTime.parse(dateTime, DATE_TIME_FORMATTER);
+            return LocalDateTime.parse(dateTime, DateTimeFormats.DATE_TIME_FORMATTER);
         } catch (DateTimeParseException exception) {
             throw new IllegalArgumentException(
                     fieldName + " must use format dd/MM/yyyy HHmm and contain a valid date and time",

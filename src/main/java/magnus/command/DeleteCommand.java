@@ -32,7 +32,7 @@ public class DeleteCommand implements Command {
      */
     @Override
     public String execute(String... args) throws MagnusException {
-        int taskIndex = TaskIndexParser.parseTaskIndex(args, "delete", this.tasks.getLength());
+        int taskIndex = TaskIndexParser.parseTaskIndex(args, "delete", this.tasks.size());
 
         Task removedTask = this.tasks.removeTask(taskIndex);
         return "\tBoooooom!!! I've made this task vanished:\n\n\t" + removedTask;
