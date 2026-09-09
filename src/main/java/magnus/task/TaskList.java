@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Stores and manages the tasks in Magnus's task list.
@@ -148,10 +150,8 @@ public class TaskList {
      * @return The formatted task list, or an empty string if there are no tasks.
      */
     public String formatTasks() {
-        List<String> formattedTasks = new ArrayList<>();
-        for (int i = 0; i < tasks.size(); i++) {
-            formattedTasks.add(String.format("\t%d. %s", i + 1, this.tasks.get(i)));
-        }
-        return String.join(System.lineSeparator(), formattedTasks);
+        return IntStream.range(0, this.tasks.size())
+                .mapToObj(index -> String.format("\t%d. %s", index + 1, this.tasks.get(index)))
+                .collect(Collectors.joining(System.lineSeparator()));
     }
 }
