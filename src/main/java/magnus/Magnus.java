@@ -79,9 +79,9 @@ public class Magnus {
     /**
      * Runs Magnus's command-line interaction loop.
      *
-     * @param args Command-line arguments, which are currently ignored.
+     * @param ignoredArgs Command-line arguments, which are not used.
      */
-    public static void main(String[] args) {
+    public static void main(String[] ignoredArgs) {
         Ui ui = new Ui();
         ui.showWelcome();
 
@@ -89,30 +89,32 @@ public class Magnus {
         try {
             magnus = new Magnus();
         } catch (MagnusException exception) {
-            System.out.println(exception.getMessage());
+            ui.showMessage(exception.getMessage());
             return;
         }
 
+        runCommandLoop(magnus, ui);
+        ui.printDivider();
+    }
+
+    /**
+     * Reads and processes commands from standard input until input ends or Magnus exits.
+     *
+     * @param magnus The command-processing application.
+     * @param ui The command-line user interface.
+     */
+    private static void runCommandLoop(Magnus magnus, Ui ui) {
         try (Scanner scanner = new Scanner(System.in)) {
-            // Chat loop
             while (scanner.hasNextLine()) {
                 String userInput = scanner.nextLine();
-
-                // Start of result
                 ui.printDivider();
-
-                String response = magnus.getResponse(userInput);
-                System.out.println(response);
+                ui.showMessage(magnus.getResponse(userInput));
 
                 if (magnus.isExitRequested()) {
                     break;
                 }
-
-                // End of result
                 ui.printDivider();
             }
         }
-
-        ui.printDivider();
     }
 }
