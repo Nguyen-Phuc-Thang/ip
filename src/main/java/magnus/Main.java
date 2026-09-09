@@ -31,8 +31,10 @@ public class Main extends Application {
     private static final int WINDOW_WIDTH = 840;
     private static final int WINDOW_HEIGHT = 600;
     private static final int MESSAGE_MAX_WIDTH = 600;
+    private static final int MESSAGE_ROW_SPACING = 10;
     private static final int AVATAR_SIZE = 44;
     private static final int AVATAR_CONTAINER_SIZE = 48;
+    private static final double BOTTOM_SCROLL_POSITION = 1.0;
 
     private final VBox messageList = new VBox();
     private final ScrollPane chatScroll = new ScrollPane();
@@ -156,7 +158,7 @@ public class Main extends Application {
         messageList.getChildren().add(createMessageRow(response, false));
 
         // Layout must finish before the scroll position can move to the new bottom.
-        Platform.runLater(() -> chatScroll.setVvalue(1.0));
+        Platform.runLater(() -> chatScroll.setVvalue(BOTTOM_SCROLL_POSITION));
     }
 
     /**
@@ -180,7 +182,7 @@ public class Main extends Application {
         HBox messageRow = isUserMessage
                 ? new HBox(messageBubble, avatar)
                 : new HBox(avatar, messageBubble);
-        messageRow.setSpacing(10);
+        messageRow.setSpacing(MESSAGE_ROW_SPACING);
         messageRow.setAlignment(isUserMessage ? Pos.TOP_RIGHT : Pos.TOP_LEFT);
         return messageRow;
     }
@@ -204,7 +206,8 @@ public class Main extends Application {
         imageView.setFitHeight(AVATAR_SIZE);
         imageView.setPreserveRatio(true);
         imageView.setAccessibleText(isUserMessage ? "User avatar" : "Magnus avatar");
-        imageView.setClip(new Circle(AVATAR_SIZE / 2.0, AVATAR_SIZE / 2.0, AVATAR_SIZE / 2.0));
+        double avatarRadius = AVATAR_SIZE / 2.0;
+        imageView.setClip(new Circle(avatarRadius, avatarRadius, avatarRadius));
 
         StackPane avatar = new StackPane(imageView);
         avatar.setMinSize(AVATAR_CONTAINER_SIZE, AVATAR_CONTAINER_SIZE);

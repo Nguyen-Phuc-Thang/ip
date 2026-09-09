@@ -5,6 +5,12 @@ package magnus.task;
  * A newly created task is incomplete by default.
  */
 public class Task {
+    private static final String FIELD_DELIMITER = ",";
+    private static final String QUOTATION_MARK = "\"";
+    private static final String ESCAPED_QUOTATION_MARK = "\"\"";
+    private static final int INCOMPLETE_STATUS = 0;
+    private static final int COMPLETE_STATUS = 1;
+
     private final String description;
     private boolean isDone;
 
@@ -49,7 +55,18 @@ public class Task {
      * @return The serialized task data.
      */
     public String toDataString() {
-        return String.format("T,%d,%s", getStatusNumber(), encodeDataField(this.description));
+        return String.format("%s,%d,%s",
+                getTaskType().getStorageCode(),
+                getCompletionStatusCode(), encodeDataField(this.description));
+    }
+
+    /**
+     * Returns the specific type of this task.
+     *
+     * @return This task's type.
+     */
+    protected TaskType getTaskType() {
+        return TaskType.TODO;
     }
 
     /**
@@ -57,8 +74,8 @@ public class Task {
      *
      * @return {@code 1} if the task is complete; {@code 0} otherwise.
      */
-    protected int getStatusNumber() {
-        return this.isDone ? 1 : 0;
+    protected int getCompletionStatusCode() {
+        return this.isDone ? COMPLETE_STATUS : INCOMPLETE_STATUS;
     }
 
     /**
@@ -72,11 +89,14 @@ public class Task {
         if (field.contains("\n") || field.contains("\r")) {
             throw new IllegalArgumentException("Task fields cannot contain line breaks");
         }
-        if (!field.contains(",") && !field.contains("\"")) {
+        boolean requiresQuotationMarks = field.contains(FIELD_DELIMITER)
+                || field.contains(QUOTATION_MARK);
+        if (!requiresQuotationMarks) {
             return field;
         }
 
-        return "\"" + field.replace("\"", "\"\"") + "\"";
+        String escapedField = field.replace(QUOTATION_MARK, ESCAPED_QUOTATION_MARK);
+        return QUOTATION_MARK + escapedField + QUOTATION_MARK;
     }
 
     /**

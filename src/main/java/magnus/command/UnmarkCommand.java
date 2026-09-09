@@ -32,33 +32,9 @@ public class UnmarkCommand implements Command {
      */
     @Override
     public String execute(String... args) throws MagnusException {
+        int taskIndex = TaskIndexParser.parseTaskIndex(args, "unmark", this.tasks.size());
 
-        // Missing task number
-        if (args.length == 0 || args[0].isBlank()) {
-            throw new CommandSyntaxException("\tInvalid syntax! Please tell me the task number.\n"
-                    + "\tUsage: unmark <task number>");
-        }
-
-        // Too many arguments
-        if (args.length > 1) {
-            throw new CommandSyntaxException("\tInvalid syntax! The unmark command accepts only one argument.\n"
-                    + "\tUsage: unmark <task number>");
-        }
-
-        int taskNumber;
-
-        try {
-            taskNumber = Integer.parseInt(args[0]) - 1;
-        } catch (NumberFormatException exception) {
-            throw new CommandSyntaxException("\t'" + args[0] + "' is not a valid task number.\n"
-                    + "\tUsage: unmark <task number>");
-        }
-
-        if (taskNumber < 0 || taskNumber >= this.tasks.getLength()) {
-            throw new TaskNotFoundException("\tSorry, I can't find this task number");
-        }
-
-        this.tasks.markTaskAsUndone(taskNumber);
-        return "\tAlright, I've unmarked this task:\n\n\t" + this.tasks.getTask(taskNumber);
+        this.tasks.markTaskAsUndone(taskIndex);
+        return "\tAlright, I've unmarked this task:\n\n\t" + this.tasks.getTask(taskIndex);
     }
 }

@@ -31,33 +31,10 @@ public class MarkCommand implements Command {
      */
     @Override
     public String execute(String... args) throws MagnusException {
-        // Missing task number
-        if (args.length == 0 || args[0].isBlank()) {
-            throw new CommandSyntaxException("\tInvalid syntax! Please tell me the task number.\n"
-                    + "\tUsage: mark <task number>");
-        }
+        int taskIndex = TaskIndexParser.parseTaskIndex(args, "mark", this.tasks.size());
 
-        // Too many arguments
-        if (args.length > 1) {
-            throw new CommandSyntaxException("\tInvalid syntax! The mark command accepts only one argument.\n"
-                    + "\tUsage: mark <task number>");
-        }
-
-        int taskNumber;
-
-        try {
-            taskNumber = Integer.parseInt(args[0]) - 1;
-        } catch (NumberFormatException exception) {
-            throw new CommandSyntaxException("\t'" + args[0] + "' is not a valid task number.\n"
-                    + "\tUsage: mark <task number>");
-        }
-
-        if (taskNumber < 0 || taskNumber >= this.tasks.getLength()) {
-            throw new TaskNotFoundException("\tSorry, I can't find this task number");
-        }
-
-        this.tasks.markTaskAsDone(taskNumber);
+        this.tasks.markTaskAsDone(taskIndex);
         return "\tBrilliant!! I've marked this task as completed:\n\n\t"
-                + this.tasks.getTask(taskNumber);
+                + this.tasks.getTask(taskIndex);
     }
 }

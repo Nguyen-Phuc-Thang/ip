@@ -47,10 +47,9 @@ public class TaskList {
      * @param date The deadline date to match.
      * @return A new task list containing the matching deadline tasks.
      */
-    public TaskList filterTaskOnDate(LocalDate date) {
+    public TaskList filterDeadlinesOnDate(LocalDate date) {
         List<Task> filteredTasks = this.tasks.stream()
-                .filter(task -> task instanceof DeadlineTask deadlineTask
-                        && deadlineTask.getDeadline().toLocalDate().equals(date))
+                .filter(task -> isDeadlineOnDate(task, date))
                 .toList();
         return new TaskList(filteredTasks);
     }
@@ -62,15 +61,43 @@ public class TaskList {
      * @param endDate The last date in the range.
      * @return A new task list containing the matching event tasks.
      */
-    public TaskList filterTaskWithinDateRange(LocalDate startDate, LocalDate endDate) {
+    public TaskList filterEventsWithinDateRange(LocalDate startDate, LocalDate endDate) {
         assert !startDate.isAfter(endDate)
                 : "The event filter requires an ordered date range";
         List<Task> filteredTasks = this.tasks.stream()
-                .filter(task -> task instanceof EventTask eventTask
-                        && !eventTask.getStart().toLocalDate().isBefore(startDate)
-                        && !eventTask.getEnd().toLocalDate().isAfter(endDate))
+                .filter(task -> isEventWithinDateRange(task, startDate, endDate))
                 .toList();
         return new TaskList(filteredTasks);
+    }
+
+    /**
+     * Returns whether a task is a deadline on the specified date.
+     *
+     * @param task The task to examine.
+     * @param date The deadline date to match.
+     * @return {@code true} if the task is a deadline on the date.
+     */
+    private boolean isDeadlineOnDate(Task task, LocalDate date) {
+        return task instanceof DeadlineTask deadlineTask
+                && deadlineTask.getDeadline().toLocalDate().equals(date);
+    }
+
+    /**
+     * Returns whether an event task is fully enclosed by the inclusive date range.
+     *
+     * @param task The task to examine.
+     * @param startDate The first date in the range.
+     * @param endDate The last date in the range.
+     * @return {@code true} if the task is an event within the date range.
+     */
+    private boolean isEventWithinDateRange(Task task, LocalDate startDate, LocalDate endDate) {
+        if (!(task instanceof EventTask eventTask)) {
+            return false;
+        }
+
+        boolean startsWithinRange = !eventTask.getStart().toLocalDate().isBefore(startDate);
+        boolean endsWithinRange = !eventTask.getEnd().toLocalDate().isAfter(endDate);
+        return startsWithinRange && endsWithinRange;
     }
 
     /**
@@ -93,7 +120,7 @@ public class TaskList {
      *
      * @return The number of stored tasks.
      */
-    public int getLength() {
+    public int size() {
         return this.tasks.size();
     }
 

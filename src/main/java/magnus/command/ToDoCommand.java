@@ -9,6 +9,8 @@ import magnus.task.ToDoTask;
  * Adds to-do tasks to a task list.
  */
 public class ToDoCommand implements Command {
+    private static final String USAGE_MESSAGE = "\tUsage: todo <task description>";
+
     private final TaskList tasks;
 
     /**
@@ -29,16 +31,14 @@ public class ToDoCommand implements Command {
      */
     @Override
     public String execute(String... args) throws MagnusException {
-
-        // Missing task description
         if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me the task description.\n"
-                    + "\tUsage: todo <task description>");
+                    + USAGE_MESSAGE);
         }
 
         if (args.length > 1) {
             throw new CommandSyntaxException("\tInvalid syntax! The todo command accepts one description.\n"
-                    + "\tUsage: todo <task description>");
+                    + USAGE_MESSAGE);
         }
 
         String taskDescription = args[0];

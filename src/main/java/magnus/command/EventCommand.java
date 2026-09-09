@@ -9,6 +9,9 @@ import magnus.task.TaskList;
  * Adds event tasks to a task list.
  */
 public class EventCommand implements Command {
+    private static final String USAGE_MESSAGE =
+            "\tUsage: event <task description> /from <dd/MM/yyyy HHmm> /to <dd/MM/yyyy HHmm>";
+
     private final TaskList tasks;
 
     /**
@@ -30,21 +33,19 @@ public class EventCommand implements Command {
      */
     @Override
     public String execute(String... args) throws MagnusException {
-
-        // Missing arguments
         if (args.length == 0 || args[0].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me the task description.\n"
-                    + "\tUsage: event <task description> /from <dd/MM/yyyy HHmm> /to <dd/MM/yyyy HHmm>");
+                    + USAGE_MESSAGE);
         }
 
         if (args.length < 3 || args[1].isBlank() || args[2].isBlank()) {
             throw new CommandSyntaxException("\tInvalid syntax! Please give me the task start and end time.\n"
-                    + "\tUsage: event <task description> /from <dd/MM/yyyy HHmm> /to <dd/MM/yyyy HHmm>");
+                    + USAGE_MESSAGE);
         }
 
         if (args.length > 3) {
             throw new CommandSyntaxException("\tInvalid syntax! The event command requires one /from and /to field.\n"
-                    + "\tUsage: event <task description> /from <dd/MM/yyyy HHmm> /to <dd/MM/yyyy HHmm>");
+                    + USAGE_MESSAGE);
         }
 
         String taskDescription = args[0];
