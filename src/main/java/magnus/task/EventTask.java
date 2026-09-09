@@ -1,20 +1,16 @@
 package magnus.task;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Objects;
 
+import magnus.parser.DateTimeFormats;
 import magnus.parser.DateTimeParser;
 
 /**
  * Represents a task that occurs between specified start and end times.
  */
 public class EventTask extends Task {
-    private static final DateTimeFormatter EVENT_STORAGE_FORMATTER = DateTimeFormatter
-            .ofPattern("dd/MM/uuuu HHmm");
-    private static final DateTimeFormatter EVENT_DISPLAY_FORMATTER = DateTimeFormatter
-            .ofPattern("MMM dd, uuuu HH:mm", Locale.ENGLISH);
+    private static final String EVENT_TIME_DELIMITER = "-";
     private static final DateTimeParser EVENT_PARSER = new DateTimeParser();
 
     private final LocalDateTime start;
@@ -71,7 +67,7 @@ public class EventTask extends Task {
      * @return The formatted event time.
      */
     private String formatForStorage(LocalDateTime eventTime) {
-        return eventTime.format(EVENT_STORAGE_FORMATTER);
+        return eventTime.format(DateTimeFormats.DATE_TIME_FORMATTER);
     }
 
     /**
@@ -81,7 +77,12 @@ public class EventTask extends Task {
      * @return The display-formatted event time.
      */
     private String formatForDisplay(LocalDateTime eventTime) {
-        return eventTime.format(EVENT_DISPLAY_FORMATTER);
+        return eventTime.format(DateTimeFormats.DISPLAY_DATE_TIME_FORMATTER);
+    }
+
+    @Override
+    protected TaskType getTaskType() {
+        return TaskType.EVENT;
     }
 
     /**
@@ -91,9 +92,11 @@ public class EventTask extends Task {
      */
     @Override
     public String toDataString() {
-        String eventTime = formatForStorage(this.start) + "-" + formatForStorage(this.end);
-        return String.format("E,%d,%s,%s",
-                getStatusNumber(), encodeDataField(getDescription()), encodeDataField(eventTime));
+        String eventTime = formatForStorage(this.start)
+                + EVENT_TIME_DELIMITER + formatForStorage(this.end);
+        return String.format("%s,%d,%s,%s",
+                getTaskType().getStorageCode(), getCompletionStatusCode(),
+                encodeDataField(getDescription()), encodeDataField(eventTime));
     }
 
     /**

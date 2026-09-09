@@ -1,17 +1,29 @@
 package magnus.storage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import magnus.task.DeadlineTask;
 import magnus.task.EventTask;
 import magnus.task.Task;
+import magnus.task.TaskType;
 import magnus.task.ToDoTask;
 
 /**
  * Converts serialized task records into task objects.
  */
 public class TaskDataParser {
+    private static final int MINIMUM_FIELD_COUNT = 2;
+    private static final int TODO_FIELD_COUNT = 3;
+    private static final int DATED_TASK_FIELD_COUNT = 4;
+    private static final int TASK_TYPE_INDEX = 0;
+    private static final int STATUS_INDEX = 1;
+    private static final int DESCRIPTION_INDEX = 2;
+    private static final int DATE_TIME_INDEX = 3;
+    private static final String INCOMPLETE_STATUS = "0";
+    private static final String COMPLETE_STATUS = "1";
+    private static final char EVENT_TIME_DELIMITER = '-';
+    private static final char ESCAPE_CHARACTER = '\\';
+
     /**
      * Creates a parser for serialized task records.
      */
@@ -26,36 +38,13 @@ public class TaskDataParser {
      * @throws IllegalArgumentException If the record is malformed or contains invalid task data.
      */
     public Task parseTask(String line) {
-        List<String> taskDataFields = parseDataFields(line);
-        if (taskDataFields.size() < 2) {
+        List<String> taskDataFields = CsvFieldParser.parseFields(line);
+        if (taskDataFields.size() < MINIMUM_FIELD_COUNT) {
             throw new IllegalArgumentException("missing task type or status");
         }
 
-        String taskType = taskDataFields.get(0);
-        boolean isDone = isDoneStatus(taskDataFields.get(1));
-
-        Task task = switch (taskType) {
-            case "T" -> {
-                requireFieldCount(taskDataFields, 3, "to-do");
-                yield new ToDoTask(requireNonBlank(taskDataFields.get(2), "description"));
-            }
-            case "D" -> {
-                requireFieldCount(taskDataFields, 4, "deadline");
-                yield new DeadlineTask(
-                        requireNonBlank(taskDataFields.get(2), "description"),
-                        requireNonBlank(taskDataFields.get(3), "deadline"));
-            }
-            case "E" -> {
-                requireFieldCount(taskDataFields, 4, "event");
-                String[] eventTimes = parseEventTime(
-                        requireNonBlank(taskDataFields.get(3), "event time"));
-                yield new EventTask(
-                        requireNonBlank(taskDataFields.get(2), "description"),
-                        eventTimes[0], eventTimes[1]);
-            }
-            default -> throw new IllegalArgumentException("unknown task type '" + taskType + "'");
-        };
-
+        boolean isDone = parseCompletionStatus(taskDataFields.get(STATUS_INDEX));
+        Task task = createTask(taskDataFields);
         if (isDone) {
             task.markAsDone();
         }
@@ -63,59 +52,46 @@ public class TaskDataParser {
     }
 
     /**
-     * Splits a comma-separated task record while decoding quoted fields and escaped quotes.
+     * Creates the task represented by validated serialized fields.
      *
-     * @param line The serialized task record.
-     * @return The decoded fields in their original order.
-     * @throws IllegalArgumentException If quotation marks are malformed.
+     * @param taskDataFields The decoded task fields.
+     * @return The task represented by the fields.
+     * @throws IllegalArgumentException If the task type or its fields are invalid.
      */
-    private List<String> parseDataFields(String line) {
-        List<String> fields = new ArrayList<>();
-        StringBuilder currentField = new StringBuilder();
-        boolean isQuoted = false;
-        boolean hasClosedQuote = false;
-
-        for (int i = 0; i < line.length(); i++) {
-            char currentCharacter = line.charAt(i);
-
-            if (isQuoted) {
-                if (currentCharacter == '"') {
-                    if (i + 1 < line.length() && line.charAt(i + 1) == '"') {
-                        currentField.append('"');
-                        i++;
-                    } else {
-                        isQuoted = false;
-                        hasClosedQuote = true;
-                    }
-                } else {
-                    currentField.append(currentCharacter);
-                }
-            } else if (hasClosedQuote) {
-                if (currentCharacter != ',') {
-                    throw new IllegalArgumentException("unexpected text after a quoted field");
-                }
-                fields.add(currentField.toString());
-                currentField.setLength(0);
-                hasClosedQuote = false;
-            } else if (currentCharacter == ',') {
-                fields.add(currentField.toString());
-                currentField.setLength(0);
-            } else if (currentCharacter == '"') {
-                if (!currentField.isEmpty()) {
-                    throw new IllegalArgumentException("unexpected quote in an unquoted field");
-                }
-                isQuoted = true;
-            } else {
-                currentField.append(currentCharacter);
+    private Task createTask(List<String> taskDataFields) {
+        TaskType taskType = TaskType.fromStorageCode(taskDataFields.get(TASK_TYPE_INDEX));
+        return switch (taskType) {
+            case TODO -> {
+                requireFieldCount(taskDataFields, TODO_FIELD_COUNT, "to-do");
+                yield new ToDoTask(requireDescription(taskDataFields));
             }
-        }
+            case DEADLINE -> {
+                requireFieldCount(taskDataFields, DATED_TASK_FIELD_COUNT, "deadline");
+                yield new DeadlineTask(
+                        requireDescription(taskDataFields),
+                        requireNonBlank(taskDataFields.get(DATE_TIME_INDEX), "deadline"));
+            }
+            case EVENT -> {
+                requireFieldCount(taskDataFields, DATED_TASK_FIELD_COUNT, "event");
+                EventTimes eventTimes = parseEventTimes(
+                        requireNonBlank(taskDataFields.get(DATE_TIME_INDEX), "event time"));
+                yield new EventTask(
+                        requireDescription(taskDataFields),
+                        eventTimes.start(), eventTimes.end());
+            }
+            default -> throw new AssertionError("Unexpected task type: " + taskType);
+        };
+    }
 
-        if (isQuoted) {
-            throw new IllegalArgumentException("unclosed quoted field");
-        }
-
-        fields.add(currentField.toString());
-        return fields;
+    /**
+     * Returns the validated description field from serialized task data.
+     *
+     * @param taskDataFields The decoded task fields.
+     * @return The non-blank task description.
+     * @throws IllegalArgumentException If the description is blank.
+     */
+    private String requireDescription(List<String> taskDataFields) {
+        return requireNonBlank(taskDataFields.get(DESCRIPTION_INDEX), "description");
     }
 
     /**
@@ -125,11 +101,11 @@ public class TaskDataParser {
      * @return {@code true} for a completed task; {@code false} for an incomplete task.
      * @throws IllegalArgumentException If the status is not supported.
      */
-    private boolean isDoneStatus(String status) {
-        if (status.equals("1")) {
+    private boolean parseCompletionStatus(String status) {
+        if (status.equals(COMPLETE_STATUS)) {
             return true;
         }
-        if (status.equals("0")) {
+        if (status.equals(INCOMPLETE_STATUS)) {
             return false;
         }
         throw new IllegalArgumentException("invalid task status '" + status + "'");
@@ -170,10 +146,10 @@ public class TaskDataParser {
      * Backslashes escape delimiter characters within either value.
      *
      * @param eventTimeData The serialized event-time field.
-     * @return A two-element array containing the start and end values.
+     * @return The decoded start and end values.
      * @throws IllegalArgumentException If the field is malformed or either value is blank.
      */
-    private String[] parseEventTime(String eventTimeData) {
+    private EventTimes parseEventTimes(String eventTimeData) {
         StringBuilder currentPart = new StringBuilder();
         String start = null;
         boolean isEscaped = false;
@@ -183,9 +159,9 @@ public class TaskDataParser {
             if (isEscaped) {
                 currentPart.append(currentCharacter);
                 isEscaped = false;
-            } else if (currentCharacter == '\\') {
+            } else if (currentCharacter == ESCAPE_CHARACTER) {
                 isEscaped = true;
-            } else if (currentCharacter == '-' && start == null) {
+            } else if (currentCharacter == EVENT_TIME_DELIMITER && start == null) {
                 start = currentPart.toString();
                 currentPart.setLength(0);
             } else {
@@ -201,6 +177,15 @@ public class TaskDataParser {
         if (start == null || start.isBlank() || end.isBlank()) {
             throw new IllegalArgumentException("event time must contain a non-blank start and end");
         }
-        return new String[] {start, end};
+        return new EventTimes(start, end);
+    }
+
+    /**
+     * Contains the start and end values decoded from a serialized event-time field.
+     *
+     * @param start The serialized event start time.
+     * @param end The serialized event end time.
+     */
+    private record EventTimes(String start, String end) {
     }
 }
