@@ -32,33 +32,9 @@ public class DeleteCommand implements Command {
      */
     @Override
     public String execute(String... args) throws MagnusException {
-        // Missing task number
-        if (args.length == 0 || args[0].isBlank()) {
-            throw new CommandSyntaxException("\tInvalid syntax! Please tell me the task number.\n"
-                    + "\tUsage: delete <task number>");
-        }
+        int taskIndex = TaskIndexParser.parseTaskIndex(args, "delete", this.tasks.getLength());
 
-        // Too many arguments
-        if (args.length > 1) {
-            throw new CommandSyntaxException("\tInvalid syntax! The delete command accepts only one argument.\n"
-                    + "\tUsage: delete <task number>");
-        }
-
-        int taskNumber;
-
-        try {
-            taskNumber = Integer.parseInt(args[0]) - 1;
-        } catch (NumberFormatException exception) {
-            throw new CommandSyntaxException("\t'" + args[0] + "' is not a valid task number.\n"
-                    + "\tUsage: delete <task number>");
-        }
-
-        // Task number out of range
-        if (taskNumber < 0 || taskNumber >= this.tasks.getLength()) {
-            throw new TaskNotFoundException("\tSorry, I can't find this task number");
-        }
-
-        Task removedTask = this.tasks.removeTask(taskNumber);
+        Task removedTask = this.tasks.removeTask(taskIndex);
         return "\tBoooooom!!! I've made this task vanished:\n\n\t" + removedTask;
     }
 }
