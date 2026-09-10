@@ -1,7 +1,9 @@
 package magnus.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +26,7 @@ public class TaskTest {
 
         task.markAsDone();
 
+        assertTrue(task.isDone());
         assertEquals("[X] read book", task.toString());
         assertEquals("T,1,read book", task.toDataString());
     }
@@ -35,6 +38,7 @@ public class TaskTest {
 
         task.markAsUndone();
 
+        assertFalse(task.isDone());
         assertEquals("[ ] read book", task.toString());
         assertEquals("T,0,read book", task.toDataString());
     }

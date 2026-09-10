@@ -24,6 +24,8 @@ public enum CommandType {
     DEADLINE("deadline", true),
     /** Adds an event task. */
     EVENT("event", true),
+    /** Starts a two-step update of an existing task. */
+    UPDATE("update", false),
     /** Deletes a task. */
     DELETE("delete", true);
 

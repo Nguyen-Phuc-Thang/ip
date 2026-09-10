@@ -57,7 +57,7 @@ public class Magnus {
         try {
             CommandResult commandResult = this.router.route(userInput);
             CommandType commandType = commandResult.commandType();
-            if (commandType.canChangeTaskList()) {
+            if (commandResult.taskListChanged()) {
                 this.storage.saveTasks(this.tasks.getTasks());
             }
             this.isExitRequested = commandType == CommandType.BYE;

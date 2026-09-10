@@ -20,6 +20,7 @@ public class CommandRouter {
 
     private final Map<CommandType, Command> commands;
     private final CommandParser parser;
+    private final UpdateCommand updateCommand;
 
     /**
      * Creates a command router whose commands operate on the specified task list.
@@ -38,6 +39,8 @@ public class CommandRouter {
         this.commands.put(CommandType.TODO, new ToDoCommand(tasks));
         this.commands.put(CommandType.DEADLINE, new DeadlineCommand(tasks));
         this.commands.put(CommandType.EVENT, new EventCommand(tasks));
+        this.updateCommand = new UpdateCommand(tasks);
+        this.commands.put(CommandType.UPDATE, this.updateCommand);
         this.commands.put(CommandType.DELETE, new DeleteCommand(tasks));
         assert this.commands.size() == CommandType.values().length
                 : "Every command type must have a registered command";
@@ -54,6 +57,11 @@ public class CommandRouter {
      * @throws MagnusException If the matching command cannot be executed.
      */
     public CommandResult route(String userInput) throws MagnusException {
+        if (this.updateCommand.isAwaitingUpdatedTask()) {
+            String resultMessage = this.updateCommand.completeUpdate(userInput);
+            return new CommandResult(CommandType.UPDATE, resultMessage, true);
+        }
+
         String[] parsedCommandParts = this.parser.parse(userInput);
         if (parsedCommandParts.length == 0) {
             throw new CommandSyntaxException("\tPlease enter a command.");
@@ -74,6 +82,6 @@ public class CommandRouter {
         assert command != null : "The parsed command type must have a registered command";
         String resultMessage = command.execute(commandArguments);
         assert resultMessage != null : "A successful command must return a response message";
-        return new CommandResult(commandType, resultMessage);
+        return new CommandResult(commandType, resultMessage, commandType.canChangeTaskList());
     }
 }

@@ -159,6 +159,27 @@ public class TaskListTest {
     }
 
     @Test
+    public void replaceTask_validIndex_replacesOnlySelectedTask() {
+        Task task1 = new ToDoTask("read book");
+        Task task2 = new ToDoTask("return book");
+        Task replacementTask = new ToDoTask("write essay");
+        TaskList tasks = new TaskList(List.of(task1, task2));
+
+        tasks.replaceTask(1, replacementTask);
+
+        assertSame(task1, tasks.getTask(0));
+        assertSame(replacementTask, tasks.getTask(1));
+    }
+
+    @Test
+    public void replaceTask_indexOutsideTaskList_throwsIndexOutOfBoundsException() {
+        TaskList tasks = new TaskList();
+
+        assertThrows(IndexOutOfBoundsException.class, () ->
+                tasks.replaceTask(0, new ToDoTask("read book")));
+    }
+
+    @Test
     public void markTaskAsDone_validIndex_marksOnlySelectedTaskAsDone() {
         Task task1 = new ToDoTask("read book");
         Task task2 = new ToDoTask("return book");
