@@ -47,6 +47,36 @@ public class MagnusTest {
         assertTrue(magnus.isExitRequested());
     }
 
+    @Test
+    public void getResponse_validUpdateFlow_updatesTaskAndPersistsResult() throws MagnusException {
+        Magnus magnus = createMagnus();
+        magnus.getResponse("todo read book");
+
+        String prompt = magnus.getResponse("update 1");
+        String updateResponse = magnus.getResponse("read two books");
+        Magnus reloadedMagnus = createMagnus();
+
+        assertEquals("\tPlease enter the updated To-Do task in this format:\n"
+                + "\t<new task name>", prompt);
+        assertEquals("\tI've updated this task:\n\n\t[T][ ] read two books", updateResponse);
+        assertEquals("\tHere's your task list:\n\n\t1. [T][ ] read two books",
+                reloadedMagnus.getResponse("list"));
+    }
+
+    @Test
+    public void getResponse_invalidUpdateInput_failsThenProcessesNextCommandNormally() throws MagnusException {
+        Magnus magnus = createMagnus();
+        magnus.getResponse("deadline submit report /by 02/09/2026 1500");
+        magnus.getResponse("update 1");
+
+        String failureResponse = magnus.getResponse("submit report tomorrow");
+        String listResponse = magnus.getResponse("list");
+
+        assertEquals("\tUpdate failed.", failureResponse);
+        assertEquals("\tHere's your task list:\n\n"
+                + "\t1. [D][ ] submit report (by: Sep 02, 2026 15:00)", listResponse);
+    }
+
     /**
      * Creates a Magnus instance with an isolated task data file.
      *
