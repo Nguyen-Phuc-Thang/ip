@@ -158,6 +158,18 @@ public class TaskList {
     }
 
     /**
+     * Replaces the task at the specified zero-based index.
+     *
+     * @param index The zero-based index of the task to replace.
+     * @param task The replacement task.
+     * @throws IndexOutOfBoundsException If the index is outside the task list.
+     */
+    public void replaceTask(int index, Task task) {
+        assert task != null : "A task list must not contain null tasks";
+        this.tasks.set(index, task);
+    }
+
+    /**
      * Marks the task at the specified zero-based index as completed.
      *
      * @param index The zero-based index of the task to mark.
