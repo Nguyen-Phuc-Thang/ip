@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
@@ -100,6 +102,47 @@ public class MagnusTest {
                 failureResponse);
         assertEquals("\tHere's the current position - your full task list:\n\n"
                 + "\t1. [D][ ] submit report (by: Sep 02, 2026 15:00)", listResponse);
+    }
+
+    @Test
+    public void getResponse_duplicateTask_rejectsTaskAndKeepsSingleCopy() throws MagnusException {
+        Magnus magnus = createMagnus();
+        magnus.getResponse("todo read book");
+
+        MagnusResponse duplicateResponse = magnus.getResponseResult("todo read book");
+        String listResponse = magnus.getResponse("list");
+
+        assertTrue(duplicateResponse.isError());
+        assertEquals("\tThat piece is already on the board - an identical task already exists.",
+                duplicateResponse.message());
+        assertEquals("\tHere's the current position - your full task list:\n\n"
+                + "\t1. [T][ ] read book", listResponse);
+    }
+
+    @Test
+    public void getResponse_eventWithNonIncreasingTimes_rejectsEvent() throws MagnusException {
+        MagnusResponse response = createMagnus().getResponseResult(
+                "event meeting /from 02/09/2026 1500 /to 02/09/2026 1500");
+
+        assertTrue(response.isError());
+        assertEquals("\tThe clock rejects that event - use valid start and end times "
+                + "in dd/MM/yyyy HHmm format, with the start strictly before the end.",
+                response.message());
+    }
+
+    @Test
+    public void getResponse_saveFailure_rollsBackInMemoryChange() throws MagnusException, IOException {
+        Path dataFile = this.temporaryDirectory.resolve("blocked-data-path");
+        Magnus magnus = new Magnus(dataFile);
+        Files.createDirectory(dataFile);
+
+        MagnusResponse saveResponse = magnus.getResponseResult("todo read book");
+        String listResponse = magnus.getResponse("list");
+
+        assertTrue(saveResponse.isError());
+        assertTrue(saveResponse.message().contains("I could not save your tasks"));
+        assertTrue(saveResponse.message().contains("move was rolled back"));
+        assertEquals("\tHere's the current position - your full task list:\n\n", listResponse);
     }
 
     /**

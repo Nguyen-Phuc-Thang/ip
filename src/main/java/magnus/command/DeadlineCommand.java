@@ -1,6 +1,7 @@
 package magnus.command;
 
 import magnus.exception.CommandSyntaxException;
+import magnus.exception.DuplicateTaskException;
 import magnus.exception.MagnusException;
 import magnus.task.DeadlineTask;
 import magnus.task.TaskList;
@@ -57,6 +58,10 @@ public class DeadlineCommand implements Command {
             throw new CommandSyntaxException(
                     "\tThe clock rejects that deadline time - enter it in dd/MM/yyyy HHmm format, "
                             + "for example 02/09/2026 1500.");
+        }
+        if (tasks.containsTaskWithSameDetails(newTask)) {
+            throw new DuplicateTaskException(
+                    "\tThat piece is already on the board - an identical task already exists.");
         }
         tasks.addTask(newTask);
 

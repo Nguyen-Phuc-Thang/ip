@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -26,10 +27,42 @@ public class TaskList {
      * @param tasks The tasks with which to initialize the list.
      */
     public TaskList(List<Task> tasks) {
-        assert tasks != null : "The initial task collection must not be null";
-        assert tasks.stream().noneMatch(task -> task == null)
-                : "The initial task collection must not contain null tasks";
+        Objects.requireNonNull(tasks, "The initial task collection must not be null");
+        if (tasks.stream().anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("The initial task collection must not contain null tasks");
+        }
         this.tasks = new ArrayList<>(tasks);
+    }
+
+    /**
+     * Captures the list membership, order, and completion states for transactional rollback.
+     *
+     * @return A snapshot that can later be passed to {@link #restoreSnapshot(Snapshot)}.
+     */
+    public Snapshot createSnapshot() {
+        List<Task> taskSnapshot = new ArrayList<>(this.tasks);
+        List<Boolean> completionSnapshot = this.tasks.stream()
+                .map(Task::isDone)
+                .toList();
+        return new Snapshot(taskSnapshot, completionSnapshot);
+    }
+
+    /**
+     * Restores the exact list membership, order, and completion states in a prior snapshot.
+     *
+     * @param snapshot The snapshot to restore.
+     */
+    public void restoreSnapshot(Snapshot snapshot) {
+        Objects.requireNonNull(snapshot);
+        this.tasks.clear();
+        this.tasks.addAll(snapshot.tasks);
+        for (int index = 0; index < this.tasks.size(); index++) {
+            if (snapshot.completionStatuses.get(index)) {
+                this.tasks.get(index).markAsDone();
+            } else {
+                this.tasks.get(index).markAsUndone();
+            }
+        }
     }
 
     /**
@@ -130,8 +163,32 @@ public class TaskList {
      * @param task The task to add.
      */
     public void addTask(Task task) {
-        assert task != null : "A task list must not contain null tasks";
-        this.tasks.add(task);
+        this.tasks.add(Objects.requireNonNull(task, "A task list must not contain null tasks"));
+    }
+
+    /**
+     * Returns whether this list already contains a task with the same details as the candidate.
+     *
+     * @param candidate The proposed task.
+     * @return {@code true} if an equivalent task already exists.
+     */
+    public boolean containsTaskWithSameDetails(Task candidate) {
+        return containsTaskWithSameDetailsExcept(candidate, -1);
+    }
+
+    /**
+     * Returns whether this list contains an equivalent task outside one excluded position.
+     * This supports updates that leave a task's own details unchanged.
+     *
+     * @param candidate The proposed task.
+     * @param excludedIndex The zero-based position to ignore.
+     * @return {@code true} if another equivalent task exists.
+     */
+    public boolean containsTaskWithSameDetailsExcept(Task candidate, int excludedIndex) {
+        Objects.requireNonNull(candidate);
+        return IntStream.range(0, this.tasks.size())
+                .filter(index -> index != excludedIndex)
+                .anyMatch(index -> this.tasks.get(index).hasSameDetails(candidate));
     }
 
     /**
@@ -165,8 +222,7 @@ public class TaskList {
      * @throws IndexOutOfBoundsException If the index is outside the task list.
      */
     public void replaceTask(int index, Task task) {
-        assert task != null : "A task list must not contain null tasks";
-        this.tasks.set(index, task);
+        this.tasks.set(index, Objects.requireNonNull(task, "A task list must not contain null tasks"));
     }
 
     /**
@@ -198,5 +254,18 @@ public class TaskList {
         return IntStream.range(0, this.tasks.size())
                 .mapToObj(index -> String.format("\t%d. %s", index + 1, this.tasks.get(index)))
                 .collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    /**
+     * Immutable rollback data produced by a task list.
+     */
+    public static final class Snapshot {
+        private final List<Task> tasks;
+        private final List<Boolean> completionStatuses;
+
+        private Snapshot(List<Task> tasks, List<Boolean> completionStatuses) {
+            this.tasks = tasks;
+            this.completionStatuses = completionStatuses;
+        }
     }
 }

@@ -7,6 +7,7 @@ import magnus.command.CommandResult;
 import magnus.command.CommandRouter;
 import magnus.command.CommandType;
 import magnus.exception.MagnusException;
+import magnus.exception.StorageException;
 import magnus.storage.Storage;
 import magnus.task.TaskList;
 import magnus.ui.Ui;
@@ -65,6 +66,7 @@ public class Magnus {
      */
     public MagnusResponse getResponseResult(String userInput) {
         this.isExitRequested = false;
+        TaskList.Snapshot taskSnapshot = this.tasks.createSnapshot();
 
         try {
             CommandResult commandResult = this.router.route(userInput);
@@ -74,6 +76,10 @@ public class Magnus {
             }
             this.isExitRequested = commandType == CommandType.BYE;
             return MagnusResponse.success(commandResult.message());
+        } catch (StorageException exception) {
+            this.tasks.restoreSnapshot(taskSnapshot);
+            return MagnusResponse.error(exception.getMessage()
+                    + "\n\tThe move was rolled back, so your in-memory task list is unchanged.");
         } catch (MagnusException exception) {
             return MagnusResponse.error(exception.getMessage());
         }

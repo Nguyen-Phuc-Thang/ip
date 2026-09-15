@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import magnus.exception.CommandSyntaxException;
+import magnus.exception.DuplicateTaskException;
 import magnus.exception.MagnusException;
 import magnus.exception.TaskNotFoundException;
 import magnus.task.DeadlineTask;
@@ -86,7 +87,7 @@ public class UpdateCommand implements Command {
      * @return A message displaying the updated task.
      * @throws CommandSyntaxException If the replacement information does not match the required format.
      */
-    String completeUpdate(String updateInput) throws CommandSyntaxException {
+    String completeUpdate(String updateInput) throws MagnusException {
         assert isAwaitingUpdatedTask() : "An update must select a task before receiving replacement data";
         int taskIndex = this.pendingTaskIndex;
         this.pendingTaskIndex = NO_PENDING_TASK;
@@ -101,6 +102,10 @@ public class UpdateCommand implements Command {
 
         if (originalTask.isDone()) {
             updatedTask.markAsDone();
+        }
+        if (this.tasks.containsTaskWithSameDetailsExcept(updatedTask, taskIndex)) {
+            throw new DuplicateTaskException(
+                    "\tThat piece is already on the board - an identical task already exists.");
         }
         this.tasks.replaceTask(taskIndex, updatedTask);
         return "\tPosition updated - I've updated this task:\n\n\t" + updatedTask;

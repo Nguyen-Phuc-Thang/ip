@@ -1,6 +1,7 @@
 package magnus.command;
 
 import magnus.exception.CommandSyntaxException;
+import magnus.exception.DuplicateTaskException;
 import magnus.exception.MagnusException;
 import magnus.task.EventTask;
 import magnus.task.TaskList;
@@ -57,9 +58,12 @@ public class EventCommand implements Command {
         try {
             newTask = new EventTask(taskDescription, taskStart, taskEnd);
         } catch (IllegalArgumentException exception) {
-            throw new CommandSyntaxException(
-                    "\tThe clock rejects that event time - enter start and end times in dd/MM/yyyy HHmm format, "
-                            + "for example 02/09/2026 1500.");
+            throw new CommandSyntaxException("\tThe clock rejects that event - use valid start and end times "
+                    + "in dd/MM/yyyy HHmm format, with the start strictly before the end.");
+        }
+        if (tasks.containsTaskWithSameDetails(newTask)) {
+            throw new DuplicateTaskException(
+                    "\tThat piece is already on the board - an identical task already exists.");
         }
         tasks.addTask(newTask);
 

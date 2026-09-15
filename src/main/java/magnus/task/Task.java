@@ -1,5 +1,7 @@
 package magnus.task;
 
+import java.util.Objects;
+
 /**
  * Represents a task in Magnus's task list.
  * A newly created task is incomplete by default.
@@ -20,9 +22,13 @@ public class Task {
      * @param description The description of the task.
      */
     public Task(String description) {
-        assert description != null && !description.isBlank()
-                : "A task must have a non-blank description";
-        this.description = description;
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("A task must have a non-blank description");
+        }
+        if (description.contains("\n") || description.contains("\r")) {
+            throw new IllegalArgumentException("A task description cannot contain line breaks");
+        }
+        this.description = description.strip();
         this.isDone = false;
     }
 
@@ -42,6 +48,30 @@ public class Task {
      */
     public boolean isDone() {
         return this.isDone;
+    }
+
+    /**
+     * Returns whether another task has the same type, description, and scheduling details.
+     * Completion status is deliberately excluded because it is mutable state, not task identity.
+     *
+     * @param other The task to compare with this task.
+     * @return {@code true} if both tasks describe the same work.
+     */
+    public boolean hasSameDetails(Task other) {
+        return other != null
+                && getTaskType() == other.getTaskType()
+                && this.description.equals(other.description)
+                && hasSameSchedule(other);
+    }
+
+    /**
+     * Compares scheduling details supplied by a concrete task type.
+     *
+     * @param other The task already known to have the same task type.
+     * @return {@code true} when both tasks have the same scheduling details.
+     */
+    protected boolean hasSameSchedule(Task other) {
+        return true;
     }
 
     /**
@@ -95,6 +125,7 @@ public class Task {
      * @throws IllegalArgumentException If the field contains a line break.
      */
     protected String encodeDataField(String field) {
+        Objects.requireNonNull(field);
         if (field.contains("\n") || field.contains("\r")) {
             throw new IllegalArgumentException("Task fields cannot contain line breaks");
         }

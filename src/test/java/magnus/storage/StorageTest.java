@@ -69,4 +69,16 @@ public class StorageTest {
                         + "missing task type or status",
                 exception.getMessage());
     }
+
+    @Test
+    public void loadTasks_duplicateRecords_reportsDuplicateLine() throws IOException {
+        Path dataFile = this.temporaryDirectory.resolve("magnus.txt");
+        Files.writeString(dataFile, "T,0,read book\nT,1,read book", StandardCharsets.UTF_8);
+        Storage storage = new Storage(dataFile);
+
+        StorageException exception = assertThrows(StorageException.class, storage::loadTasks);
+
+        assertEquals("\tThe score sheet contains an invalid position - duplicate task at line 2.",
+                exception.getMessage());
+    }
 }
