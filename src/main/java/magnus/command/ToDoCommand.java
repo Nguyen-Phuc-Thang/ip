@@ -32,12 +32,13 @@ public class ToDoCommand implements Command {
     @Override
     public String execute(String... args) throws MagnusException {
         if (args.length == 0 || args[0].isBlank()) {
-            throw new CommandSyntaxException("\tInvalid syntax! Please give me the task description.\n"
+            throw new CommandSyntaxException("\tThat move is incomplete - please give me the task description.\n"
                     + USAGE_MESSAGE);
         }
 
         if (args.length > 1) {
-            throw new CommandSyntaxException("\tInvalid syntax! The todo command accepts one description.\n"
+            throw new CommandSyntaxException("\tToo many pieces in that move - the todo command accepts one "
+                    + "description.\n"
                     + USAGE_MESSAGE);
         }
 
@@ -45,6 +46,6 @@ public class ToDoCommand implements Command {
         ToDoTask newTask = new ToDoTask(taskDescription);
         tasks.addTask(newTask);
 
-        return "\tI've added this To-Do task:\n\n\t" + newTask;
+        return "\tOpening move complete - I've added this To-Do task:\n\n\t" + newTask;
     }
 }

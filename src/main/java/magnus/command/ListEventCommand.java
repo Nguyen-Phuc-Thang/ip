@@ -38,7 +38,8 @@ public class ListEventCommand implements Command {
     @Override
     public String execute(String... args) throws CommandSyntaxException {
         if (args.length == 0 || args[0].isBlank()) {
-            throw new CommandSyntaxException("\tInvalid syntax! Please give me a start date and an end date.\n"
+            throw new CommandSyntaxException("\tThat move is incomplete - please give me a start date and an "
+                    + "end date.\n"
                     + USAGE_MESSAGE);
         }
 
@@ -53,13 +54,14 @@ public class ListEventCommand implements Command {
         LocalDate endDate = dateRange.endDate();
         if (startDate.isAfter(endDate)) {
             throw new CommandSyntaxException(
-                    "\tInvalid date range! The start date must be before or equal to the end date.");
+                    "\tThat move reverses the clock - the start date must be before or equal to the end date.");
         }
         assert !startDate.isAfter(endDate)
                 : "A validated date range must be ordered before filtering";
 
         TaskList filteredTasks = this.tasks.filterEventsWithinDateRange(startDate, endDate);
-        return "\tHere's your task list:\n\n" + filteredTasks.formatTasks();
+        return "\tBoard surveyed - here are your Event tasks in that date range:\n\n"
+                + filteredTasks.formatTasks();
     }
 
     /**
@@ -74,7 +76,7 @@ public class ListEventCommand implements Command {
             return this.dateTimeParser.parseDateRange(dateRange);
         } catch (DateTimeParseException exception) {
             throw new CommandSyntaxException(
-                    "\tInvalid date! Enter both dates in dd/MM/yyyy format, for example "
+                    "\tThe clock rejects those dates - enter both in dd/MM/yyyy format, for example "
                             + "01/09/2026 30/09/2026.");
         } catch (IllegalArgumentException exception) {
             throw createInvalidDateCountException();
@@ -88,7 +90,7 @@ public class ListEventCommand implements Command {
      */
     private CommandSyntaxException createInvalidDateCountException() {
         return new CommandSyntaxException(
-                "\tInvalid syntax! The list_event command requires exactly two dates.\n"
+                "\tThe board needs two dates - the list_event command requires exactly two dates.\n"
                         + USAGE_MESSAGE);
     }
 }

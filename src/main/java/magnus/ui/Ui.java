@@ -13,8 +13,8 @@ public class Ui {
             ╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
             """;
     private static final String UI_GREETING = """
-            Hello! I'm Magnus.
-            How can I help you today?
+            Greetings! I'm Magnus, your task tactician.
+            The board is ready. What shall be our next move?
             """;
     private static final String UI_DIVIDER = "____________________________________________________________";
     private static final String UI_INDENT = "\t";

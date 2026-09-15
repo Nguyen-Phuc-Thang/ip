@@ -28,7 +28,7 @@ public class FindCommandTest {
                 firstMatch, new ToDoTask("submit report"), secondMatch));
         FindCommand command = new FindCommand(tasks);
         String expectedOutput = String.join(System.lineSeparator(),
-                "\tHere are the results that match \"book\":",
+                "\tI searched the board - here are the tasks matching \"book\":",
                 "",
                 "\t1. [T][X] read book",
                 "\t2. [D][X] return book (by: Jun 06, 2026 18:00)");
@@ -45,7 +45,7 @@ public class FindCommandTest {
         CommandSyntaxException exception = assertThrows(
                 CommandSyntaxException.class, () -> command.execute(new String[0]));
 
-        assertEquals("\tInvalid syntax! Please give me a search query.\n\tUsage: find <query>",
+        assertEquals("\tThat move has no target - please give me a search query.\n\tUsage: find <query>",
                 exception.getMessage());
     }
 

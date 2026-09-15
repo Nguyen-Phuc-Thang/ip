@@ -30,18 +30,19 @@ public class FindCommand implements Command {
     @Override
     public String execute(String... args) throws CommandSyntaxException {
         if (args.length == 0 || args[0].isBlank()) {
-            throw new CommandSyntaxException("\tInvalid syntax! Please give me a search query.\n"
+            throw new CommandSyntaxException("\tThat move has no target - please give me a search query.\n"
                     + USAGE_MESSAGE);
         }
 
         if (args.length > 1) {
-            throw new CommandSyntaxException("\tInvalid syntax! The find command accepts one query.\n"
+            throw new CommandSyntaxException("\tToo many targets in that move - the find command accepts one "
+                    + "query.\n"
                     + USAGE_MESSAGE);
         }
 
         String query = args[0].strip();
         TaskList matchingTasks = this.tasks.filterTasksByDescription(query);
-        return String.format("\tHere are the results that match \"%s\":%n%n%s",
+        return String.format("\tI searched the board - here are the tasks matching \"%s\":%n%n%s",
                 query, matchingTasks.formatTasks());
     }
 }

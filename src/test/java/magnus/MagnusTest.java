@@ -24,7 +24,7 @@ public class MagnusTest {
 
         String response = magnus.getResponse("todo read book");
 
-        assertEquals("\tI've added this To-Do task:\n\n\t[T][ ] read book", response);
+        assertEquals("\tOpening move complete - I've added this To-Do task:\n\n\t[T][ ] read book", response);
     }
 
     @Test
@@ -33,7 +33,7 @@ public class MagnusTest {
 
         String response = magnus.getResponse("unknown");
 
-        assertEquals("\tSorry, I don't know what you mean by 'unknown'", response);
+        assertEquals("\tThat move is not in my playbook - I don't recognize the command 'unknown'.", response);
         assertFalse(magnus.isExitRequested());
     }
 
@@ -43,7 +43,8 @@ public class MagnusTest {
 
         MagnusResponse response = magnus.getResponseResult("todo read book");
 
-        assertEquals("\tI've added this To-Do task:\n\n\t[T][ ] read book", response.message());
+        assertEquals("\tOpening move complete - I've added this To-Do task:\n\n\t[T][ ] read book",
+                response.message());
         assertFalse(response.isError());
     }
 
@@ -53,7 +54,8 @@ public class MagnusTest {
 
         MagnusResponse response = magnus.getResponseResult("unknown");
 
-        assertEquals("\tSorry, I don't know what you mean by 'unknown'", response.message());
+        assertEquals("\tThat move is not in my playbook - I don't recognize the command 'unknown'.",
+                response.message());
         assertTrue(response.isError());
     }
 
@@ -63,7 +65,7 @@ public class MagnusTest {
 
         String response = magnus.getResponse("bye");
 
-        assertEquals("\tGoodbye. See you soon!", response);
+        assertEquals("\tThe board is set aside for now. Goodbye, and see you next game!", response);
         assertTrue(magnus.isExitRequested());
     }
 
@@ -76,10 +78,12 @@ public class MagnusTest {
         String updateResponse = magnus.getResponse("read two books");
         Magnus reloadedMagnus = createMagnus();
 
-        assertEquals("\tPlease enter the updated To-Do task in this format:\n"
+        assertEquals("\tYour move - enter the updated To-Do task in this format:\n"
                 + "\t<new task name>", prompt);
-        assertEquals("\tI've updated this task:\n\n\t[T][ ] read two books", updateResponse);
-        assertEquals("\tHere's your task list:\n\n\t1. [T][ ] read two books",
+        assertEquals("\tPosition updated - I've updated this task:\n\n\t[T][ ] read two books",
+                updateResponse);
+        assertEquals("\tHere's the current position - your full task list:\n\n"
+                        + "\t1. [T][ ] read two books",
                 reloadedMagnus.getResponse("list"));
     }
 
@@ -92,8 +96,9 @@ public class MagnusTest {
         String failureResponse = magnus.getResponse("submit report tomorrow");
         String listResponse = magnus.getResponse("list");
 
-        assertEquals("\tUpdate failed.", failureResponse);
-        assertEquals("\tHere's your task list:\n\n"
+        assertEquals("\tThat move does not match the required format - the task was not updated.",
+                failureResponse);
+        assertEquals("\tHere's the current position - your full task list:\n\n"
                 + "\t1. [D][ ] submit report (by: Sep 02, 2026 15:00)", listResponse);
     }
 

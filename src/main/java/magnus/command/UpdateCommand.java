@@ -19,7 +19,8 @@ import magnus.task.ToDoTask;
  */
 public class UpdateCommand implements Command {
     private static final int NO_PENDING_TASK = -1;
-    private static final String UPDATE_FAILED_MESSAGE = "\tUpdate failed.";
+    private static final String UPDATE_FAILED_MESSAGE =
+            "\tThat move does not match the required format - the task was not updated.";
     private static final String DATE_TIME_FORMAT = "dd/MM/yyyy HHmm";
     private static final Pattern FIELD_DELIMITER_PATTERN = Pattern.compile(
             "(?:^|\\s+)/(?:by|from|to)(?:\\s+|$)");
@@ -55,16 +56,16 @@ public class UpdateCommand implements Command {
         this.pendingTaskIndex = taskIndex;
 
         if (selectedTask instanceof DeadlineTask) {
-            return "\tPlease enter the updated Deadline task in this format:\n"
+            return "\tYour move - enter the updated Deadline task in this format:\n"
                     + "\t<new task name> /by <deadline time>\n"
                     + "\tDeadline time format: " + DATE_TIME_FORMAT;
         }
         if (selectedTask instanceof EventTask) {
-            return "\tPlease enter the updated Event task in this format:\n"
+            return "\tYour move - enter the updated Event task in this format:\n"
                     + "\t<new task name> /from <start time> /to <end time>\n"
                     + "\tStart and end time format: " + DATE_TIME_FORMAT;
         }
-        return "\tPlease enter the updated To-Do task in this format:\n"
+        return "\tYour move - enter the updated To-Do task in this format:\n"
                 + "\t<new task name>";
     }
 
@@ -102,7 +103,7 @@ public class UpdateCommand implements Command {
             updatedTask.markAsDone();
         }
         this.tasks.replaceTask(taskIndex, updatedTask);
-        return "\tI've updated this task:\n\n\t" + updatedTask;
+        return "\tPosition updated - I've updated this task:\n\n\t" + updatedTask;
     }
 
     /**

@@ -36,13 +36,13 @@ public class ListDeadlineCommand implements Command {
     @Override
     public String execute(String... args) throws CommandSyntaxException {
         if (args.length == 0 || args[0].isBlank()) {
-            throw new CommandSyntaxException("\tInvalid syntax! Please give me a date.\n"
+            throw new CommandSyntaxException("\tThe clock is missing a date - please give me one.\n"
                     + USAGE_MESSAGE);
         }
 
         if (args.length > 1) {
             throw new CommandSyntaxException(
-                    "\tInvalid syntax! The list_deadline command requires exactly one date.\n"
+                    "\tToo many dates on the clock - the list_deadline command requires exactly one date.\n"
                             + USAGE_MESSAGE);
         }
 
@@ -51,10 +51,12 @@ public class ListDeadlineCommand implements Command {
             date = this.dateTimeParser.parseDate(args[0]);
         } catch (DateTimeParseException exception) {
             throw new CommandSyntaxException(
-                    "\tInvalid date! Enter the date in dd/MM/yyyy format, for example 20/09/2026.");
+                    "\tThe clock rejects that date - enter it in dd/MM/yyyy format, "
+                            + "for example 20/09/2026.");
         }
 
         TaskList filteredTasks = this.tasks.filterDeadlinesOnDate(date);
-        return "\tHere's your task list:\n\n" + filteredTasks.formatTasks();
+        return "\tClock check - here are your Deadline tasks for that date:\n\n"
+                + filteredTasks.formatTasks();
     }
 }

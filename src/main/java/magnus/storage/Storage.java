@@ -60,7 +60,8 @@ public class Storage {
             return tasks;
         } catch (IOException exception) {
             throw new StorageException(
-                    "\tSorry, I could not read the data file: " + this.filePath, exception);
+                    "\tScore-sheet problem - I could not read the data file: " + this.filePath,
+                    exception);
         }
     }
 
@@ -76,7 +77,8 @@ public class Storage {
             writeTaskData(fileContents);
         } catch (IOException exception) {
             throw new StorageException(
-                    "\tSorry, I could not save your tasks to: " + this.filePath, exception);
+                    "\tScore-sheet problem - I could not save your tasks to: " + this.filePath,
+                    exception);
         }
     }
 
@@ -93,7 +95,8 @@ public class Storage {
             return this.taskDataParser.parseTask(line);
         } catch (IllegalArgumentException exception) {
             throw new StorageException(
-                    "\tThe data file is corrupted at line " + lineNumber
+                    "\tThe score sheet contains an invalid position - the data file is corrupted at line "
+                            + lineNumber
                             + ": " + exception.getMessage(),
                     exception);
         }
@@ -112,7 +115,8 @@ public class Storage {
                     .map(this::serializeTask)
                     .collect(Collectors.joining(System.lineSeparator()));
         } catch (RuntimeException exception) {
-            throw new StorageException("\tSorry, I could not prepare the tasks for saving.", exception);
+            throw new StorageException(
+                    "\tScore-sheet problem - I could not prepare the tasks for saving.", exception);
         }
     }
 

@@ -27,9 +27,10 @@ public class ListCommand implements Command {
     @Override
     public String execute(String... args) throws CommandSyntaxException {
         if (args.length > 0) {
-            throw new CommandSyntaxException("\tInvalid syntax! The list command does not accept arguments.\n"
+            throw new CommandSyntaxException("\tThat move has extra pieces - the list command does not accept "
+                    + "arguments.\n"
                     + "\tUsage: list");
         }
-        return "\tHere's your task list:\n\n" + tasks.formatTasks();
+        return "\tHere's the current position - your full task list:\n\n" + tasks.formatTasks();
     }
 }

@@ -30,7 +30,7 @@ public class UpdateCommandTest {
 
         String response = command.execute("1");
 
-        assertEquals("\tPlease enter the updated To-Do task in this format:\n"
+        assertEquals("\tYour move - enter the updated To-Do task in this format:\n"
                 + "\t<new task name>", response);
         assertTrue(command.isAwaitingUpdatedTask());
     }
@@ -43,7 +43,7 @@ public class UpdateCommandTest {
 
         String response = command.execute("1");
 
-        assertEquals("\tPlease enter the updated Deadline task in this format:\n"
+        assertEquals("\tYour move - enter the updated Deadline task in this format:\n"
                 + "\t<new task name> /by <deadline time>\n"
                 + "\tDeadline time format: dd/MM/yyyy HHmm", response);
     }
@@ -57,7 +57,7 @@ public class UpdateCommandTest {
 
         String response = command.execute("1");
 
-        assertEquals("\tPlease enter the updated Event task in this format:\n"
+        assertEquals("\tYour move - enter the updated Event task in this format:\n"
                 + "\t<new task name> /from <start time> /to <end time>\n"
                 + "\tStart and end time format: dd/MM/yyyy HHmm", response);
     }
@@ -72,7 +72,7 @@ public class UpdateCommandTest {
 
         String response = command.completeUpdate("read two books");
 
-        assertEquals("\tI've updated this task:\n\n\t[T][X] read two books", response);
+        assertEquals("\tPosition updated - I've updated this task:\n\n\t[T][X] read two books", response);
         assertEquals("[T][X] read two books", tasks.getTask(0).toString());
         assertFalse(command.isAwaitingUpdatedTask());
     }
@@ -86,7 +86,7 @@ public class UpdateCommandTest {
 
         String response = command.completeUpdate("submit final report /by 03/09/2026 1630");
 
-        assertEquals("\tI've updated this task:\n\n\t[D][ ] submit final report "
+        assertEquals("\tPosition updated - I've updated this task:\n\n\t[D][ ] submit final report "
                 + "(by: Sep 03, 2026 16:30)", response);
     }
 
@@ -101,7 +101,7 @@ public class UpdateCommandTest {
         String response = command.completeUpdate(
                 "team meeting /from 04/09/2026 0900 /to 04/09/2026 1030");
 
-        assertEquals("\tI've updated this task:\n\n\t[E][ ] team meeting "
+        assertEquals("\tPosition updated - I've updated this task:\n\n\t[E][ ] team meeting "
                 + "(from: Sep 04, 2026 09:00 to: Sep 04, 2026 10:30)", response);
     }
 
@@ -116,7 +116,8 @@ public class UpdateCommandTest {
         CommandSyntaxException exception = assertThrows(
                 CommandSyntaxException.class, () -> command.completeUpdate("read /by tomorrow"));
 
-        assertEquals("\tUpdate failed.", exception.getMessage());
+        assertEquals("\tThat move does not match the required format - the task was not updated.",
+                exception.getMessage());
         assertSame(originalTask, tasks.getTask(0));
         assertFalse(command.isAwaitingUpdatedTask());
     }
@@ -133,7 +134,8 @@ public class UpdateCommandTest {
         CommandSyntaxException exception = assertThrows(CommandSyntaxException.class, () ->
                 command.completeUpdate(invalidUpdate));
 
-        assertEquals("\tUpdate failed.", exception.getMessage());
+        assertEquals("\tThat move does not match the required format - the task was not updated.",
+                exception.getMessage());
         assertSame(originalTask, tasks.getTask(0));
     }
 }

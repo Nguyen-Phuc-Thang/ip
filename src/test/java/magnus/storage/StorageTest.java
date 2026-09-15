@@ -65,7 +65,8 @@ public class StorageTest {
         StorageException exception = assertThrows(
                 StorageException.class, storage::loadTasks);
 
-        assertEquals("\tThe data file is corrupted at line 2: missing task type or status",
+        assertEquals("\tThe score sheet contains an invalid position - the data file is corrupted at line 2: "
+                        + "missing task type or status",
                 exception.getMessage());
     }
 }
