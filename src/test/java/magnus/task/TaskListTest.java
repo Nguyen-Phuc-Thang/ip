@@ -1,6 +1,7 @@
 package magnus.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -46,6 +47,13 @@ public class TaskListTest {
 
         assertThrows(IllegalArgumentException.class, () ->
                 new TaskList(List.of(firstTask, duplicateTask)));
+    }
+
+    @Test
+    public void constructor_nullCollectionOrMember_rejectsNull() {
+        assertThrows(NullPointerException.class, () -> new TaskList(null));
+        assertThrows(IllegalArgumentException.class, () ->
+                new TaskList(java.util.Arrays.asList(new ToDoTask("read book"), null)));
     }
 
     @Test
@@ -138,6 +146,13 @@ public class TaskListTest {
     }
 
     @Test
+    public void addTask_nullTask_throwsNullPointerException() {
+        TaskList tasks = new TaskList();
+
+        assertThrows(NullPointerException.class, () -> tasks.addTask(null));
+    }
+
+    @Test
     public void containsTaskWithSameDetails_sameDetailsDifferentStatus_returnsTrue() {
         ToDoTask existingTask = new ToDoTask("read book");
         ToDoTask candidate = new ToDoTask("read book");
@@ -145,6 +160,21 @@ public class TaskListTest {
         TaskList tasks = new TaskList(List.of(existingTask));
 
         assertTrue(tasks.containsTaskWithSameDetails(candidate));
+    }
+
+    @Test
+    public void containsTaskWithSameDetailsExcept_excludedMatchingTask_returnsFalse() {
+        ToDoTask task = new ToDoTask("read book");
+        TaskList tasks = new TaskList(List.of(task));
+
+        assertFalse(tasks.containsTaskWithSameDetailsExcept(new ToDoTask("read book"), 0));
+    }
+
+    @Test
+    public void containsTaskWithSameDetails_nullCandidate_throwsNullPointerException() {
+        TaskList tasks = new TaskList();
+
+        assertThrows(NullPointerException.class, () -> tasks.containsTaskWithSameDetails(null));
     }
 
     @Test
@@ -160,6 +190,11 @@ public class TaskListTest {
         assertEquals(1, tasks.size());
         assertSame(originalTask, tasks.getTask(0));
         assertEquals("[T][ ] read book", originalTask.toString());
+    }
+
+    @Test
+    public void restoreSnapshot_nullSnapshot_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> new TaskList().restoreSnapshot(null));
     }
 
     @Test
@@ -235,6 +270,16 @@ public class TaskListTest {
     }
 
     @Test
+    public void replaceTask_nullTask_throwsNullPointerExceptionWithoutReplacingTask() {
+        Task originalTask = new ToDoTask("read book");
+        TaskList tasks = new TaskList(List.of(originalTask));
+
+        assertThrows(NullPointerException.class, () -> tasks.replaceTask(0, null));
+
+        assertSame(originalTask, tasks.getTask(0));
+    }
+
+    @Test
     public void markTaskAsDone_validIndex_marksOnlySelectedTaskAsDone() {
         Task task1 = new ToDoTask("read book");
         Task task2 = new ToDoTask("return book");
@@ -287,5 +332,10 @@ public class TaskListTest {
         String output = tasks.formatTasks();
 
         assertEquals(expectedOutput, output);
+    }
+
+    @Test
+    public void formatTasks_emptyList_returnsEmptyString() {
+        assertEquals("", new TaskList().formatTasks());
     }
 }

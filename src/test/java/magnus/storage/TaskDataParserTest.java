@@ -59,6 +59,20 @@ public class TaskDataParserTest {
     public void parseTask_incorrectFieldCount_throwsIllegalArgumentException() {
         assertThrows(
                 IllegalArgumentException.class, () -> this.parser.parseTask("D,0,submit report"));
+        assertThrows(
+                IllegalArgumentException.class, () -> this.parser.parseTask("T,0,read book,extra"));
+    }
+
+    @Test
+    public void parseTask_missingTypeOrStatus_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> this.parser.parseTask("T"));
+        assertThrows(IllegalArgumentException.class, () -> this.parser.parseTask(""));
+    }
+
+    @Test
+    public void parseTask_blankRequiredField_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> this.parser.parseTask("T,0,   "));
+        assertThrows(IllegalArgumentException.class, () -> this.parser.parseTask("D,0,report,   "));
     }
 
     @Test
@@ -71,5 +85,21 @@ public class TaskDataParserTest {
     public void parseTask_nonIncreasingEventTimes_throwsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> this.parser.parseTask(
                 "E,0,meeting,02/09/2026 1600-02/09/2026 1500"));
+    }
+
+    @Test
+    public void parseTask_eventTimeWithoutBothParts_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> this.parser.parseTask(
+                "E,0,meeting,02/09/2026 1500"));
+        assertThrows(IllegalArgumentException.class, () -> this.parser.parseTask(
+                "E,0,meeting,-02/09/2026 1600"));
+        assertThrows(IllegalArgumentException.class, () -> this.parser.parseTask(
+                "E,0,meeting,02/09/2026 1500-"));
+    }
+
+    @Test
+    public void parseTask_eventTimeWithIncompleteEscape_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> this.parser.parseTask(
+                "E,0,meeting,02/09/2026 1500-02/09/2026 1600\\"));
     }
 }
