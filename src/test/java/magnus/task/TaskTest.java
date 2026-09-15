@@ -21,6 +21,23 @@ public class TaskTest {
     }
 
     @Test
+    public void constructor_blankDescription_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> new Task("   "));
+    }
+
+    @Test
+    public void constructor_multilineDescription_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> new Task("first line\nsecond line"));
+    }
+
+    @Test
+    public void constructor_surroundingWhitespace_stripsDescription() {
+        Task task = new Task("  read book  ");
+
+        assertEquals("read book", task.getDescription());
+    }
+
+    @Test
     public void markAsDone_incompleteTask_taskIsCompleted() {
         Task task = new Task("read book");
 
@@ -65,21 +82,8 @@ public class TaskTest {
     }
 
     @Test
-    public void toDataString_descriptionWithLineFeed_throwsIllegalArgumentException() {
-        Task task = new Task("first line\nsecond line");
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class, task::toDataString);
-        assertEquals("Task fields cannot contain line breaks", exception.getMessage());
-    }
-
-    @Test
-    public void toDataString_descriptionWithCarriageReturn_throwsIllegalArgumentException() {
-        Task task = new Task("first line\rsecond line");
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class, task::toDataString);
-        assertEquals("Task fields cannot contain line breaks", exception.getMessage());
+    public void constructor_descriptionWithCarriageReturn_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> new Task("first line\rsecond line"));
     }
 
     @Test

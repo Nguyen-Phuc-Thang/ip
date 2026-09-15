@@ -55,7 +55,14 @@ public class Storage {
                 if (line.isBlank()) {
                     continue;
                 }
-                tasks.add(parseTaskRecord(line, lineNumber));
+                Task task = parseTaskRecord(line, lineNumber);
+                if (tasks.stream().anyMatch(existingTask -> existingTask.hasSameDetails(task))) {
+                    throw new StorageException(
+                            "\tThe score sheet contains an invalid position - duplicate task at line "
+                                    + lineNumber + ".",
+                            new IllegalArgumentException("duplicate task"));
+                }
+                tasks.add(task);
             }
             return tasks;
         } catch (IOException exception) {

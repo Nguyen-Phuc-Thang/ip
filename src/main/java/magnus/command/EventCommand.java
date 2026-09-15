@@ -1,6 +1,7 @@
 package magnus.command;
 
 import magnus.exception.CommandSyntaxException;
+import magnus.exception.DuplicateTaskException;
 import magnus.exception.MagnusException;
 import magnus.task.EventTask;
 import magnus.task.TaskList;
@@ -38,28 +39,26 @@ public class EventCommand implements Command {
                     + USAGE_MESSAGE);
         }
 
-        if (args.length < 3 || args[1].isBlank() || args[2].isBlank()) {
-            throw new CommandSyntaxException("\tThe clock is incomplete - please give me the task start and "
-                    + "end time.\n"
-                    + USAGE_MESSAGE);
-        }
-
-        if (args.length > 3) {
+        if (args.length > 1) {
             throw new CommandSyntaxException("\tToo many clocks in that move - the event command requires "
                     + "exactly one /from field and one /to field.\n"
                     + USAGE_MESSAGE);
         }
 
-        String taskDescription = args[0];
-        String taskStart = args[1];
-        String taskEnd = args[2];
         EventTask newTask;
         try {
-            newTask = new EventTask(taskDescription, taskStart, taskEnd);
+            TaskArgumentsParser.EventArguments taskArguments =
+                    TaskArgumentsParser.parseEvent(args[0]);
+            newTask = new EventTask(
+                    taskArguments.description(), taskArguments.start(), taskArguments.end());
         } catch (IllegalArgumentException exception) {
-            throw new CommandSyntaxException(
-                    "\tThe clock rejects that event time - enter start and end times in dd/MM/yyyy HHmm format, "
-                            + "for example 02/09/2026 1500.");
+            throw new CommandSyntaxException("\tThe clock rejects that event - use valid start and end times "
+                    + "in dd/MM/yyyy HHmm format, with exactly one /from followed by one /to and the start "
+                    + "strictly before the end.\n" + USAGE_MESSAGE);
+        }
+        if (tasks.containsTaskWithSameDetails(newTask)) {
+            throw new DuplicateTaskException(
+                    "\tThat piece is already on the board - an identical task already exists.");
         }
         tasks.addTask(newTask);
 

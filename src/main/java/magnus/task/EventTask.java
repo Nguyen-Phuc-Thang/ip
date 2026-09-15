@@ -24,9 +24,9 @@ public class EventTask extends Task {
      * @param end The event's end time.
      */
     public EventTask(String description, String start, String end) {
-        super(description);
-        this.start = EVENT_PARSER.parseDateTime(start, "start time");
-        this.end = EVENT_PARSER.parseDateTime(end, "end time");
+        this(description,
+                EVENT_PARSER.parseDateTime(start, "start time"),
+                EVENT_PARSER.parseDateTime(end, "end time"));
     }
 
     /**
@@ -40,6 +40,9 @@ public class EventTask extends Task {
         super(description);
         this.start = Objects.requireNonNull(start);
         this.end = Objects.requireNonNull(end);
+        if (!this.start.isBefore(this.end)) {
+            throw new IllegalArgumentException("Event start time must be before end time");
+        }
     }
 
     /**
@@ -83,6 +86,12 @@ public class EventTask extends Task {
     @Override
     protected TaskType getTaskType() {
         return TaskType.EVENT;
+    }
+
+    @Override
+    protected boolean hasSameSchedule(Task other) {
+        EventTask otherEvent = (EventTask) other;
+        return this.start.equals(otherEvent.start) && this.end.equals(otherEvent.end);
     }
 
     /**

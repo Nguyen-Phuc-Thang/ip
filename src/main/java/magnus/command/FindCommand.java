@@ -39,6 +39,10 @@ public class FindCommand implements Command {
                     + "query.\n"
                     + USAGE_MESSAGE);
         }
+        if (TaskArgumentsParser.containsFieldDelimiter(args[0])) {
+            throw new CommandSyntaxException("\tThat move uses a reserved clock field - the find command "
+                    + "accepts only a query.\n" + USAGE_MESSAGE);
+        }
 
         String query = args[0].strip();
         TaskList matchingTasks = this.tasks.filterTasksByDescription(query);

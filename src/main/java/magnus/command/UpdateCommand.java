@@ -1,9 +1,7 @@
 package magnus.command;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import magnus.exception.CommandSyntaxException;
+import magnus.exception.DuplicateTaskException;
 import magnus.exception.MagnusException;
 import magnus.exception.TaskNotFoundException;
 import magnus.task.DeadlineTask;
@@ -22,12 +20,6 @@ public class UpdateCommand implements Command {
     private static final String UPDATE_FAILED_MESSAGE =
             "\tThat move does not match the required format - the task was not updated.";
     private static final String DATE_TIME_FORMAT = "dd/MM/yyyy HHmm";
-    private static final Pattern FIELD_DELIMITER_PATTERN = Pattern.compile(
-            "(?:^|\\s+)/(?:by|from|to)(?:\\s+|$)");
-    private static final Pattern DEADLINE_UPDATE_PATTERN = Pattern.compile(
-            "^(.+?)\\s+/by\\s+(.+)$");
-    private static final Pattern EVENT_UPDATE_PATTERN = Pattern.compile(
-            "^(.+?)\\s+/from\\s+(.+?)\\s+/to\\s+(.+)$");
 
     private final TaskList tasks;
     private int pendingTaskIndex = NO_PENDING_TASK;
@@ -86,7 +78,7 @@ public class UpdateCommand implements Command {
      * @return A message displaying the updated task.
      * @throws CommandSyntaxException If the replacement information does not match the required format.
      */
-    String completeUpdate(String updateInput) throws CommandSyntaxException {
+    String completeUpdate(String updateInput) throws MagnusException {
         assert isAwaitingUpdatedTask() : "An update must select a task before receiving replacement data";
         int taskIndex = this.pendingTaskIndex;
         this.pendingTaskIndex = NO_PENDING_TASK;
@@ -101,6 +93,10 @@ public class UpdateCommand implements Command {
 
         if (originalTask.isDone()) {
             updatedTask.markAsDone();
+        }
+        if (this.tasks.containsTaskWithSameDetailsExcept(updatedTask, taskIndex)) {
+            throw new DuplicateTaskException(
+                    "\tThat piece is already on the board - an identical task already exists.");
         }
         this.tasks.replaceTask(taskIndex, updatedTask);
         return "\tPosition updated - I've updated this task:\n\n\t" + updatedTask;
@@ -127,7 +123,7 @@ public class UpdateCommand implements Command {
         if (originalTask instanceof EventTask) {
             return createEventTask(strippedInput);
         }
-        if (FIELD_DELIMITER_PATTERN.matcher(strippedInput).find()) {
+        if (TaskArgumentsParser.containsFieldDelimiter(strippedInput)) {
             throw new IllegalArgumentException("A To-Do update accepts only a task name");
         }
         return new ToDoTask(strippedInput);
@@ -141,17 +137,9 @@ public class UpdateCommand implements Command {
      * @throws IllegalArgumentException If the syntax or deadline time is invalid.
      */
     private Task createDeadlineTask(String updateInput) {
-        Matcher matcher = DEADLINE_UPDATE_PATTERN.matcher(updateInput);
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("A Deadline update requires a /by field");
-        }
-
-        String description = matcher.group(1).strip();
-        String deadline = matcher.group(2).strip();
-        if (containsFieldDelimiter(description) || containsFieldDelimiter(deadline)) {
-            throw new IllegalArgumentException("A Deadline update accepts exactly one /by field");
-        }
-        return new DeadlineTask(description, deadline);
+        TaskArgumentsParser.DeadlineArguments taskArguments =
+                TaskArgumentsParser.parseDeadline(updateInput);
+        return new DeadlineTask(taskArguments.description(), taskArguments.deadline());
     }
 
     /**
@@ -162,29 +150,9 @@ public class UpdateCommand implements Command {
      * @throws IllegalArgumentException If the syntax or either event time is invalid.
      */
     private Task createEventTask(String updateInput) {
-        Matcher matcher = EVENT_UPDATE_PATTERN.matcher(updateInput);
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("An Event update requires /from and /to fields");
-        }
-
-        String description = matcher.group(1).strip();
-        String startTime = matcher.group(2).strip();
-        String endTime = matcher.group(3).strip();
-        if (containsFieldDelimiter(description)
-                || containsFieldDelimiter(startTime)
-                || containsFieldDelimiter(endTime)) {
-            throw new IllegalArgumentException("An Event update accepts one /from and one /to field");
-        }
-        return new EventTask(description, startTime, endTime);
-    }
-
-    /**
-     * Returns whether text contains a task field delimiter recognized by Magnus.
-     *
-     * @param text The text to inspect.
-     * @return {@code true} if the text contains a {@code /by}, {@code /from}, or {@code /to} delimiter.
-     */
-    private boolean containsFieldDelimiter(String text) {
-        return FIELD_DELIMITER_PATTERN.matcher(text).find();
+        TaskArgumentsParser.EventArguments taskArguments =
+                TaskArgumentsParser.parseEvent(updateInput);
+        return new EventTask(
+                taskArguments.description(), taskArguments.start(), taskArguments.end());
     }
 }

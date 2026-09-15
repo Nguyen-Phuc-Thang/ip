@@ -1,7 +1,6 @@
 package magnus;
 
 import java.net.URL;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,6 +59,7 @@ public class Main extends Application {
     private final VBox messageList = new VBox();
     private final ScrollPane chatScroll = new ScrollPane();
     private final TextField commandInput = new TextField();
+    private final Button sendButton = new Button("Send");
     private Magnus magnus;
     private Image magnusAvatar;
     private Image userAvatar;
@@ -68,11 +68,10 @@ public class Main extends Application {
      * Creates and displays the chat interface.
      *
      * @param stage Primary window supplied by JavaFX.
-     * @throws MagnusException If saved tasks cannot be loaded when the backend starts.
      */
     @Override
-    public void start(Stage stage) throws MagnusException {
-        this.magnus = new Magnus();
+    public void start(Stage stage) {
+        String startupError = initializeBackend();
         loadAvatarImages();
 
         BorderPane root = new BorderPane();
@@ -82,7 +81,7 @@ public class Main extends Application {
         root.setBottom(createInputArea());
 
         Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-        scene.getStylesheets().add(Main.class.getResource("chat.css").toExternalForm());
+        addStylesheetIfAvailable(scene);
 
         stage.setTitle("Magnus");
         stage.setResizable(true);
@@ -90,9 +89,53 @@ public class Main extends Application {
         stage.setMinHeight(MINIMUM_WINDOW_HEIGHT);
         stage.setScene(scene);
         showWelcomeMessage();
+        if (startupError != null) {
+            showStartupError(startupError);
+        }
         stage.show();
 
-        commandInput.requestFocus();
+        if (startupError == null) {
+            commandInput.requestFocus();
+        }
+    }
+
+    /**
+     * Creates the command backend, preserving a user-facing error if task data cannot be loaded.
+     *
+     * @return The startup error message, or {@code null} when initialization succeeds.
+     */
+    private String initializeBackend() {
+        try {
+            this.magnus = new Magnus();
+            return null;
+        } catch (MagnusException exception) {
+            return exception.getMessage();
+        }
+    }
+
+    /**
+     * Adds the application stylesheet when it is present in the packaged resources.
+     * The interface remains usable without styling if packaging is incomplete.
+     *
+     * @param scene The scene to style.
+     */
+    private void addStylesheetIfAvailable(Scene scene) {
+        URL stylesheetUrl = Main.class.getResource("chat.css");
+        if (stylesheetUrl != null) {
+            scene.getStylesheets().add(stylesheetUrl.toExternalForm());
+        }
+    }
+
+    /**
+     * Displays a fatal startup problem and disables command entry to avoid null backend access.
+     *
+     * @param errorMessage The storage or initialization error to show.
+     */
+    private void showStartupError(String errorMessage) {
+        this.messageList.getChildren().add(createBotMessageRow(
+                errorMessage + "\n\tMagnus cannot safely accept commands until this problem is fixed.", true));
+        this.commandInput.setDisable(true);
+        this.sendButton.setDisable(true);
     }
 
     /**
@@ -107,12 +150,16 @@ public class Main extends Application {
      * Loads an image packaged beside the Magnus JavaFX resources.
      *
      * @param resourcePath Package-relative path of the image resource.
-     * @return The loaded image.
-     * @throws NullPointerException If the image resource cannot be found.
+     * @return The loaded image, or {@code null} if the resource is unavailable or invalid.
      */
     private Image loadImage(String resourcePath) {
-        URL imageUrl = Objects.requireNonNull(Main.class.getResource(resourcePath));
-        return new Image(imageUrl.toExternalForm());
+        URL imageUrl = Main.class.getResource(resourcePath);
+        if (imageUrl == null) {
+            return null;
+        }
+
+        Image image = new Image(imageUrl.toExternalForm(), false);
+        return image.isError() ? null : image;
     }
 
     /**
@@ -197,13 +244,12 @@ public class Main extends Application {
         commandInput.setOnAction(event -> submitCommand());
         HBox.setHgrow(commandInput, Priority.ALWAYS);
 
-        Button sendButton = new Button("Send");
-        sendButton.setAccessibleText("Send command");
-        sendButton.getStyleClass().add("send-button");
-        sendButton.setDefaultButton(true);
-        sendButton.setOnAction(event -> submitCommand());
+        this.sendButton.setAccessibleText("Send command");
+        this.sendButton.getStyleClass().add("send-button");
+        this.sendButton.setDefaultButton(true);
+        this.sendButton.setOnAction(event -> submitCommand());
 
-        HBox inputArea = new HBox(commandInput, sendButton);
+        HBox inputArea = new HBox(commandInput, this.sendButton);
         inputArea.setAlignment(Pos.CENTER);
         inputArea.getStyleClass().add("input-area");
         return inputArea;
@@ -437,6 +483,32 @@ public class Main extends Application {
      */
     private StackPane createAvatar(boolean isUserMessage, int imageSize) {
         Image image = isUserMessage ? this.userAvatar : this.magnusAvatar;
+        StackPane avatar = new StackPane();
+        if (image == null) {
+            Label fallbackLabel = new Label(isUserMessage ? "U" : "M");
+            fallbackLabel.setAccessibleText(isUserMessage ? "User avatar" : "Magnus avatar");
+            avatar.getChildren().add(fallbackLabel);
+        } else {
+            avatar.getChildren().add(createAvatarImage(image, isUserMessage, imageSize));
+        }
+
+        int containerSize = imageSize + AVATAR_BORDER_ALLOWANCE;
+        avatar.setMinSize(containerSize, containerSize);
+        avatar.setPrefSize(containerSize, containerSize);
+        avatar.setMaxSize(containerSize, containerSize);
+        avatar.getStyleClass().addAll("avatar", isUserMessage ? "user-avatar" : "magnus-avatar");
+        return avatar;
+    }
+
+    /**
+     * Creates a cropped, circular image for an available avatar resource.
+     *
+     * @param image The successfully loaded avatar image.
+     * @param isUserMessage Whether the image represents the user.
+     * @param imageSize Diameter of the displayed image in pixels.
+     * @return The configured avatar image view.
+     */
+    private ImageView createAvatarImage(Image image, boolean isUserMessage, int imageSize) {
         double squareLength = Math.min(image.getWidth(), image.getHeight());
         double viewportX = (image.getWidth() - squareLength) / 2;
         double viewportY = (image.getHeight() - squareLength) / 2;
@@ -449,13 +521,6 @@ public class Main extends Application {
         imageView.setAccessibleText(isUserMessage ? "User portrait" : "Magnus portrait");
         double avatarRadius = imageSize / 2.0;
         imageView.setClip(new Circle(avatarRadius, avatarRadius, avatarRadius));
-
-        int containerSize = imageSize + AVATAR_BORDER_ALLOWANCE;
-        StackPane avatar = new StackPane(imageView);
-        avatar.setMinSize(containerSize, containerSize);
-        avatar.setPrefSize(containerSize, containerSize);
-        avatar.setMaxSize(containerSize, containerSize);
-        avatar.getStyleClass().addAll("avatar", isUserMessage ? "user-avatar" : "magnus-avatar");
-        return avatar;
+        return imageView;
     }
 }

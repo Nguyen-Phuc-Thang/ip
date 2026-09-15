@@ -50,6 +50,12 @@ public class TaskIndexParserTest {
     }
 
     @Test
+    public void parseTaskIndex_signedTaskNumber_throwsCommandSyntaxException() {
+        assertThrows(CommandSyntaxException.class, () -> TaskIndexParser.parseTaskIndex(
+                new String[] { "+1" }, "delete", 3));
+    }
+
+    @Test
     public void parseTaskIndex_taskNumberBelowRange_throwsTaskNotFoundException() {
         TaskNotFoundException exception = assertThrows(
                 TaskNotFoundException.class, () -> TaskIndexParser.parseTaskIndex(

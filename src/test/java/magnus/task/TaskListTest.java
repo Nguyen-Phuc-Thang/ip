@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,6 +36,16 @@ public class TaskListTest {
         assertEquals(2, tasks.size());
         assertSame(task1, tasks.getTask(0));
         assertSame(task2, tasks.getTask(1));
+    }
+
+    @Test
+    public void constructor_duplicateTaskDetails_throwsIllegalArgumentException() {
+        ToDoTask firstTask = new ToDoTask("read book");
+        ToDoTask duplicateTask = new ToDoTask("read book");
+        duplicateTask.markAsDone();
+
+        assertThrows(IllegalArgumentException.class, () ->
+                new TaskList(List.of(firstTask, duplicateTask)));
     }
 
     @Test
@@ -119,6 +130,39 @@ public class TaskListTest {
     }
 
     @Test
+    public void addTask_duplicateTaskDetails_throwsIllegalArgumentException() {
+        TaskList tasks = new TaskList(List.of(new ToDoTask("read book")));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                tasks.addTask(new ToDoTask("read book")));
+    }
+
+    @Test
+    public void containsTaskWithSameDetails_sameDetailsDifferentStatus_returnsTrue() {
+        ToDoTask existingTask = new ToDoTask("read book");
+        ToDoTask candidate = new ToDoTask("read book");
+        existingTask.markAsDone();
+        TaskList tasks = new TaskList(List.of(existingTask));
+
+        assertTrue(tasks.containsTaskWithSameDetails(candidate));
+    }
+
+    @Test
+    public void restoreSnapshot_mutatedList_restoresMembershipAndCompletionState() {
+        ToDoTask originalTask = new ToDoTask("read book");
+        TaskList tasks = new TaskList(List.of(originalTask));
+        TaskList.Snapshot snapshot = tasks.createSnapshot();
+
+        originalTask.markAsDone();
+        tasks.addTask(new ToDoTask("write essay"));
+        tasks.restoreSnapshot(snapshot);
+
+        assertEquals(1, tasks.size());
+        assertSame(originalTask, tasks.getTask(0));
+        assertEquals("[T][ ] read book", originalTask.toString());
+    }
+
+    @Test
     public void removeTask_validIndex_returnsRemovedTaskAndShiftsRemainingTasks() {
         Task task1 = new ToDoTask("read book");
         Task task2 = new ToDoTask("return book");
@@ -169,6 +213,17 @@ public class TaskListTest {
 
         assertSame(task1, tasks.getTask(0));
         assertSame(replacementTask, tasks.getTask(1));
+    }
+
+    @Test
+    public void replaceTask_duplicateOfOtherTask_throwsIllegalArgumentException() {
+        ToDoTask firstTask = new ToDoTask("read book");
+        ToDoTask secondTask = new ToDoTask("write essay");
+        TaskList tasks = new TaskList(List.of(firstTask, secondTask));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                tasks.replaceTask(1, new ToDoTask("read book")));
+        assertSame(secondTask, tasks.getTask(1));
     }
 
     @Test

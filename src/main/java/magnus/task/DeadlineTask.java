@@ -21,8 +21,7 @@ public class DeadlineTask extends Task {
      * @param deadline The deadline by which the task should be completed.
      */
     public DeadlineTask(String description, String deadline) {
-        super(description);
-        this.deadline = DEADLINE_PARSER.parseDateTime(deadline, "deadline");
+        this(description, DEADLINE_PARSER.parseDateTime(deadline, "deadline"));
     }
 
     /**
@@ -66,6 +65,12 @@ public class DeadlineTask extends Task {
     @Override
     protected TaskType getTaskType() {
         return TaskType.DEADLINE;
+    }
+
+    @Override
+    protected boolean hasSameSchedule(Task other) {
+        DeadlineTask otherDeadline = (DeadlineTask) other;
+        return this.deadline.equals(otherDeadline.deadline);
     }
 
     /**

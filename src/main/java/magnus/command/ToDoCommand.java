@@ -1,6 +1,7 @@
 package magnus.command;
 
 import magnus.exception.CommandSyntaxException;
+import magnus.exception.DuplicateTaskException;
 import magnus.exception.MagnusException;
 import magnus.task.TaskList;
 import magnus.task.ToDoTask;
@@ -41,9 +42,17 @@ public class ToDoCommand implements Command {
                     + "description.\n"
                     + USAGE_MESSAGE);
         }
+        if (TaskArgumentsParser.containsFieldDelimiter(args[0])) {
+            throw new CommandSyntaxException("\tThat move uses a reserved clock field - the todo command "
+                    + "accepts only a description.\n" + USAGE_MESSAGE);
+        }
 
         String taskDescription = args[0];
         ToDoTask newTask = new ToDoTask(taskDescription);
+        if (tasks.containsTaskWithSameDetails(newTask)) {
+            throw new DuplicateTaskException(
+                    "\tThat piece is already on the board - an identical task already exists.");
+        }
         tasks.addTask(newTask);
 
         return "\tOpening move complete - I've added this To-Do task:\n\n\t" + newTask;
