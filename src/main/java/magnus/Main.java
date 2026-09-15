@@ -2,12 +2,15 @@ package magnus;
 
 import java.net.URL;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -16,6 +19,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -43,6 +47,15 @@ public class Main extends Application {
     private static final double USER_MESSAGE_WIDTH_RATIO = 0.70;
     private static final double BOT_MESSAGE_WIDTH_RATIO = 0.84;
     private static final double BOTTOM_SCROLL_POSITION = 1.0;
+    private static final String DISPLAY_DATE_TIME_PATTERN =
+            "[A-Z][a-z]{2} \\d{2}, \\d{4} \\d{2}:\\d{2}";
+    private static final Pattern TASK_LINE_PATTERN = Pattern.compile(
+            "^(?:\\d+\\.\\s+)?\\[[TDE]\\]\\[[X ]\\]\\s+.+");
+    private static final Pattern EVENT_TIME_PATTERN = Pattern.compile(
+            "\\s*\\(from:\\s*(?<from>" + DISPLAY_DATE_TIME_PATTERN
+                    + ")\\s+to:\\s*(?<to>" + DISPLAY_DATE_TIME_PATTERN + ")\\)$");
+    private static final Pattern DEADLINE_TIME_PATTERN = Pattern.compile(
+            "\\s*\\(by:\\s*(?<by>" + DISPLAY_DATE_TIME_PATTERN + ")\\)$");
 
     private final VBox messageList = new VBox();
     private final ScrollPane chatScroll = new ScrollPane();
@@ -258,10 +271,10 @@ public class Main extends Application {
             senderLabel.getStyleClass().add("error-sender-label");
         }
 
-        Label messageBubble = createMessageLabel(message, "bot-message");
+        VBox messageBubble = createBotMessageCard(message);
         if (isError) {
             messageBubble.getStyleClass().add("error-message");
-            messageBubble.setAccessibleText("Command error. " + messageBubble.getText());
+            messageBubble.setAccessibleText("Command error. " + formatForGraphicalDisplay(message));
         }
         messageBubble.getStyleClass().addAll(additionalStyleClasses);
         messageBubble.maxWidthProperty().bind(
@@ -281,6 +294,100 @@ public class Main extends Application {
     }
 
     /**
+     * Creates a structured Magnus response whose task rows and date-time
+     * details can be spaced and styled independently.
+     *
+     * @param message Text returned by Magnus.
+     * @return Styled response card containing each display line.
+     */
+    private VBox createBotMessageCard(String message) {
+        VBox messageCard = new VBox();
+        messageCard.setMinWidth(0);
+        messageCard.getStyleClass().addAll("message-bubble", "bot-message", "message-body");
+
+        String[] messageLines = formatForGraphicalDisplay(message).split("\\n", -1);
+        for (String messageLine : messageLines) {
+            messageCard.getChildren().add(createBotMessageLine(messageLine));
+        }
+        return messageCard;
+    }
+
+    /**
+     * Converts one response line into plain text, a paragraph gap, or a task
+     * row with separately styled time details.
+     *
+     * @param messageLine One line of a Magnus response.
+     * @return Node used to render that line.
+     */
+    private Node createBotMessageLine(String messageLine) {
+        if (messageLine.isBlank()) {
+            Region paragraphSpacer = new Region();
+            paragraphSpacer.getStyleClass().add("paragraph-spacer");
+            return paragraphSpacer;
+        }
+
+        Matcher eventTimeMatcher = EVENT_TIME_PATTERN.matcher(messageLine);
+        if (eventTimeMatcher.find()) {
+            String taskText = messageLine.substring(0, eventTimeMatcher.start()).stripTrailing();
+            return createTaskItem(taskText,
+                    createTimeChip("from", eventTimeMatcher.group("from")),
+                    createTimeChip("to", eventTimeMatcher.group("to")));
+        }
+
+        Matcher deadlineTimeMatcher = DEADLINE_TIME_PATTERN.matcher(messageLine);
+        if (deadlineTimeMatcher.find()) {
+            String taskText = messageLine.substring(0, deadlineTimeMatcher.start()).stripTrailing();
+            return createTaskItem(taskText,
+                    createTimeChip("by", deadlineTimeMatcher.group("by")));
+        }
+
+        if (TASK_LINE_PATTERN.matcher(messageLine).matches()) {
+            return createTaskItem(messageLine);
+        }
+        return createWrappingLabel(messageLine, "message-line");
+    }
+
+    /**
+     * Creates a vertically spaced task row with optional wrapping time chips.
+     *
+     * @param taskText Task number, markers, and description.
+     * @param timeChips Optional date-time chips belonging to the task.
+     * @return Structured task display.
+     */
+    private VBox createTaskItem(String taskText, HBox... timeChips) {
+        Label taskLabel = createWrappingLabel(taskText, "task-text");
+        VBox taskItem = new VBox(taskLabel);
+        taskItem.getStyleClass().add("task-item");
+
+        if (timeChips.length > 0) {
+            FlowPane timeDetails = new FlowPane();
+            timeDetails.getChildren().addAll(timeChips);
+            timeDetails.getStyleClass().add("time-details");
+            taskItem.getChildren().add(timeDetails);
+        }
+        return taskItem;
+    }
+
+    /**
+     * Creates one compact label/value box for a task date and time.
+     *
+     * @param keyword Relationship of the time to the task, such as {@code from}.
+     * @param dateTime Display-formatted date and time.
+     * @return Styled date-time chip.
+     */
+    private HBox createTimeChip(String keyword, String dateTime) {
+        Label keywordLabel = new Label(keyword);
+        keywordLabel.getStyleClass().add("time-keyword");
+        Label dateTimeLabel = new Label(dateTime);
+        dateTimeLabel.getStyleClass().add("time-value");
+
+        HBox timeChip = new HBox(keywordLabel, dateTimeLabel);
+        timeChip.setAlignment(Pos.CENTER_LEFT);
+        timeChip.getStyleClass().add("time-chip");
+        return timeChip;
+    }
+
+    /**
      * Creates a wrapping message label and removes the CLI-only leading tabs
      * that would otherwise waste horizontal space in the graphical interface.
      *
@@ -289,12 +396,35 @@ public class Main extends Application {
      * @return Styled, wrapping message label.
      */
     private Label createMessageLabel(String message, String styleClass) {
-        String graphicalMessage = message.strip().replaceAll("(?m)^\\t", "");
-        Label messageLabel = new Label(graphicalMessage);
-        messageLabel.setWrapText(true);
-        messageLabel.setMinWidth(0);
+        Label messageLabel = createWrappingLabel(formatForGraphicalDisplay(message));
         messageLabel.getStyleClass().addAll("message-bubble", styleClass);
         return messageLabel;
+    }
+
+    /**
+     * Creates a label that uses all available card width before wrapping.
+     *
+     * @param text Text displayed by the label.
+     * @param styleClasses CSS classes applied to the label.
+     * @return Wrapping label.
+     */
+    private Label createWrappingLabel(String text, String... styleClasses) {
+        Label messageLabel = new Label(text);
+        messageLabel.setWrapText(true);
+        messageLabel.setMinWidth(0);
+        messageLabel.setMaxWidth(Double.MAX_VALUE);
+        messageLabel.getStyleClass().addAll(styleClasses);
+        return messageLabel;
+    }
+
+    /**
+     * Removes indentation used only by the command-line presentation.
+     *
+     * @param message Magnus response text.
+     * @return Text formatted for the graphical interface.
+     */
+    private String formatForGraphicalDisplay(String message) {
+        return message.strip().replaceAll("(?m)^\\t", "");
     }
 
     /**

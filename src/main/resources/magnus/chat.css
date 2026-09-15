@@ -74,12 +74,12 @@
 .message-bubble {
     -fx-background-radius: 10px;
     -fx-border-radius: 10px;
-    -fx-line-spacing: 2px;
     -fx-padding: 9px 12px;
 }
 
 .user-message {
     -fx-background-color: #5f7f3f;
+    -fx-line-spacing: 2px;
     -fx-text-fill: #ffffff;
 }
 
@@ -87,7 +87,54 @@
     -fx-background-color: #312e2b;
     -fx-border-color: #48443f;
     -fx-border-width: 1px;
+}
+
+.message-body {
+    -fx-spacing: 4px;
+}
+
+.message-line,
+.task-text {
+    -fx-line-spacing: 2px;
     -fx-text-fill: #eeeae3;
+}
+
+.paragraph-spacer {
+    -fx-min-height: 2px;
+    -fx-pref-height: 2px;
+    -fx-max-height: 2px;
+}
+
+.task-item {
+    -fx-padding: 2px 0 6px 0;
+    -fx-spacing: 5px;
+}
+
+.time-details {
+    -fx-hgap: 6px;
+    -fx-vgap: 5px;
+}
+
+.time-chip {
+    -fx-alignment: center-left;
+    -fx-background-color: #273222;
+    -fx-background-radius: 7px;
+    -fx-border-color: #587144;
+    -fx-border-radius: 7px;
+    -fx-border-width: 1px;
+    -fx-padding: 4px 7px;
+    -fx-spacing: 5px;
+}
+
+.time-keyword {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #a9cb8b;
+}
+
+.time-value {
+    -fx-font-size: 12px;
+    -fx-text-fill: #f0ece5;
 }
 
 .welcome-message {
@@ -99,6 +146,10 @@
     -fx-background-color: #472b28;
     -fx-border-color: #d86a56;
     -fx-border-width: 1px 1px 1px 4px;
+}
+
+.error-message .message-line,
+.error-message .task-text {
     -fx-text-fill: #ffe4de;
 }
 
