@@ -146,6 +146,7 @@ public class Main extends Application {
      */
     private ScrollPane createConversationView() {
         messageList.getStyleClass().add("message-list");
+        configureAutomaticScrolling();
 
         chatScroll.setContent(messageList);
         chatScroll.setFitToWidth(true);
@@ -154,6 +155,21 @@ public class Main extends Application {
         chatScroll.setAccessibleText("Conversation history");
         chatScroll.getStyleClass().add("chat-scroll");
         return chatScroll;
+    }
+
+    /**
+     * Keeps the newest conversation turn visible after its wrapped height has
+     * been calculated. Waiting for the content height to grow avoids scrolling
+     * against the previous layout bounds.
+     */
+    private void configureAutomaticScrolling() {
+        messageList.heightProperty().addListener((observable, previousHeight, currentHeight) -> {
+            if (currentHeight.doubleValue() <= previousHeight.doubleValue()) {
+                return;
+            }
+
+            Platform.runLater(() -> chatScroll.setVvalue(BOTTOM_SCROLL_POSITION));
+        });
     }
 
     /**
@@ -199,9 +215,6 @@ public class Main extends Application {
         }
 
         messageList.getChildren().add(createBotMessageRow(response.message(), response.isError()));
-
-        // Layout must finish before the scroll position can move to the new bottom.
-        Platform.runLater(() -> chatScroll.setVvalue(BOTTOM_SCROLL_POSITION));
     }
 
     /**
