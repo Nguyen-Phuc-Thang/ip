@@ -64,7 +64,7 @@ public class CommandRouter {
 
         String[] parsedCommandParts = this.parser.parse(userInput);
         if (parsedCommandParts.length == 0) {
-            throw new CommandSyntaxException("\tPlease enter a command.");
+            throw new CommandSyntaxException("\tYour move - please enter a command.");
         }
         String commandKeyword = parsedCommandParts[COMMAND_KEYWORD_INDEX];
         String[] commandArguments = Arrays.copyOfRange(
@@ -75,7 +75,8 @@ public class CommandRouter {
             commandType = CommandType.parseKeyword(commandKeyword);
         } catch (IllegalArgumentException exception) {
             throw new CommandNotFoundException(
-                    "\tSorry, I don't know what you mean by '" + commandKeyword + "'");
+                    "\tThat move is not in my playbook - I don't recognize the command '"
+                            + commandKeyword + "'.");
         }
 
         Command command = this.commands.get(commandType);

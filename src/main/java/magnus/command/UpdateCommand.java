@@ -19,7 +19,8 @@ import magnus.task.ToDoTask;
  */
 public class UpdateCommand implements Command {
     private static final int NO_PENDING_TASK = -1;
-    private static final String UPDATE_FAILED_MESSAGE = "\tUpdate failed.";
+    private static final String UPDATE_FAILED_MESSAGE =
+            "\tThat move does not match the required format - the task was not updated.";
     private static final String DATE_TIME_FORMAT = "dd/MM/yyyy HHmm";
     private static final Pattern FIELD_DELIMITER_PATTERN = Pattern.compile(
             "(?:^|\\s+)/(?:by|from|to)(?:\\s+|$)");

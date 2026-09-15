@@ -116,7 +116,8 @@ public class UpdateCommandTest {
         CommandSyntaxException exception = assertThrows(
                 CommandSyntaxException.class, () -> command.completeUpdate("read /by tomorrow"));
 
-        assertEquals("\tUpdate failed.", exception.getMessage());
+        assertEquals("\tThat move does not match the required format - the task was not updated.",
+                exception.getMessage());
         assertSame(originalTask, tasks.getTask(0));
         assertFalse(command.isAwaitingUpdatedTask());
     }
@@ -133,7 +134,8 @@ public class UpdateCommandTest {
         CommandSyntaxException exception = assertThrows(CommandSyntaxException.class, () ->
                 command.completeUpdate(invalidUpdate));
 
-        assertEquals("\tUpdate failed.", exception.getMessage());
+        assertEquals("\tThat move does not match the required format - the task was not updated.",
+                exception.getMessage());
         assertSame(originalTask, tasks.getTask(0));
     }
 }

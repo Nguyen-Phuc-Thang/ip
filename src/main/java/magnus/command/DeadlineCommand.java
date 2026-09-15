@@ -33,17 +33,18 @@ public class DeadlineCommand implements Command {
     @Override
     public String execute(String... args) throws MagnusException {
         if (args.length == 0 || args[0].isBlank()) {
-            throw new CommandSyntaxException("\tInvalid syntax! Please give me the task description.\n"
+            throw new CommandSyntaxException("\tThat move is incomplete - please give me the task description.\n"
                     + USAGE_MESSAGE);
         }
 
         if (args.length == 1 || args[1].isBlank()) {
-            throw new CommandSyntaxException("\tInvalid syntax! Please give me the task deadline.\n"
+            throw new CommandSyntaxException("\tThe clock is missing - please give me the task deadline.\n"
                     + USAGE_MESSAGE);
         }
 
         if (args.length > 2) {
-            throw new CommandSyntaxException("\tInvalid syntax! The deadline command requires one /by field.\n"
+            throw new CommandSyntaxException("\tToo many clocks in that move - the deadline command requires "
+                    + "exactly one /by field.\n"
                     + USAGE_MESSAGE);
         }
 
@@ -54,7 +55,7 @@ public class DeadlineCommand implements Command {
             newTask = new DeadlineTask(taskDescription, taskDeadline);
         } catch (IllegalArgumentException exception) {
             throw new CommandSyntaxException(
-                    "\tInvalid deadline time! Enter deadline time in dd/MM/yyyy HHmm format, "
+                    "\tThe clock rejects that deadline time - enter it in dd/MM/yyyy HHmm format, "
                             + "for example 02/09/2026 1500.");
         }
         tasks.addTask(newTask);

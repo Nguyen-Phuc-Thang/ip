@@ -34,17 +34,19 @@ public class EventCommand implements Command {
     @Override
     public String execute(String... args) throws MagnusException {
         if (args.length == 0 || args[0].isBlank()) {
-            throw new CommandSyntaxException("\tInvalid syntax! Please give me the task description.\n"
+            throw new CommandSyntaxException("\tThat move is incomplete - please give me the task description.\n"
                     + USAGE_MESSAGE);
         }
 
         if (args.length < 3 || args[1].isBlank() || args[2].isBlank()) {
-            throw new CommandSyntaxException("\tInvalid syntax! Please give me the task start and end time.\n"
+            throw new CommandSyntaxException("\tThe clock is incomplete - please give me the task start and "
+                    + "end time.\n"
                     + USAGE_MESSAGE);
         }
 
         if (args.length > 3) {
-            throw new CommandSyntaxException("\tInvalid syntax! The event command requires one /from and /to field.\n"
+            throw new CommandSyntaxException("\tToo many clocks in that move - the event command requires "
+                    + "exactly one /from field and one /to field.\n"
                     + USAGE_MESSAGE);
         }
 
@@ -56,7 +58,7 @@ public class EventCommand implements Command {
             newTask = new EventTask(taskDescription, taskStart, taskEnd);
         } catch (IllegalArgumentException exception) {
             throw new CommandSyntaxException(
-                    "\tInvalid event time! Enter start and end times in dd/MM/yyyy HHmm format, "
+                    "\tThe clock rejects that event time - enter start and end times in dd/MM/yyyy HHmm format, "
                             + "for example 02/09/2026 1500.");
         }
         tasks.addTask(newTask);

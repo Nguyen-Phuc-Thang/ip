@@ -33,7 +33,7 @@ public class MagnusTest {
 
         String response = magnus.getResponse("unknown");
 
-        assertEquals("\tSorry, I don't know what you mean by 'unknown'", response);
+        assertEquals("\tThat move is not in my playbook - I don't recognize the command 'unknown'.", response);
         assertFalse(magnus.isExitRequested());
     }
 
@@ -54,7 +54,8 @@ public class MagnusTest {
 
         MagnusResponse response = magnus.getResponseResult("unknown");
 
-        assertEquals("\tSorry, I don't know what you mean by 'unknown'", response.message());
+        assertEquals("\tThat move is not in my playbook - I don't recognize the command 'unknown'.",
+                response.message());
         assertTrue(response.isError());
     }
 
@@ -95,7 +96,8 @@ public class MagnusTest {
         String failureResponse = magnus.getResponse("submit report tomorrow");
         String listResponse = magnus.getResponse("list");
 
-        assertEquals("\tUpdate failed.", failureResponse);
+        assertEquals("\tThat move does not match the required format - the task was not updated.",
+                failureResponse);
         assertEquals("\tHere's the current position - your full task list:\n\n"
                 + "\t1. [D][ ] submit report (by: Sep 02, 2026 15:00)", listResponse);
     }

@@ -25,7 +25,7 @@ public class TaskIndexParserTest {
         CommandSyntaxException exception = assertThrows(
                 CommandSyntaxException.class, () -> TaskIndexParser.parseTaskIndex(new String[0], "mark", 3));
 
-        assertEquals("\tInvalid syntax! Please tell me the task number.\n"
+        assertEquals("\tThat move is incomplete - please tell me the task number.\n"
                 + "\tUsage: mark <task number>", exception.getMessage());
     }
 
@@ -35,7 +35,7 @@ public class TaskIndexParserTest {
                 CommandSyntaxException.class, () -> TaskIndexParser.parseTaskIndex(
                         new String[] { "1", "2" }, "unmark", 3));
 
-        assertEquals("\tInvalid syntax! The unmark command accepts only one argument.\n"
+        assertEquals("\tToo many pieces in that move - the unmark command accepts only one argument.\n"
                 + "\tUsage: unmark <task number>", exception.getMessage());
     }
 
@@ -45,7 +45,7 @@ public class TaskIndexParserTest {
                 CommandSyntaxException.class, () -> TaskIndexParser.parseTaskIndex(
                         new String[] { "first" }, "delete", 3));
 
-        assertEquals("\t'first' is not a valid task number.\n"
+        assertEquals("\tThat square is not a task number - 'first' is not valid.\n"
                 + "\tUsage: delete <task number>", exception.getMessage());
     }
 
@@ -55,7 +55,7 @@ public class TaskIndexParserTest {
                 TaskNotFoundException.class, () -> TaskIndexParser.parseTaskIndex(
                         new String[] { "0" }, "mark", 3));
 
-        assertEquals("\tSorry, I can't find this task number", exception.getMessage());
+        assertEquals("\tThat task is off the board - I can't find task number 0.", exception.getMessage());
     }
 
     @Test
@@ -64,6 +64,6 @@ public class TaskIndexParserTest {
                 TaskNotFoundException.class, () -> TaskIndexParser.parseTaskIndex(
                         new String[] { "4" }, "mark", 3));
 
-        assertEquals("\tSorry, I can't find this task number", exception.getMessage());
+        assertEquals("\tThat task is off the board - I can't find task number 4.", exception.getMessage());
     }
 }

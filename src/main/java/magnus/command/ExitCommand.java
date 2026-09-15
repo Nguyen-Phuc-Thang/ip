@@ -24,7 +24,8 @@ public class ExitCommand implements Command {
     @Override
     public String execute(String... args) throws CommandSyntaxException {
         if (args.length > 0) {
-            throw new CommandSyntaxException("\tInvalid syntax! The bye command does not accept arguments.\n"
+            throw new CommandSyntaxException("\tThat move has extra pieces - the bye command does not accept "
+                    + "arguments.\n"
                     + "\tUsage: bye");
         }
         return EXIT_TEXT;
