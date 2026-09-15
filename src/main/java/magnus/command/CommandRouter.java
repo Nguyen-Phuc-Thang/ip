@@ -57,6 +57,10 @@ public class CommandRouter {
      * @throws MagnusException If the matching command cannot be executed.
      */
     public CommandResult route(String userInput) throws MagnusException {
+        if (userInput != null && (userInput.contains("\n") || userInput.contains("\r"))) {
+            throw new CommandSyntaxException(
+                    "\tThat move spans multiple lines - please enter one command at a time.");
+        }
         if (this.updateCommand.isAwaitingUpdatedTask()) {
             String resultMessage = this.updateCommand.completeUpdate(userInput);
             return new CommandResult(CommandType.UPDATE, resultMessage, true);

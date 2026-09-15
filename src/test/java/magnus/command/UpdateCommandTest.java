@@ -138,4 +138,19 @@ public class UpdateCommandTest {
                 exception.getMessage());
         assertSame(originalTask, tasks.getTask(0));
     }
+
+    @Test
+    public void completeUpdate_eventFieldsInWrongOrder_failsWithoutReplacingTask()
+            throws MagnusException {
+        Task originalTask = new EventTask(
+                "meeting", LocalDateTime.of(2026, 9, 2, 15, 0),
+                LocalDateTime.of(2026, 9, 2, 16, 0));
+        TaskList tasks = new TaskList(List.of(originalTask));
+        UpdateCommand command = new UpdateCommand(tasks);
+        command.execute("1");
+
+        assertThrows(CommandSyntaxException.class, () -> command.completeUpdate(
+                "team meeting /to 04/09/2026 1030 /from 04/09/2026 0900"));
+        assertSame(originalTask, tasks.getTask(0));
+    }
 }

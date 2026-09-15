@@ -28,16 +28,23 @@ public class CommandParserTest {
     }
 
     @Test
-    public void parse_eventCommand_returnsSeparateArgumentFields() {
+    public void parse_eventCommand_preservesArgumentsForCommandSpecificParsing() {
         assertArrayEquals(
-                new String[] { "event", "meeting", "02/09/2026 1500", "02/09/2026 1600" },
+                new String[] {
+                    "event", "meeting /from 02/09/2026 1500 /to 02/09/2026 1600"
+                },
                 this.parser.parse("event meeting /from 02/09/2026 1500 /to 02/09/2026 1600"));
     }
 
     @Test
-    public void parse_missingDelimitedField_preservesEmptyField() {
+    public void parse_missingDelimitedField_preservesRawArguments() {
         assertArrayEquals(
-                new String[] { "deadline", "submit report", "" },
+                new String[] { "deadline", "submit report /by" },
                 this.parser.parse("deadline submit report /by"));
+    }
+
+    @Test
+    public void parse_nullInput_returnsEmptyArray() {
+        assertArrayEquals(new String[0], this.parser.parse(null));
     }
 }

@@ -42,6 +42,10 @@ public class ToDoCommand implements Command {
                     + "description.\n"
                     + USAGE_MESSAGE);
         }
+        if (TaskArgumentsParser.containsFieldDelimiter(args[0])) {
+            throw new CommandSyntaxException("\tThat move uses a reserved clock field - the todo command "
+                    + "accepts only a description.\n" + USAGE_MESSAGE);
+        }
 
         String taskDescription = args[0];
         ToDoTask newTask = new ToDoTask(taskDescription);

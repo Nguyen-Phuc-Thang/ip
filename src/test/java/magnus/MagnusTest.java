@@ -126,8 +126,63 @@ public class MagnusTest {
 
         assertTrue(response.isError());
         assertEquals("\tThe clock rejects that event - use valid start and end times "
-                + "in dd/MM/yyyy HHmm format, with the start strictly before the end.",
+                + "in dd/MM/yyyy HHmm format, with exactly one /from followed by one /to and the start "
+                + "strictly before the end.\n"
+                + "\tUsage: event <task description> /from <dd/MM/yyyy HHmm> /to <dd/MM/yyyy HHmm>",
                 response.message());
+    }
+
+    @Test
+    public void getResponse_surroundingAndRepeatedWhitespace_acceptsCommand() throws MagnusException {
+        MagnusResponse response = createMagnus().getResponseResult(
+                "   deadline   submit report   /by   02/09/2026 1500   ");
+
+        assertFalse(response.isError());
+        assertTrue(response.message().contains("[D][ ] submit report"));
+    }
+
+    @Test
+    public void getResponse_deadlineWithWrongDelimiter_rejectsCommand() throws MagnusException {
+        MagnusResponse response = createMagnus().getResponseResult(
+                "deadline submit report /from 02/09/2026 1500");
+
+        assertTrue(response.isError());
+        assertTrue(response.message().contains("provide exactly one /by field"));
+    }
+
+    @Test
+    public void getResponse_eventWithReversedDelimiters_rejectsCommand() throws MagnusException {
+        MagnusResponse response = createMagnus().getResponseResult(
+                "event meeting /to 02/09/2026 1600 /from 02/09/2026 1500");
+
+        assertTrue(response.isError());
+        assertTrue(response.message().contains("exactly one /from followed by one /to"));
+    }
+
+    @Test
+    public void getResponse_repeatedParameter_rejectsCommand() throws MagnusException {
+        MagnusResponse response = createMagnus().getResponseResult(
+                "deadline submit report /by 02/09/2026 1500 /by 03/09/2026 1500");
+
+        assertTrue(response.isError());
+        assertTrue(response.message().contains("provide exactly one /by field"));
+    }
+
+    @Test
+    public void getResponse_multilineInput_rejectsCommand() throws MagnusException {
+        MagnusResponse response = createMagnus().getResponseResult("todo read book\nlist");
+
+        assertTrue(response.isError());
+        assertEquals("\tThat move spans multiple lines - please enter one command at a time.",
+                response.message());
+    }
+
+    @Test
+    public void getResponse_nullInput_promptsForCommand() throws MagnusException {
+        MagnusResponse response = createMagnus().getResponseResult(null);
+
+        assertTrue(response.isError());
+        assertEquals("\tYour move - please enter a command.", response.message());
     }
 
     @Test

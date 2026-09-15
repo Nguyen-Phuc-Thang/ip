@@ -38,26 +38,21 @@ public class DeadlineCommand implements Command {
                     + USAGE_MESSAGE);
         }
 
-        if (args.length == 1 || args[1].isBlank()) {
-            throw new CommandSyntaxException("\tThe clock is missing - please give me the task deadline.\n"
-                    + USAGE_MESSAGE);
-        }
-
-        if (args.length > 2) {
+        if (args.length > 1) {
             throw new CommandSyntaxException("\tToo many clocks in that move - the deadline command requires "
                     + "exactly one /by field.\n"
                     + USAGE_MESSAGE);
         }
 
-        String taskDescription = args[0];
-        String taskDeadline = args[1];
         DeadlineTask newTask;
         try {
-            newTask = new DeadlineTask(taskDescription, taskDeadline);
+            TaskArgumentsParser.DeadlineArguments taskArguments =
+                    TaskArgumentsParser.parseDeadline(args[0]);
+            newTask = new DeadlineTask(taskArguments.description(), taskArguments.deadline());
         } catch (IllegalArgumentException exception) {
             throw new CommandSyntaxException(
-                    "\tThe clock rejects that deadline time - enter it in dd/MM/yyyy HHmm format, "
-                            + "for example 02/09/2026 1500.");
+                    "\tThe clock rejects that deadline - provide exactly one /by field with a valid "
+                            + "dd/MM/yyyy HHmm time.\n" + USAGE_MESSAGE);
         }
         if (tasks.containsTaskWithSameDetails(newTask)) {
             throw new DuplicateTaskException(
