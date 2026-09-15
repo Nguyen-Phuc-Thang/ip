@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -17,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
@@ -28,12 +30,18 @@ import magnus.ui.Ui;
  * Displays the Magnus chat window and connects it to the command backend.
  */
 public class Main extends Application {
-    private static final int WINDOW_WIDTH = 840;
-    private static final int WINDOW_HEIGHT = 600;
-    private static final int MESSAGE_MAX_WIDTH = 600;
+    private static final int WINDOW_WIDTH = 720;
+    private static final int WINDOW_HEIGHT = 620;
+    private static final int MINIMUM_WINDOW_WIDTH = 420;
+    private static final int MINIMUM_WINDOW_HEIGHT = 460;
+    private static final int BOT_AVATAR_SIZE = 34;
+    private static final int USER_AVATAR_SIZE = 26;
+    private static final int HEADER_AVATAR_SIZE = 40;
+    private static final int AVATAR_BORDER_ALLOWANCE = 4;
     private static final int MESSAGE_ROW_SPACING = 10;
-    private static final int AVATAR_SIZE = 44;
-    private static final int AVATAR_CONTAINER_SIZE = 48;
+    private static final int MINIMUM_MESSAGE_WIDTH = 180;
+    private static final double USER_MESSAGE_WIDTH_RATIO = 0.70;
+    private static final double BOT_MESSAGE_WIDTH_RATIO = 0.84;
     private static final double BOTTOM_SCROLL_POSITION = 1.0;
 
     private final VBox messageList = new VBox();
@@ -56,6 +64,7 @@ public class Main extends Application {
 
         BorderPane root = new BorderPane();
         root.getStyleClass().add("app");
+        root.setTop(createHeader());
         root.setCenter(createConversationView());
         root.setBottom(createInputArea());
 
@@ -63,10 +72,11 @@ public class Main extends Application {
         scene.getStylesheets().add(Main.class.getResource("chat.css").toExternalForm());
 
         stage.setTitle("Magnus");
-        stage.setMinWidth(WINDOW_WIDTH);
-        stage.setMinHeight(WINDOW_HEIGHT);
+        stage.setResizable(true);
+        stage.setMinWidth(MINIMUM_WINDOW_WIDTH);
+        stage.setMinHeight(MINIMUM_WINDOW_HEIGHT);
         stage.setScene(scene);
-        showWelcomeMessages();
+        showWelcomeMessage();
         stage.show();
 
         commandInput.requestFocus();
@@ -93,11 +103,40 @@ public class Main extends Application {
     }
 
     /**
-     * Displays the Magnus banner and greeting as the first bot messages.
+     * Creates the compact application identity shown above the conversation.
+     *
+     * @return Header containing the Magnus portrait and app description.
      */
-    private void showWelcomeMessages() {
-        messageList.getChildren().add(createMessageRow(Ui.getBanner(), false, "banner-message"));
-        messageList.getChildren().add(createMessageRow(Ui.getGreeting(), false));
+    private HBox createHeader() {
+        StackPane avatar = createAvatar(false, HEADER_AVATAR_SIZE);
+        avatar.getStyleClass().add("header-avatar");
+
+        Label appName = new Label("Magnus");
+        appName.getStyleClass().add("app-name");
+        Label appDescription = new Label("Your tactical task companion");
+        appDescription.getStyleClass().add("app-description");
+        VBox appIdentity = new VBox(appName, appDescription);
+        appIdentity.getStyleClass().add("app-identity");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Label turnIndicator = new Label("♟  YOUR MOVE");
+        turnIndicator.getStyleClass().add("turn-indicator");
+
+        HBox header = new HBox(avatar, appIdentity, spacer, turnIndicator);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.getStyleClass().add("app-header");
+        return header;
+    }
+
+    /**
+     * Displays only the short greeting in the graphical interface. The large
+     * text banner remains available in the command-line interface, where it
+     * does not take space away from the conversation.
+     */
+    private void showWelcomeMessage() {
+        messageList.getChildren().add(createBotMessageRow(Ui.getGreeting(), false, "welcome-message"));
     }
 
     /**
@@ -122,16 +161,20 @@ public class Main extends Application {
      * @return Input controls arranged along the bottom of the window.
      */
     private HBox createInputArea() {
-        commandInput.setPromptText("Type a command...");
+        StackPane avatar = createAvatar(true, USER_AVATAR_SIZE);
+        avatar.getStyleClass().add("input-avatar");
+
+        commandInput.setPromptText("Enter a command, e.g. list");
         commandInput.getStyleClass().add("command-input");
         commandInput.setOnAction(event -> submitCommand());
         HBox.setHgrow(commandInput, Priority.ALWAYS);
 
         Button sendButton = new Button("Send");
         sendButton.getStyleClass().add("send-button");
+        sendButton.setDefaultButton(true);
         sendButton.setOnAction(event -> submitCommand());
 
-        HBox inputArea = new HBox(commandInput, sendButton);
+        HBox inputArea = new HBox(avatar, commandInput, sendButton);
         inputArea.setAlignment(Pos.CENTER);
         inputArea.getStyleClass().add("input-area");
         return inputArea;
@@ -146,55 +189,109 @@ public class Main extends Application {
             return;
         }
 
-        messageList.getChildren().add(createMessageRow(command, true));
+        messageList.getChildren().add(createUserMessageRow(command));
         commandInput.clear();
 
-        String response = this.magnus.getResponse(command);
+        MagnusResponse response = this.magnus.getResponseResult(command);
         if (this.magnus.isExitRequested()) {
             Platform.exit();
             return;
         }
 
-        messageList.getChildren().add(createMessageRow(response, false));
+        messageList.getChildren().add(createBotMessageRow(response.message(), response.isError()));
 
         // Layout must finish before the scroll position can move to the new bottom.
         Platform.runLater(() -> chatScroll.setVvalue(BOTTOM_SCROLL_POSITION));
     }
 
     /**
-     * Creates a left- or right-aligned message bubble.
+     * Creates a compact, right-aligned user message. Unlike Magnus responses,
+     * user messages do not repeat a sender heading because their alignment and
+     * distinct color already establish ownership.
      *
-     * @param message Text displayed inside the bubble.
-     * @param isUserMessage Whether the message belongs to the user.
-     * @param additionalStyleClasses Extra CSS classes applied to the message bubble.
-     * @return Row containing the aligned message bubble.
+     * @param message Text entered by the user.
+     * @return Row containing the user message.
      */
-    private HBox createMessageRow(String message, boolean isUserMessage,
-            String... additionalStyleClasses) {
-        Label messageBubble = new Label(message);
-        messageBubble.setWrapText(true);
-        messageBubble.setMaxWidth(MESSAGE_MAX_WIDTH);
-        messageBubble.getStyleClass().addAll("message-bubble",
-                isUserMessage ? "user-message" : "bot-message");
-        messageBubble.getStyleClass().addAll(additionalStyleClasses);
+    private HBox createUserMessageRow(String message) {
+        Label messageBubble = createMessageLabel(message, "user-message");
+        messageBubble.maxWidthProperty().bind(
+                Bindings.max(MINIMUM_MESSAGE_WIDTH,
+                        chatScroll.widthProperty().multiply(USER_MESSAGE_WIDTH_RATIO)
+                                .subtract(USER_AVATAR_SIZE + AVATAR_BORDER_ALLOWANCE)));
 
-        StackPane avatar = createAvatar(isUserMessage);
-        HBox messageRow = isUserMessage
-                ? new HBox(messageBubble, avatar)
-                : new HBox(avatar, messageBubble);
+        StackPane avatar = createAvatar(true, USER_AVATAR_SIZE);
+        HBox messageRow = new HBox(messageBubble, avatar);
         messageRow.setSpacing(MESSAGE_ROW_SPACING);
-        messageRow.setAlignment(isUserMessage ? Pos.TOP_RIGHT : Pos.TOP_LEFT);
+        messageRow.setAlignment(Pos.TOP_RIGHT);
+        messageRow.getStyleClass().addAll("message-row", "user-message-row");
         return messageRow;
     }
 
     /**
-     * Creates a circular avatar containing the user or Magnus image.
+     * Creates a labeled Magnus response card. Error responses receive both a
+     * semantic heading and a dedicated style so they remain distinguishable
+     * without relying on color alone.
+     *
+     * @param message Text returned by Magnus.
+     * @param isError Whether the response reports a command error.
+     * @param additionalStyleClasses Extra CSS classes applied to the response.
+     * @return Row containing the Magnus response card.
+     */
+    private HBox createBotMessageRow(String message, boolean isError,
+            String... additionalStyleClasses) {
+        Label senderLabel = new Label(isError ? "MAGNUS  •  COMMAND ISSUE" : "MAGNUS");
+        senderLabel.getStyleClass().add("sender-label");
+        if (isError) {
+            senderLabel.getStyleClass().add("error-sender-label");
+        }
+
+        Label messageBubble = createMessageLabel(message, "bot-message");
+        if (isError) {
+            messageBubble.getStyleClass().add("error-message");
+        }
+        messageBubble.getStyleClass().addAll(additionalStyleClasses);
+        messageBubble.maxWidthProperty().bind(
+                Bindings.max(MINIMUM_MESSAGE_WIDTH,
+                        chatScroll.widthProperty().multiply(BOT_MESSAGE_WIDTH_RATIO)
+                                .subtract(BOT_AVATAR_SIZE + AVATAR_BORDER_ALLOWANCE)));
+
+        VBox responseContent = new VBox(senderLabel, messageBubble);
+        responseContent.getStyleClass().add("response-content");
+
+        StackPane avatar = createAvatar(false, BOT_AVATAR_SIZE);
+        HBox messageRow = new HBox(avatar, responseContent);
+        messageRow.setSpacing(MESSAGE_ROW_SPACING);
+        messageRow.setAlignment(Pos.TOP_LEFT);
+        messageRow.getStyleClass().addAll("message-row", "bot-message-row");
+        return messageRow;
+    }
+
+    /**
+     * Creates a wrapping message label and removes the CLI-only leading tabs
+     * that would otherwise waste horizontal space in the graphical interface.
+     *
+     * @param message Text to display.
+     * @param styleClass CSS class describing the message role.
+     * @return Styled, wrapping message label.
+     */
+    private Label createMessageLabel(String message, String styleClass) {
+        String graphicalMessage = message.strip().replaceAll("(?m)^\\t", "");
+        Label messageLabel = new Label(graphicalMessage);
+        messageLabel.setWrapText(true);
+        messageLabel.setMinWidth(0);
+        messageLabel.getStyleClass().addAll("message-bubble", styleClass);
+        return messageLabel;
+    }
+
+    /**
+     * Creates a compact circular avatar containing the user or Magnus image.
      * Landscape images are cropped to a centred square before being displayed.
      *
      * @param isUserMessage Whether the avatar belongs to the user.
+     * @param imageSize Diameter of the displayed image in pixels.
      * @return The styled avatar container.
      */
-    private StackPane createAvatar(boolean isUserMessage) {
+    private StackPane createAvatar(boolean isUserMessage, int imageSize) {
         Image image = isUserMessage ? this.userAvatar : this.magnusAvatar;
         double squareLength = Math.min(image.getWidth(), image.getHeight());
         double viewportX = (image.getWidth() - squareLength) / 2;
@@ -202,18 +299,19 @@ public class Main extends Application {
 
         ImageView imageView = new ImageView(image);
         imageView.setViewport(new Rectangle2D(viewportX, viewportY, squareLength, squareLength));
-        imageView.setFitWidth(AVATAR_SIZE);
-        imageView.setFitHeight(AVATAR_SIZE);
+        imageView.setFitWidth(imageSize);
+        imageView.setFitHeight(imageSize);
         imageView.setPreserveRatio(true);
-        imageView.setAccessibleText(isUserMessage ? "User avatar" : "Magnus avatar");
-        double avatarRadius = AVATAR_SIZE / 2.0;
+        imageView.setAccessibleText(isUserMessage ? "User portrait" : "Magnus portrait");
+        double avatarRadius = imageSize / 2.0;
         imageView.setClip(new Circle(avatarRadius, avatarRadius, avatarRadius));
 
+        int containerSize = imageSize + AVATAR_BORDER_ALLOWANCE;
         StackPane avatar = new StackPane(imageView);
-        avatar.setMinSize(AVATAR_CONTAINER_SIZE, AVATAR_CONTAINER_SIZE);
-        avatar.setPrefSize(AVATAR_CONTAINER_SIZE, AVATAR_CONTAINER_SIZE);
-        avatar.setMaxSize(AVATAR_CONTAINER_SIZE, AVATAR_CONTAINER_SIZE);
-        avatar.getStyleClass().add("avatar");
+        avatar.setMinSize(containerSize, containerSize);
+        avatar.setPrefSize(containerSize, containerSize);
+        avatar.setMaxSize(containerSize, containerSize);
+        avatar.getStyleClass().addAll("avatar", isUserMessage ? "user-avatar" : "magnus-avatar");
         return avatar;
     }
 }
