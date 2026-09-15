@@ -151,6 +151,7 @@ public class Main extends Application {
         chatScroll.setFitToWidth(true);
         chatScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         chatScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        chatScroll.setAccessibleText("Conversation history");
         chatScroll.getStyleClass().add("chat-scroll");
         return chatScroll;
     }
@@ -161,20 +162,19 @@ public class Main extends Application {
      * @return Input controls arranged along the bottom of the window.
      */
     private HBox createInputArea() {
-        StackPane avatar = createAvatar(true, USER_AVATAR_SIZE);
-        avatar.getStyleClass().add("input-avatar");
-
         commandInput.setPromptText("Enter a command, e.g. list");
+        commandInput.setAccessibleText("Command input");
         commandInput.getStyleClass().add("command-input");
         commandInput.setOnAction(event -> submitCommand());
         HBox.setHgrow(commandInput, Priority.ALWAYS);
 
         Button sendButton = new Button("Send");
+        sendButton.setAccessibleText("Send command");
         sendButton.getStyleClass().add("send-button");
         sendButton.setDefaultButton(true);
         sendButton.setOnAction(event -> submitCommand());
 
-        HBox inputArea = new HBox(avatar, commandInput, sendButton);
+        HBox inputArea = new HBox(commandInput, sendButton);
         inputArea.setAlignment(Pos.CENTER);
         inputArea.getStyleClass().add("input-area");
         return inputArea;
@@ -248,6 +248,7 @@ public class Main extends Application {
         Label messageBubble = createMessageLabel(message, "bot-message");
         if (isError) {
             messageBubble.getStyleClass().add("error-message");
+            messageBubble.setAccessibleText("Command error. " + messageBubble.getText());
         }
         messageBubble.getStyleClass().addAll(additionalStyleClasses);
         messageBubble.maxWidthProperty().bind(

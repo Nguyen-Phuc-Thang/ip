@@ -79,7 +79,7 @@
 }
 
 .user-message {
-    -fx-background-color: #779556;
+    -fx-background-color: #5f7f3f;
     -fx-text-fill: #ffffff;
 }
 
@@ -113,10 +113,6 @@
 .header-avatar {
     -fx-border-color: #81b64c;
     -fx-border-width: 2px;
-}
-
-.input-avatar {
-    -fx-opacity: 0.9;
 }
 
 .input-area {
@@ -154,6 +150,12 @@
 
 .send-button:hover {
     -fx-background-color: #91c45b;
+}
+
+.send-button:focused {
+    -fx-border-color: #d7c49e;
+    -fx-border-radius: 8px;
+    -fx-border-width: 2px;
 }
 
 .send-button:pressed {
