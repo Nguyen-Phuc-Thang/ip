@@ -81,4 +81,15 @@ public class StorageTest {
         assertEquals("\tThe score sheet contains an invalid position - duplicate task at line 2.",
                 exception.getMessage());
     }
+
+    @Test
+    public void loadTasks_dataPathIsDirectory_reportsReadError() throws IOException {
+        Path dataPath = this.temporaryDirectory.resolve("magnus.txt");
+        Files.createDirectory(dataPath);
+        Storage storage = new Storage(dataPath);
+
+        StorageException exception = assertThrows(StorageException.class, storage::loadTasks);
+
+        assertTrue(exception.getMessage().contains("I could not read the data file"));
+    }
 }

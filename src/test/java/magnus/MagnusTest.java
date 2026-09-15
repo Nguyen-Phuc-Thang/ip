@@ -169,6 +169,15 @@ public class MagnusTest {
     }
 
     @Test
+    public void getResponse_nonExistentDate_rejectsCommand() throws MagnusException {
+        MagnusResponse response = createMagnus().getResponseResult(
+                "deadline submit report /by 30/02/2026 1500");
+
+        assertTrue(response.isError());
+        assertTrue(response.message().contains("clock rejects that deadline"));
+    }
+
+    @Test
     public void getResponse_multilineInput_rejectsCommand() throws MagnusException {
         MagnusResponse response = createMagnus().getResponseResult("todo read book\nlist");
 

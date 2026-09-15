@@ -60,4 +60,16 @@ public class TaskDataParserTest {
         assertThrows(
                 IllegalArgumentException.class, () -> this.parser.parseTask("D,0,submit report"));
     }
+
+    @Test
+    public void parseTask_nonExistentDate_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                this.parser.parseTask("D,0,submit report,30/02/2026 1500"));
+    }
+
+    @Test
+    public void parseTask_nonIncreasingEventTimes_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> this.parser.parseTask(
+                "E,0,meeting,02/09/2026 1600-02/09/2026 1500"));
+    }
 }
