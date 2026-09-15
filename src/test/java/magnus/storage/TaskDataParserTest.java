@@ -44,6 +44,14 @@ public class TaskDataParserTest {
     }
 
     @Test
+    public void parseTask_eventRecordWithEscapedCharacter_decodesEventTime() {
+        Task task = this.parser.parseTask(
+                "E,0,meeting,02/09/2026 15\\00-02/09/2026 1600");
+
+        assertEquals("E,0,meeting,02/09/2026 1500-02/09/2026 1600", task.toDataString());
+    }
+
+    @Test
     public void parseTask_unknownTaskType_throwsIllegalArgumentException() {
         assertThrows(
                 IllegalArgumentException.class, () -> this.parser.parseTask("X,0,read book"));

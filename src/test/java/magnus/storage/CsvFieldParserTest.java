@@ -34,6 +34,13 @@ public class CsvFieldParserTest {
     }
 
     @Test
+    public void parseFields_quotedFieldBeforeDelimiter_resumesParsingNextField() {
+        List<String> fields = CsvFieldParser.parseFields("\"task, one\",second");
+
+        assertIterableEquals(List.of("task, one", "second"), fields);
+    }
+
+    @Test
     public void parseFields_escapedQuotationMark_returnsDecodedField() {
         List<String> fields = CsvFieldParser.parseFields("T,0,\"read \"\"Dune\"\"\"");
 

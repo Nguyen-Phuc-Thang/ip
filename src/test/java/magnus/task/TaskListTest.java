@@ -198,6 +198,19 @@ public class TaskListTest {
     }
 
     @Test
+    public void restoreSnapshot_originallyCompletedTask_restoresCompletedState() {
+        Task task = new ToDoTask("read book");
+        task.markAsDone();
+        TaskList tasks = new TaskList(List.of(task));
+        TaskList.Snapshot snapshot = tasks.createSnapshot();
+        task.markAsUndone();
+
+        tasks.restoreSnapshot(snapshot);
+
+        assertTrue(task.isDone());
+    }
+
+    @Test
     public void removeTask_validIndex_returnsRemovedTaskAndShiftsRemainingTasks() {
         Task task1 = new ToDoTask("read book");
         Task task2 = new ToDoTask("return book");
