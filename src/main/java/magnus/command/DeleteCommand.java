@@ -35,6 +35,6 @@ public class DeleteCommand implements Command {
         int taskIndex = TaskIndexParser.parseTaskIndex(args, "delete", this.tasks.size());
 
         Task removedTask = this.tasks.removeTask(taskIndex);
-        return "\tBoooooom!!! I've made this task vanished:\n\n\t" + removedTask;
+        return "\tPiece captured and cleared - I've deleted this task:\n\n\t" + removedTask;
     }
 }

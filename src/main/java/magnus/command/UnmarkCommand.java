@@ -35,6 +35,7 @@ public class UnmarkCommand implements Command {
         int taskIndex = TaskIndexParser.parseTaskIndex(args, "unmark", this.tasks.size());
 
         this.tasks.markTaskAsUndone(taskIndex);
-        return "\tAlright, I've unmarked this task:\n\n\t" + this.tasks.getTask(taskIndex);
+        return "\tThis piece is back in play - I've marked the task as incomplete:\n\n\t"
+                + this.tasks.getTask(taskIndex);
     }
 }

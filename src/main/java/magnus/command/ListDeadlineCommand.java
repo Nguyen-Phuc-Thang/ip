@@ -55,6 +55,7 @@ public class ListDeadlineCommand implements Command {
         }
 
         TaskList filteredTasks = this.tasks.filterDeadlinesOnDate(date);
-        return "\tHere's your task list:\n\n" + filteredTasks.formatTasks();
+        return "\tClock check - here are your Deadline tasks for that date:\n\n"
+                + filteredTasks.formatTasks();
     }
 }

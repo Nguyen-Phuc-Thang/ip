@@ -59,6 +59,6 @@ public class DeadlineCommand implements Command {
         }
         tasks.addTask(newTask);
 
-        return "\tI've added this Deadline task:\n\n\t" + newTask;
+        return "\tClock set - I've added this Deadline task:\n\n\t" + newTask;
     }
 }

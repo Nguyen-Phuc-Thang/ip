@@ -59,7 +59,8 @@ public class ListEventCommand implements Command {
                 : "A validated date range must be ordered before filtering";
 
         TaskList filteredTasks = this.tasks.filterEventsWithinDateRange(startDate, endDate);
-        return "\tHere's your task list:\n\n" + filteredTasks.formatTasks();
+        return "\tBoard surveyed - here are your Event tasks in that date range:\n\n"
+                + filteredTasks.formatTasks();
     }
 
     /**

@@ -34,7 +34,7 @@ public class MarkCommand implements Command {
         int taskIndex = TaskIndexParser.parseTaskIndex(args, "mark", this.tasks.size());
 
         this.tasks.markTaskAsDone(taskIndex);
-        return "\tBrilliant!! I've marked this task as completed:\n\n\t"
+        return "\tCheckmate for this task - I've marked it as completed:\n\n\t"
                 + this.tasks.getTask(taskIndex);
     }
 }

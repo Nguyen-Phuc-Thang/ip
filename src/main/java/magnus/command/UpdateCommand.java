@@ -55,16 +55,16 @@ public class UpdateCommand implements Command {
         this.pendingTaskIndex = taskIndex;
 
         if (selectedTask instanceof DeadlineTask) {
-            return "\tPlease enter the updated Deadline task in this format:\n"
+            return "\tYour move - enter the updated Deadline task in this format:\n"
                     + "\t<new task name> /by <deadline time>\n"
                     + "\tDeadline time format: " + DATE_TIME_FORMAT;
         }
         if (selectedTask instanceof EventTask) {
-            return "\tPlease enter the updated Event task in this format:\n"
+            return "\tYour move - enter the updated Event task in this format:\n"
                     + "\t<new task name> /from <start time> /to <end time>\n"
                     + "\tStart and end time format: " + DATE_TIME_FORMAT;
         }
-        return "\tPlease enter the updated To-Do task in this format:\n"
+        return "\tYour move - enter the updated To-Do task in this format:\n"
                 + "\t<new task name>";
     }
 
@@ -102,7 +102,7 @@ public class UpdateCommand implements Command {
             updatedTask.markAsDone();
         }
         this.tasks.replaceTask(taskIndex, updatedTask);
-        return "\tI've updated this task:\n\n\t" + updatedTask;
+        return "\tPosition updated - I've updated this task:\n\n\t" + updatedTask;
     }
 
     /**

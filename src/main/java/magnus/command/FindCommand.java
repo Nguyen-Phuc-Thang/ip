@@ -41,7 +41,7 @@ public class FindCommand implements Command {
 
         String query = args[0].strip();
         TaskList matchingTasks = this.tasks.filterTasksByDescription(query);
-        return String.format("\tHere are the results that match \"%s\":%n%n%s",
+        return String.format("\tI searched the board - here are the tasks matching \"%s\":%n%n%s",
                 query, matchingTasks.formatTasks());
     }
 }

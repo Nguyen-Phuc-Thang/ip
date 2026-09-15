@@ -28,7 +28,7 @@ public class FindCommandTest {
                 firstMatch, new ToDoTask("submit report"), secondMatch));
         FindCommand command = new FindCommand(tasks);
         String expectedOutput = String.join(System.lineSeparator(),
-                "\tHere are the results that match \"book\":",
+                "\tI searched the board - here are the tasks matching \"book\":",
                 "",
                 "\t1. [T][X] read book",
                 "\t2. [D][X] return book (by: Jun 06, 2026 18:00)");
