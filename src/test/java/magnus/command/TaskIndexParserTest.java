@@ -72,4 +72,16 @@ public class TaskIndexParserTest {
 
         assertEquals("\tThat task is off the board - I can't find task number 4.", exception.getMessage());
     }
+
+    @Test
+    public void parseTaskIndex_excessivelyLargeTaskNumber_throwsCommandSyntaxException() {
+        String taskNumber = "999999999999999999999999999999999999";
+
+        CommandSyntaxException exception = assertThrows(
+                CommandSyntaxException.class, () -> TaskIndexParser.parseTaskIndex(
+                        new String[] { taskNumber }, "delete", 3));
+
+        assertEquals("\tThat square is not a task number - '" + taskNumber
+                + "' is not valid.\n\tUsage: delete <task number>", exception.getMessage());
+    }
 }
