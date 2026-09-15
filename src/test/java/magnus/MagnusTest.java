@@ -38,6 +38,26 @@ public class MagnusTest {
     }
 
     @Test
+    public void getResponseResult_validCommand_marksResponseAsSuccessful() throws MagnusException {
+        Magnus magnus = createMagnus();
+
+        MagnusResponse response = magnus.getResponseResult("todo read book");
+
+        assertEquals("\tI've added this To-Do task:\n\n\t[T][ ] read book", response.message());
+        assertFalse(response.isError());
+    }
+
+    @Test
+    public void getResponseResult_invalidCommand_marksResponseAsError() throws MagnusException {
+        Magnus magnus = createMagnus();
+
+        MagnusResponse response = magnus.getResponseResult("unknown");
+
+        assertEquals("\tSorry, I don't know what you mean by 'unknown'", response.message());
+        assertTrue(response.isError());
+    }
+
+    @Test
     public void getResponse_byeCommand_returnsMessageAndRequestsExit() throws MagnusException {
         Magnus magnus = createMagnus();
 

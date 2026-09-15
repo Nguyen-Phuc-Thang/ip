@@ -52,6 +52,18 @@ public class Magnus {
      * @return The command result message, or an error message if the command fails.
      */
     public String getResponse(String userInput) {
+        return getResponseResult(userInput).message();
+    }
+
+    /**
+     * Processes one user command and returns both its message and error state.
+     * This richer result lets graphical interfaces distinguish errors without
+     * inferring their meaning from user-facing text.
+     *
+     * @param userInput The raw command entered by the user.
+     * @return The response text and whether command processing failed.
+     */
+    public MagnusResponse getResponseResult(String userInput) {
         this.isExitRequested = false;
 
         try {
@@ -61,9 +73,9 @@ public class Magnus {
                 this.storage.saveTasks(this.tasks.getTasks());
             }
             this.isExitRequested = commandType == CommandType.BYE;
-            return commandResult.message();
+            return MagnusResponse.success(commandResult.message());
         } catch (MagnusException exception) {
-            return exception.getMessage();
+            return MagnusResponse.error(exception.getMessage());
         }
     }
 
