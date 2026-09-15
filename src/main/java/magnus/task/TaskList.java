@@ -31,7 +31,26 @@ public class TaskList {
         if (tasks.stream().anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException("The initial task collection must not contain null tasks");
         }
+        requireUniqueTaskDetails(tasks);
         this.tasks = new ArrayList<>(tasks);
+    }
+
+    /**
+     * Verifies that a task collection does not contain duplicate task details.
+     *
+     * @param tasks The tasks to validate.
+     * @throws IllegalArgumentException If two tasks represent the same work.
+     */
+    private void requireUniqueTaskDetails(List<Task> tasks) {
+        for (int firstIndex = 0; firstIndex < tasks.size(); firstIndex++) {
+            Task firstTask = tasks.get(firstIndex);
+            boolean hasDuplicate = IntStream.range(firstIndex + 1, tasks.size())
+                    .anyMatch(secondIndex -> firstTask.hasSameDetails(tasks.get(secondIndex)));
+            if (hasDuplicate) {
+                throw new IllegalArgumentException(
+                        "The initial task collection must not contain duplicate task details");
+            }
+        }
     }
 
     /**
@@ -161,9 +180,14 @@ public class TaskList {
      * Adds a task to the end of this task list.
      *
      * @param task The task to add.
+     * @throws IllegalArgumentException If an existing task has the same details.
      */
     public void addTask(Task task) {
-        this.tasks.add(Objects.requireNonNull(task, "A task list must not contain null tasks"));
+        Task validatedTask = Objects.requireNonNull(task, "A task list must not contain null tasks");
+        if (containsTaskWithSameDetails(validatedTask)) {
+            throw new IllegalArgumentException("A task list must not contain duplicate task details");
+        }
+        this.tasks.add(validatedTask);
     }
 
     /**
@@ -220,9 +244,15 @@ public class TaskList {
      * @param index The zero-based index of the task to replace.
      * @param task The replacement task.
      * @throws IndexOutOfBoundsException If the index is outside the task list.
+     * @throws IllegalArgumentException If another task has the same details.
      */
     public void replaceTask(int index, Task task) {
-        this.tasks.set(index, Objects.requireNonNull(task, "A task list must not contain null tasks"));
+        Objects.checkIndex(index, this.tasks.size());
+        Task validatedTask = Objects.requireNonNull(task, "A task list must not contain null tasks");
+        if (containsTaskWithSameDetailsExcept(validatedTask, index)) {
+            throw new IllegalArgumentException("A task list must not contain duplicate task details");
+        }
+        this.tasks.set(index, validatedTask);
     }
 
     /**
