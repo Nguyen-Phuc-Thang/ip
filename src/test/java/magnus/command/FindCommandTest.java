@@ -63,4 +63,11 @@ public class FindCommandTest {
         assertThrows(CommandSyntaxException.class, () -> command.execute(new String[] { "book", "tomorrow" }));
     }
 
+    @Test
+    public void execute_reservedDateField_throwsCommandSyntaxException() {
+        FindCommand command = new FindCommand(new TaskList());
+
+        assertThrows(CommandSyntaxException.class, () -> command.execute("book /by Friday"));
+    }
+
 }

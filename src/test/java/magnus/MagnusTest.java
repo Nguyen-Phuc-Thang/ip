@@ -2,9 +2,11 @@ package magnus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -69,6 +71,24 @@ public class MagnusTest {
 
         assertEquals("\tThe board is set aside for now. Goodbye, and see you next game!", response);
         assertTrue(magnus.isExitRequested());
+    }
+
+    @Test
+    public void getResponse_commandAfterBye_clearsExitRequest() throws MagnusException {
+        Magnus magnus = new Magnus(this.temporaryDirectory.resolve("magnus.txt"));
+        magnus.getResponse("bye");
+
+        magnus.getResponse("list");
+
+        assertFalse(magnus.isExitRequested());
+    }
+
+    @Test
+    public void constructor_corruptedDataFile_throwsMagnusException() throws IOException {
+        Path dataFile = this.temporaryDirectory.resolve("magnus.txt");
+        Files.writeString(dataFile, "corrupted", StandardCharsets.UTF_8);
+
+        assertThrows(MagnusException.class, () -> new Magnus(dataFile));
     }
 
     @Test

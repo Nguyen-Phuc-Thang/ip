@@ -1,6 +1,7 @@
 package magnus.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -26,6 +27,11 @@ import magnus.task.ToDoTask;
 public class StorageTest {
     @TempDir
     private Path temporaryDirectory;
+
+    @Test
+    public void constructor_nullPath_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> new Storage(null));
+    }
 
     @Test
     public void loadTasks_missingDataFile_returnsEmptyList() throws StorageException {
@@ -57,6 +63,60 @@ public class StorageTest {
     }
 
     @Test
+    public void saveTasks_emptyList_createsEmptyDataFile() throws StorageException, IOException {
+        Path dataFile = this.temporaryDirectory.resolve("magnus.txt");
+        Storage storage = new Storage(dataFile);
+
+        storage.saveTasks(List.of());
+
+        assertTrue(Files.exists(dataFile));
+        assertEquals("", Files.readString(dataFile, StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void saveTasks_replacesExistingContentsWithoutLeavingTemporaryFile()
+            throws StorageException, IOException {
+        Path dataFile = this.temporaryDirectory.resolve("magnus.txt");
+        Storage storage = new Storage(dataFile);
+        storage.saveTasks(List.of(new ToDoTask("first"), new ToDoTask("second")));
+
+        storage.saveTasks(List.of(new ToDoTask("replacement")));
+
+        assertEquals("T,0,replacement", Files.readString(dataFile, StandardCharsets.UTF_8));
+        try (var files = Files.list(this.temporaryDirectory)) {
+            assertFalse(files.anyMatch(path -> path.getFileName().toString().endsWith(".tmp")));
+        }
+    }
+
+    @Test
+    public void saveTasks_nullCollectionOrTask_reportsSerializationError() {
+        Storage storage = new Storage(this.temporaryDirectory.resolve("magnus.txt"));
+
+        StorageException nullCollectionException = assertThrows(
+                StorageException.class, () -> storage.saveTasks(null));
+        StorageException nullTaskException = assertThrows(
+                StorageException.class, () -> storage.saveTasks(java.util.Arrays.asList((Task) null)));
+
+        assertTrue(nullCollectionException.getMessage().contains("could not prepare the tasks"));
+        assertTrue(nullTaskException.getMessage().contains("could not prepare the tasks"));
+        assertTrue(nullCollectionException.getCause() instanceof NullPointerException);
+        assertTrue(nullTaskException.getCause() instanceof NullPointerException);
+    }
+
+    @Test
+    public void saveTasks_parentPathIsFile_reportsSaveError() throws IOException {
+        Path parentFile = this.temporaryDirectory.resolve("not-a-directory");
+        Files.writeString(parentFile, "occupied", StandardCharsets.UTF_8);
+        Storage storage = new Storage(parentFile.resolve("magnus.txt"));
+
+        StorageException exception = assertThrows(
+                StorageException.class, () -> storage.saveTasks(List.of(new ToDoTask("read book"))));
+
+        assertTrue(exception.getMessage().contains("I could not save your tasks"));
+        assertTrue(exception.getCause() instanceof IOException);
+    }
+
+    @Test
     public void loadTasks_malformedRecord_reportsLineNumber() throws IOException {
         Path dataFile = this.temporaryDirectory.resolve("magnus.txt");
         Files.writeString(dataFile, "T,0,read book\ninvalid", StandardCharsets.UTF_8);
@@ -68,6 +128,18 @@ public class StorageTest {
         assertEquals("\tThe score sheet contains an invalid position - the data file is corrupted at line 2: "
                         + "missing task type or status",
                 exception.getMessage());
+    }
+
+    @Test
+    public void loadTasks_blankLines_ignoresBlankRecordsAndRetainsPhysicalLineNumbers()
+            throws IOException {
+        Path dataFile = this.temporaryDirectory.resolve("magnus.txt");
+        Files.writeString(dataFile, "\nT,0,read book\n\ninvalid", StandardCharsets.UTF_8);
+        Storage storage = new Storage(dataFile);
+
+        StorageException exception = assertThrows(StorageException.class, storage::loadTasks);
+
+        assertTrue(exception.getMessage().contains("corrupted at line 4"));
     }
 
     @Test

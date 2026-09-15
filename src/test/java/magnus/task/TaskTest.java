@@ -82,6 +82,15 @@ public class TaskTest {
     }
 
     @Test
+    public void encodeDataField_nullOrMultilineField_rejectsInvalidStorageData() {
+        TestableTask task = new TestableTask("read book");
+
+        assertThrows(NullPointerException.class, () -> task.encodeField(null));
+        assertThrows(IllegalArgumentException.class, () -> task.encodeField("first\nsecond"));
+        assertThrows(IllegalArgumentException.class, () -> task.encodeField("first\rsecond"));
+    }
+
+    @Test
     public void constructor_descriptionWithCarriageReturn_throwsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> new Task("first line\rsecond line"));
     }
@@ -99,5 +108,18 @@ public class TaskTest {
         task.markAsDone();
 
         assertEquals("[X] read book", task.toString());
+    }
+
+    /**
+     * Exposes protected storage encoding so its defensive validation can be unit tested.
+     */
+    private static final class TestableTask extends Task {
+        private TestableTask(String description) {
+            super(description);
+        }
+
+        private String encodeField(String field) {
+            return encodeDataField(field);
+        }
     }
 }

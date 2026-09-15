@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'checkstyle'
+    id 'jacoco'
     id 'com.gradleup.shadow' version '9.5.1'
 }
 
@@ -54,7 +55,45 @@ test {
         showStackTraces = true
         showStandardStreams = false
     }
+
+    finalizedBy jacocoTestReport
 }
+
+jacocoTestReport {
+    dependsOn test
+
+    classDirectories.setFrom(sourceSets.main.output.classesDirs.asFileTree.matching {
+        // JavaFX window construction requires a graphical toolkit and is not a headless unit-test target.
+        exclude 'magnus/Main*'
+        exclude 'magnus/Launcher*'
+    })
+
+    reports {
+        html.required = true
+        xml.required = true
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn test
+
+    classDirectories.setFrom(sourceSets.main.output.classesDirs.asFileTree.matching {
+        exclude 'magnus/Main*'
+        exclude 'magnus/Launcher*'
+    })
+
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.95
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
 
 application {
     mainClass.set("magnus.Launcher")

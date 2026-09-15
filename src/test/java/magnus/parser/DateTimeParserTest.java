@@ -40,6 +40,23 @@ public class DateTimeParserTest {
     public void parseDateRange_wrongDateCount_throwsIllegalArgumentException() {
         assertThrows(
                 IllegalArgumentException.class, () -> this.parser.parseDateRange("01/09/2026"));
+        assertThrows(
+                IllegalArgumentException.class, () -> this.parser.parseDateRange(
+                        "01/09/2026 02/09/2026 03/09/2026"));
+    }
+
+    @Test
+    public void parseDateRange_surroundingAndRepeatedWhitespace_parsesBothDates() {
+        DateRange dateRange = this.parser.parseDateRange("  01/09/2026   30/09/2026  ");
+
+        assertEquals(new DateRange(
+                LocalDate.of(2026, 9, 1), LocalDate.of(2026, 9, 30)), dateRange);
+    }
+
+    @Test
+    public void parseDateRange_invalidSecondDate_throwsDateTimeParseException() {
+        assertThrows(DateTimeParseException.class, () ->
+                this.parser.parseDateRange("01/09/2026 31/09/2026"));
     }
 
     @Test
@@ -54,5 +71,13 @@ public class DateTimeParserTest {
         assertThrows(
                 IllegalArgumentException.class, () -> this.parser.parseDateTime(
                         "02/09/2026 2500", "deadline"));
+    }
+
+    @Test
+    public void parseDateTime_nullDateTime_usesFieldNameInException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> this.parser.parseDateTime(null, "start time"));
+
+        assertEquals("start time cannot be null", exception.getMessage());
     }
 }

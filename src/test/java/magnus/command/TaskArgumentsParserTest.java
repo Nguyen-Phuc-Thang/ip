@@ -57,4 +57,34 @@ public class TaskArgumentsParserTest {
     public void containsFieldDelimiter_slashInsideWord_returnsFalse() {
         assertEquals(false, TaskArgumentsParser.containsFieldDelimiter("review from/to notation"));
     }
+
+    @Test
+    public void containsFieldDelimiter_reservedStandaloneFields_returnsTrue() {
+        assertEquals(true, TaskArgumentsParser.containsFieldDelimiter("task /by Friday"));
+        assertEquals(true, TaskArgumentsParser.containsFieldDelimiter("task /from today"));
+        assertEquals(true, TaskArgumentsParser.containsFieldDelimiter("task /to tomorrow"));
+    }
+
+    @Test
+    public void containsFieldDelimiter_nullText_returnsFalse() {
+        assertEquals(false, TaskArgumentsParser.containsFieldDelimiter(null));
+    }
+
+    @Test
+    public void parseDeadline_blankNullOrMultilineInput_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> TaskArgumentsParser.parseDeadline("   "));
+        assertThrows(IllegalArgumentException.class, () -> TaskArgumentsParser.parseDeadline(null));
+        assertThrows(IllegalArgumentException.class, () ->
+                TaskArgumentsParser.parseDeadline("submit report\n/by 20/09/2026 1700"));
+        assertThrows(IllegalArgumentException.class, () ->
+                TaskArgumentsParser.parseDeadline("submit report\r/by 20/09/2026 1700"));
+    }
+
+    @Test
+    public void parseEvent_blankNullOrMultilineInput_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> TaskArgumentsParser.parseEvent("   "));
+        assertThrows(IllegalArgumentException.class, () -> TaskArgumentsParser.parseEvent(null));
+        assertThrows(IllegalArgumentException.class, () -> TaskArgumentsParser.parseEvent(
+                "meeting /from 20/09/2026 0900\n/to 20/09/2026 1000"));
+    }
 }

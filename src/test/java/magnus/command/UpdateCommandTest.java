@@ -12,6 +12,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import magnus.exception.CommandSyntaxException;
+import magnus.exception.DuplicateTaskException;
 import magnus.exception.MagnusException;
 import magnus.task.DeadlineTask;
 import magnus.task.EventTask;
@@ -152,5 +153,58 @@ public class UpdateCommandTest {
         assertThrows(CommandSyntaxException.class, () -> command.completeUpdate(
                 "team meeting /to 04/09/2026 1030 /from 04/09/2026 0900"));
         assertSame(originalTask, tasks.getTask(0));
+    }
+
+    @Test
+    public void completeUpdate_sameDetailsAsSelectedTask_allowsUpdate() throws MagnusException {
+        Task originalTask = new ToDoTask("read book");
+        TaskList tasks = new TaskList(List.of(originalTask));
+        UpdateCommand command = new UpdateCommand(tasks);
+        command.execute("1");
+
+        command.completeUpdate("read book");
+
+        assertEquals("[T][ ] read book", tasks.getTask(0).toString());
+        assertFalse(command.isAwaitingUpdatedTask());
+    }
+
+    @Test
+    public void completeUpdate_duplicateOfOtherTask_rejectsUpdateAndClearsPendingState()
+            throws MagnusException {
+        Task originalTask = new ToDoTask("read book");
+        Task otherTask = new ToDoTask("write notes");
+        TaskList tasks = new TaskList(List.of(originalTask, otherTask));
+        UpdateCommand command = new UpdateCommand(tasks);
+        command.execute("1");
+
+        assertThrows(DuplicateTaskException.class, () -> command.completeUpdate("write notes"));
+
+        assertSame(originalTask, tasks.getTask(0));
+        assertFalse(command.isAwaitingUpdatedTask());
+    }
+
+    @Test
+    public void completeUpdate_blankNullOrMultilineInput_rejectsEachInput() throws MagnusException {
+        assertInvalidTodoUpdate("   ");
+        assertInvalidTodoUpdate(null);
+        assertInvalidTodoUpdate("read book\nwrite notes");
+        assertInvalidTodoUpdate("read book\rwrite notes");
+    }
+
+    /**
+     * Verifies that invalid to-do replacement text leaves the original task untouched.
+     *
+     * @param updateInput Invalid replacement text to submit.
+     * @throws MagnusException If selecting the fixture task unexpectedly fails.
+     */
+    private void assertInvalidTodoUpdate(String updateInput) throws MagnusException {
+        Task originalTask = new ToDoTask("read book");
+        TaskList tasks = new TaskList(List.of(originalTask));
+        UpdateCommand command = new UpdateCommand(tasks);
+        command.execute("1");
+
+        assertThrows(CommandSyntaxException.class, () -> command.completeUpdate(updateInput));
+        assertSame(originalTask, tasks.getTask(0));
+        assertFalse(command.isAwaitingUpdatedTask());
     }
 }
