@@ -84,4 +84,22 @@ public class CommandRouterTest {
 
         assertEquals(0, tasks.size());
     }
+
+    @Test
+    public void route_multilineUpdateInput_endsUpdateAndProcessesNextCommandNormally() throws MagnusException {
+        for (String lineBreak : new String[] {"\n", "\r"}) {
+            TaskList tasks = new TaskList();
+            CommandRouter router = new CommandRouter(tasks);
+            router.route("todo read book");
+            router.route("update 1");
+
+            String invalidUpdate = "write notes" + lineBreak + "list";
+            assertThrows(CommandSyntaxException.class, () -> router.route(invalidUpdate));
+            CommandResult result = router.route("list");
+
+            assertEquals(CommandType.LIST, result.commandType());
+            assertFalse(result.taskListChanged());
+            assertEquals("read book", tasks.getTask(0).getDescription());
+        }
+    }
 }
