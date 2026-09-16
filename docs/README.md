@@ -2,7 +2,7 @@
 
 **Magnus** is a desktop chatbot that helps you manage to-dos, deadlines, and events through short text commands. Type a command, press <kbd>Enter</kbd> or select **Send**, and Magnus will respond in the chat.
 
-![Magnus chat interface](Ui.png.png)
+![Magnus chat interface](Ui.png)
 
 - [Quick start](#quick-start)
 - [Command basics](#command-basics)
