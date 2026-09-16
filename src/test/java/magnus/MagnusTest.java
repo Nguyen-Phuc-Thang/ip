@@ -28,7 +28,8 @@ public class MagnusTest {
 
         String response = magnus.getResponse("todo read book");
 
-        assertEquals("\tOpening move complete - I've added this To-Do task:\n\n\t[T][ ] read book", response);
+        assertEquals("\tOpening move complete - I've added this To-Do task:\n\n\t[T][ ] read book\n\n"
+                + "\tYou now have 1 task in the list.", response);
     }
 
     @Test
@@ -47,7 +48,8 @@ public class MagnusTest {
 
         MagnusResponse response = magnus.getResponseResult("todo read book");
 
-        assertEquals("\tOpening move complete - I've added this To-Do task:\n\n\t[T][ ] read book",
+        assertEquals("\tOpening move complete - I've added this To-Do task:\n\n\t[T][ ] read book\n\n"
+                        + "\tYou now have 1 task in the list.",
                 response.message());
         assertFalse(response.isError());
     }

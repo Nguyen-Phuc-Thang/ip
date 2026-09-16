@@ -57,9 +57,20 @@ public class TaskStateCommandsTest {
 
         String response = new DeleteCommand(tasks).execute("1");
 
-        assertEquals("\tPiece captured and cleared - I've deleted this task:\n\n\t[T][ ] read book", response);
+        assertEquals("\tPiece captured and cleared - I've deleted this task:\n\n\t[T][ ] read book\n\n"
+                + "\tYou now have 1 task in the list.", response);
         assertEquals(1, tasks.size());
         assertSame(secondTask, tasks.getTask(0));
+    }
+
+    @Test
+    public void deleteExecute_lastTask_reportsEmptyTaskCount() throws MagnusException {
+        TaskList tasks = new TaskList(List.of(new ToDoTask("read book")));
+
+        String response = new DeleteCommand(tasks).execute("1");
+
+        assertEquals("\tPiece captured and cleared - I've deleted this task:\n\n\t[T][ ] read book\n\n"
+                + "\tYou now have 0 tasks in the list.", response);
     }
 
     @Test

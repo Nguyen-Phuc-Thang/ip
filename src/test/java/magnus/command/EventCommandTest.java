@@ -25,7 +25,8 @@ public class EventCommandTest {
                 "project meeting /from 20/09/2026 0900 /to 20/09/2026 1030");
 
         assertEquals("\tThe position is prepared - I've added this Event task:\n\n\t[E][ ] project meeting "
-                + "(from: Sep 20, 2026 09:00 to: Sep 20, 2026 10:30)", response);
+                + "(from: Sep 20, 2026 09:00 to: Sep 20, 2026 10:30)\n\n"
+                + "\tYou now have 1 task in the list.", response);
         assertInstanceOf(EventTask.class, tasks.getTask(0));
         assertEquals("E,0,project meeting,20/09/2026 0900-20/09/2026 1030",
                 tasks.getTask(0).toDataString());

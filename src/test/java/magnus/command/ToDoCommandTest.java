@@ -22,9 +22,21 @@ public class ToDoCommandTest {
 
         String response = command.execute("  read a book  ");
 
-        assertEquals("\tOpening move complete - I've added this To-Do task:\n\n\t[T][ ] read a book", response);
+        assertEquals("\tOpening move complete - I've added this To-Do task:\n\n\t[T][ ] read a book\n\n"
+                + "\tYou now have 1 task in the list.", response);
         assertEquals(1, tasks.size());
         assertEquals("read a book", tasks.getTask(0).getDescription());
+    }
+
+    @Test
+    public void execute_withExistingTask_reportsPluralTaskCount() throws MagnusException {
+        TaskList tasks = new TaskList();
+        tasks.addTask(new ToDoTask("write notes"));
+
+        String response = new ToDoCommand(tasks).execute("read a book");
+
+        assertEquals("\tOpening move complete - I've added this To-Do task:\n\n\t[T][ ] read a book\n\n"
+                + "\tYou now have 2 tasks in the list.", response);
     }
 
     @Test

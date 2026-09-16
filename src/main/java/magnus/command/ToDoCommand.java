@@ -55,6 +55,7 @@ public class ToDoCommand implements Command {
         }
         tasks.addTask(newTask);
 
-        return "\tOpening move complete - I've added this To-Do task:\n\n\t" + newTask;
+        return "\tOpening move complete - I've added this To-Do task:\n\n\t" + newTask
+                + "\n\n" + TaskCountMessage.formatTotal(this.tasks.size());
     }
 }

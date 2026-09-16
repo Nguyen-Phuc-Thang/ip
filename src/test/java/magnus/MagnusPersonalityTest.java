@@ -30,10 +30,12 @@ public class MagnusPersonalityTest {
         Magnus magnus = createMagnus();
 
         assertEquals("\tClock set - I've added this Deadline task:\n\n"
-                        + "\t[D][ ] submit report (by: Sep 20, 2026 15:00)",
+                        + "\t[D][ ] submit report (by: Sep 20, 2026 15:00)\n\n"
+                        + "\tYou now have 1 task in the list.",
                 magnus.getResponse("deadline submit report /by 20/09/2026 1500"));
         assertEquals("\tThe position is prepared - I've added this Event task:\n\n"
-                        + "\t[E][ ] team meeting (from: Sep 21, 2026 09:00 to: Sep 21, 2026 10:30)",
+                        + "\t[E][ ] team meeting (from: Sep 21, 2026 09:00 to: Sep 21, 2026 10:30)\n\n"
+                        + "\tYou now have 2 tasks in the list.",
                 magnus.getResponse("event team meeting /from 21/09/2026 0900 /to 21/09/2026 1030"));
         assertEquals("\tClock check - here are your Deadline tasks for that date:\n\n"
                         + "\t1. [D][ ] submit report (by: Sep 20, 2026 15:00)",
@@ -49,7 +51,8 @@ public class MagnusPersonalityTest {
                         + "\t[D][ ] submit report (by: Sep 20, 2026 15:00)",
                 magnus.getResponse("unmark 1"));
         assertEquals("\tPiece captured and cleared - I've deleted this task:\n\n"
-                        + "\t[E][ ] team meeting (from: Sep 21, 2026 09:00 to: Sep 21, 2026 10:30)",
+                        + "\t[E][ ] team meeting (from: Sep 21, 2026 09:00 to: Sep 21, 2026 10:30)\n\n"
+                        + "\tYou now have 1 task in the list.",
                 magnus.getResponse("delete 2"));
     }
 

@@ -24,7 +24,8 @@ public class DeadlineCommandTest {
         String response = command.execute("submit report /by 20/09/2026 1730");
 
         assertEquals("\tClock set - I've added this Deadline task:\n\n\t[D][ ] submit report "
-                + "(by: Sep 20, 2026 17:30)", response);
+                + "(by: Sep 20, 2026 17:30)\n\n"
+                + "\tYou now have 1 task in the list.", response);
         assertInstanceOf(DeadlineTask.class, tasks.getTask(0));
         assertEquals("D,0,submit report,20/09/2026 1730", tasks.getTask(0).toDataString());
     }

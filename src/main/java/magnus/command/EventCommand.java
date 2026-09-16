@@ -62,6 +62,7 @@ public class EventCommand implements Command {
         }
         tasks.addTask(newTask);
 
-        return "\tThe position is prepared - I've added this Event task:\n\n\t" + newTask;
+        return "\tThe position is prepared - I've added this Event task:\n\n\t" + newTask
+                + "\n\n" + TaskCountMessage.formatTotal(this.tasks.size());
     }
 }
