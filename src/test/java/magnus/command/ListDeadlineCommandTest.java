@@ -40,6 +40,15 @@ public class ListDeadlineCommandTest {
     }
 
     @Test
+    public void execute_noDeadlinesOnDate_announcesNoMatches() throws CommandSyntaxException {
+        TaskList tasks = new TaskList(List.of(new ToDoTask("buy milk")));
+
+        String response = new ListDeadlineCommand(tasks).execute("20/09/2026");
+
+        assertEquals("\tClock check complete - there are no Deadline tasks for that date.", response);
+    }
+
+    @Test
     public void execute_missingDate_throwsCommandSyntaxException() {
         ListDeadlineCommand command = new ListDeadlineCommand(new TaskList());
 

@@ -226,7 +226,7 @@ public class MagnusTest {
         assertTrue(saveResponse.isError());
         assertTrue(saveResponse.message().contains("I could not save your tasks"));
         assertTrue(saveResponse.message().contains("move was rolled back"));
-        assertEquals("\tHere's the current position - your full task list:\n\n", listResponse);
+        assertEquals("\tThere are no tasks on the board yet.", listResponse);
     }
 
     /**

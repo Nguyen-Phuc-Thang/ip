@@ -56,6 +56,9 @@ public class ListDeadlineCommand implements Command {
         }
 
         TaskList filteredTasks = this.tasks.filterDeadlinesOnDate(date);
+        if (filteredTasks.size() == 0) {
+            return "\tClock check complete - there are no Deadline tasks for that date.";
+        }
         return "\tClock check - here are your Deadline tasks for that date:\n\n"
                 + filteredTasks.formatTasks();
     }

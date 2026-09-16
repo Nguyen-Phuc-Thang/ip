@@ -39,6 +39,15 @@ public class FindCommandTest {
     }
 
     @Test
+    public void execute_noMatchingTasks_announcesNoMatches() throws CommandSyntaxException {
+        TaskList tasks = new TaskList(List.of(new ToDoTask("submit report")));
+
+        String output = new FindCommand(tasks).execute("book");
+
+        assertEquals("\tI searched the board, but no tasks match \"book\".", output);
+    }
+
+    @Test
     public void execute_noQuery_throwsCommandSyntaxException() {
         FindCommand command = new FindCommand(new TaskList());
 

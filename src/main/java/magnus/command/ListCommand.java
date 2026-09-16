@@ -31,6 +31,9 @@ public class ListCommand implements Command {
                     + "arguments.\n"
                     + "\tUsage: list");
         }
+        if (this.tasks.size() == 0) {
+            return "\tThere are no tasks on the board yet.";
+        }
         return "\tHere's the current position - your full task list:\n\n" + tasks.formatTasks();
     }
 }

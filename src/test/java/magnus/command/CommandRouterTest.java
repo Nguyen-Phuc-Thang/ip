@@ -23,7 +23,7 @@ public class CommandRouterTest {
         CommandResult result = router.route("LIST");
 
         assertEquals(CommandType.LIST, result.commandType());
-        assertEquals("\tHere's the current position - your full task list:\n\n", result.message());
+        assertEquals("\tThere are no tasks on the board yet.", result.message());
         assertFalse(result.taskListChanged());
     }
 

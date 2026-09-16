@@ -38,6 +38,15 @@ public class ListEventCommandTest {
     }
 
     @Test
+    public void execute_noEventsInRange_announcesNoMatches() throws CommandSyntaxException {
+        TaskList tasks = new TaskList(List.of(new ToDoTask("buy tickets")));
+
+        String response = new ListEventCommand(tasks).execute("20/09/2026 22/09/2026");
+
+        assertEquals("\tBoard surveyed - there are no Event tasks in that date range.", response);
+    }
+
+    @Test
     public void execute_missingDates_throwsCommandSyntaxException() {
         ListEventCommand command = new ListEventCommand(new TaskList());
 

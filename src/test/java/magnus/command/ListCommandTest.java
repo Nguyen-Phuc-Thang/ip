@@ -31,10 +31,10 @@ public class ListCommandTest {
     }
 
     @Test
-    public void execute_emptyTaskList_returnsHeadingWithoutTasks() throws CommandSyntaxException {
+    public void execute_emptyTaskList_announcesNoTasks() throws CommandSyntaxException {
         String response = new ListCommand(new TaskList()).execute();
 
-        assertEquals("\tHere's the current position - your full task list:\n\n", response);
+        assertEquals("\tThere are no tasks on the board yet.", response);
     }
 
     @Test
