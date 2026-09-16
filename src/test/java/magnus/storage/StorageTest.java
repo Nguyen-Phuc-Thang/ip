@@ -58,8 +58,8 @@ public class StorageTest {
         storage.saveTasks(tasks);
         List<Task> loadedTasks = storage.loadTasks();
 
-        assertEquals(tasks.stream().map(Task::toDataString).toList(),
-                loadedTasks.stream().map(Task::toDataString).toList());
+        assertEquals(tasks.stream().map(Task::serialize).toList(),
+                loadedTasks.stream().map(Task::serialize).toList());
     }
 
     @Test

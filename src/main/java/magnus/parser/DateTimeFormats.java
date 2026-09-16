@@ -9,17 +9,17 @@ import java.util.Locale;
  */
 public final class DateTimeFormats {
     /** Strict date format accepted from user input. */
-    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter
+    public static final DateTimeFormatter FORMATTER_DATE = DateTimeFormatter
             .ofPattern("dd/MM/uuuu")
             .withResolverStyle(ResolverStyle.STRICT);
 
     /** Strict date-time format accepted from user input and used in storage. */
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
+    public static final DateTimeFormatter FORMATTER_DATE_TIME = DateTimeFormatter
             .ofPattern("dd/MM/uuuu HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
 
     /** English date-time format used when displaying tasks. */
-    public static final DateTimeFormatter DISPLAY_DATE_TIME_FORMATTER = DateTimeFormatter
+    public static final DateTimeFormatter FORMATTER_DISPLAY_DATE_TIME = DateTimeFormatter
             .ofPattern("MMM dd, uuuu HH:mm", Locale.ENGLISH);
 
     private DateTimeFormats() {

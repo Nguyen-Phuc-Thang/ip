@@ -27,7 +27,7 @@ public class DeadlineCommand implements Command {
     /**
      * Adds a deadline task using its description and deadline from the command arguments.
      *
-     * @param args The command arguments, with the description at index 0 and deadline at index 1.
+     * @param args The command arguments, containing the description and {@code /by} field at index 0.
      * @return A message describing the deadline task that was added and the current task total.
      * @throws CommandSyntaxException If either the task description or deadline is missing.
      */
@@ -61,6 +61,6 @@ public class DeadlineCommand implements Command {
         tasks.addTask(newTask);
 
         return "\tClock set - I've added this Deadline task:\n\n\t" + newTask
-                + "\n\n" + TaskCountMessage.formatTotal(this.tasks.size());
+                + "\n\n" + TaskCountMessage.formatTotal(this.tasks.getTaskCount());
     }
 }

@@ -86,7 +86,7 @@ public class TaskStateCommandsTest {
 
         assertEquals("\tPiece captured and cleared - I've deleted this task:\n\n\t[T][ ] read book\n\n"
                 + "\tYou now have 1 task in the list.", response);
-        assertEquals(1, tasks.size());
+        assertEquals(1, tasks.getTaskCount());
         assertSame(secondTask, tasks.getTask(0));
     }
 
@@ -109,7 +109,7 @@ public class TaskStateCommandsTest {
         assertThrows(TaskNotFoundException.class, () -> new UnmarkCommand(tasks).execute("2"));
         assertThrows(TaskNotFoundException.class, () -> new DeleteCommand(tasks).execute("2"));
 
-        assertEquals(1, tasks.size());
+        assertEquals(1, tasks.getTaskCount());
         assertSame(task, tasks.getTask(0));
         assertFalse(task.isDone());
     }

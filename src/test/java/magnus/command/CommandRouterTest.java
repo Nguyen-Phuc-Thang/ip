@@ -24,7 +24,7 @@ public class CommandRouterTest {
 
         assertEquals(CommandType.LIST, result.commandType());
         assertEquals("\tThere are no tasks on the board yet.", result.message());
-        assertFalse(result.taskListChanged());
+        assertFalse(result.hasTaskListChanged());
     }
 
     @Test
@@ -35,7 +35,7 @@ public class CommandRouterTest {
         CommandResult result = router.route("todo read book");
 
         assertEquals(CommandType.TODO, result.commandType());
-        assertTrue(result.taskListChanged());
+        assertTrue(result.hasTaskListChanged());
         assertEquals("read book", tasks.getTask(0).getDescription());
     }
 
@@ -49,9 +49,9 @@ public class CommandRouterTest {
         CommandResult update = router.route("write notes");
 
         assertEquals(CommandType.UPDATE, prompt.commandType());
-        assertFalse(prompt.taskListChanged());
+        assertFalse(prompt.hasTaskListChanged());
         assertEquals(CommandType.UPDATE, update.commandType());
-        assertTrue(update.taskListChanged());
+        assertTrue(update.hasTaskListChanged());
         assertEquals("write notes", tasks.getTask(0).getDescription());
     }
 
@@ -82,7 +82,7 @@ public class CommandRouterTest {
         assertThrows(CommandSyntaxException.class, () -> router.route("todo first\ntodo second"));
         assertThrows(CommandSyntaxException.class, () -> router.route("todo first\rtodo second"));
 
-        assertEquals(0, tasks.size());
+        assertEquals(0, tasks.getTaskCount());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class CommandRouterTest {
             CommandResult result = router.route("list");
 
             assertEquals(CommandType.LIST, result.commandType());
-            assertFalse(result.taskListChanged());
+            assertFalse(result.hasTaskListChanged());
             assertEquals("read book", tasks.getTask(0).getDescription());
         }
     }

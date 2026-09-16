@@ -27,7 +27,7 @@ public class DeadlineCommandTest {
                 + "(by: Sep 20, 2026 17:30)\n\n"
                 + "\tYou now have 1 task in the list.", response);
         assertInstanceOf(DeadlineTask.class, tasks.getTask(0));
-        assertEquals("D,0,submit report,20/09/2026 1730", tasks.getTask(0).toDataString());
+        assertEquals("D,0,submit report,20/09/2026 1730", tasks.getTask(0).serialize());
     }
 
     @Test
@@ -52,7 +52,7 @@ public class DeadlineCommandTest {
 
         assertThrows(CommandSyntaxException.class, () -> command.execute("submit report 20/09/2026 1730"));
 
-        assertEquals(0, tasks.size());
+        assertEquals(0, tasks.getTaskCount());
     }
 
     @Test
@@ -62,7 +62,7 @@ public class DeadlineCommandTest {
 
         assertThrows(CommandSyntaxException.class, () -> command.execute("submit report /by 31/09/2026 1730"));
 
-        assertEquals(0, tasks.size());
+        assertEquals(0, tasks.getTaskCount());
     }
 
     @Test
@@ -74,6 +74,6 @@ public class DeadlineCommandTest {
         assertThrows(DuplicateTaskException.class, () ->
                 command.execute("submit report /by 20/09/2026 1730"));
 
-        assertEquals(1, tasks.size());
+        assertEquals(1, tasks.getTaskCount());
     }
 }

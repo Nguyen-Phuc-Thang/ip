@@ -31,7 +31,7 @@ public class MarkCommand implements Command {
      */
     @Override
     public String execute(String... args) throws MagnusException {
-        int taskIndex = TaskIndexParser.parseTaskIndex(args, "mark", this.tasks.size());
+        int taskIndex = TaskIndexParser.parseTaskIndex(args, "mark", this.tasks.getTaskCount());
 
         this.tasks.markTaskAsDone(taskIndex);
         return "\tCheckmate for this task - I've marked it as completed:\n\n\t"

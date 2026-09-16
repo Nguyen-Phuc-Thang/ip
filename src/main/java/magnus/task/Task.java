@@ -9,9 +9,9 @@ import java.util.Objects;
 public class Task {
     private static final String FIELD_DELIMITER = ",";
     private static final String QUOTATION_MARK = "\"";
-    private static final String ESCAPED_QUOTATION_MARK = "\"\"";
-    private static final int INCOMPLETE_STATUS = 0;
-    private static final int COMPLETE_STATUS = 1;
+    private static final String QUOTATION_MARK_ESCAPED = "\"\"";
+    private static final int STATUS_INCOMPLETE = 0;
+    private static final int STATUS_COMPLETE = 1;
 
     private final String description;
     private boolean isDone;
@@ -93,7 +93,7 @@ public class Task {
      *
      * @return The serialized task data.
      */
-    public String toDataString() {
+    public String serialize() {
         return String.format("%s,%d,%s",
                 getTaskType().getStorageCode(),
                 getCompletionStatusCode(), encodeDataField(this.description));
@@ -114,7 +114,7 @@ public class Task {
      * @return {@code 1} if the task is complete; {@code 0} otherwise.
      */
     protected int getCompletionStatusCode() {
-        return this.isDone ? COMPLETE_STATUS : INCOMPLETE_STATUS;
+        return this.isDone ? STATUS_COMPLETE : STATUS_INCOMPLETE;
     }
 
     /**
@@ -135,14 +135,14 @@ public class Task {
             return field;
         }
 
-        String escapedField = field.replace(QUOTATION_MARK, ESCAPED_QUOTATION_MARK);
+        String escapedField = field.replace(QUOTATION_MARK, QUOTATION_MARK_ESCAPED);
         return QUOTATION_MARK + escapedField + QUOTATION_MARK;
     }
 
     /**
      * Returns the icon representing this task's completion status.
      *
-     * @return {@code "X"} if the task is complete; an empty string otherwise.
+     * @return {@code "X"} if the task is complete; a space otherwise.
      */
     private String getStatusIcon() {
         return this.isDone ? "X" : " ";

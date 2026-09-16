@@ -59,11 +59,11 @@ public class TaskList {
      * @return A snapshot that can later be passed to {@link #restoreSnapshot(Snapshot)}.
      */
     public Snapshot createSnapshot() {
-        List<Task> taskSnapshot = new ArrayList<>(this.tasks);
-        List<Boolean> completionSnapshot = this.tasks.stream()
+        List<Task> snapshotTasks = new ArrayList<>(this.tasks);
+        List<Boolean> snapshotCompletionStatuses = this.tasks.stream()
                 .map(Task::isDone)
                 .toList();
-        return new Snapshot(taskSnapshot, completionSnapshot);
+        return new Snapshot(snapshotTasks, snapshotCompletionStatuses);
     }
 
     /**
@@ -147,9 +147,9 @@ public class TaskList {
             return false;
         }
 
-        boolean startsWithinRange = !eventTask.getStart().toLocalDate().isBefore(startDate);
-        boolean endsWithinRange = !eventTask.getEnd().toLocalDate().isAfter(endDate);
-        return startsWithinRange && endsWithinRange;
+        boolean isStartWithinRange = !eventTask.getStart().toLocalDate().isBefore(startDate);
+        boolean isEndWithinRange = !eventTask.getEnd().toLocalDate().isAfter(endDate);
+        return isStartWithinRange && isEndWithinRange;
     }
 
     /**
@@ -172,7 +172,7 @@ public class TaskList {
      *
      * @return The number of stored tasks.
      */
-    public int size() {
+    public int getTaskCount() {
         return this.tasks.size();
     }
 

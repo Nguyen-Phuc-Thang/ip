@@ -43,7 +43,7 @@ public class UpdateCommand implements Command {
      */
     @Override
     public String execute(String... args) throws MagnusException {
-        int taskIndex = TaskIndexParser.parseTaskIndex(args, "update", this.tasks.size());
+        int taskIndex = TaskIndexParser.parseTaskIndex(args, "update", this.tasks.getTaskCount());
         Task selectedTask = this.tasks.getTask(taskIndex);
         this.pendingTaskIndex = taskIndex;
 

@@ -171,7 +171,7 @@ public class Storage {
      * @throws IllegalArgumentException If the serialized record cannot be parsed.
      */
     private String serializeTask(Task task) {
-        String taskData = Objects.requireNonNull(task).toDataString();
+        String taskData = Objects.requireNonNull(task).serialize();
         assert taskData != null && !taskData.isBlank()
                 : "A task must serialize to a non-blank storage record";
         this.taskDataParser.parseTask(taskData);

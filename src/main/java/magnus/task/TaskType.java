@@ -38,7 +38,7 @@ public enum TaskType {
      * @return The matching task type.
      * @throws IllegalArgumentException If the code does not identify a supported task type.
      */
-    public static TaskType fromStorageCode(String storageCode) {
+    public static TaskType parseStorageCode(String storageCode) {
         for (TaskType taskType : values()) {
             if (taskType.storageCode.equals(storageCode)) {
                 return taskType;

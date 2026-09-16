@@ -45,7 +45,7 @@ public class TaskTest {
 
         assertTrue(task.isDone());
         assertEquals("[X] read book", task.toString());
-        assertEquals("T,1,read book", task.toDataString());
+        assertEquals("T,1,read book", task.serialize());
     }
 
     @Test
@@ -57,28 +57,28 @@ public class TaskTest {
 
         assertFalse(task.isDone());
         assertEquals("[ ] read book", task.toString());
-        assertEquals("T,0,read book", task.toDataString());
+        assertEquals("T,0,read book", task.serialize());
     }
 
     @Test
-    public void toDataString_simpleDescription_returnsUnquotedData() {
+    public void serialize_simpleDescription_returnsUnquotedData() {
         Task task = new Task("read book");
 
-        assertEquals("T,0,read book", task.toDataString());
+        assertEquals("T,0,read book", task.serialize());
     }
 
     @Test
-    public void toDataString_descriptionWithComma_quotesDescription() {
+    public void serialize_descriptionWithComma_quotesDescription() {
         Task task = new Task("buy milk, eggs");
 
-        assertEquals("T,0,\"buy milk, eggs\"", task.toDataString());
+        assertEquals("T,0,\"buy milk, eggs\"", task.serialize());
     }
 
     @Test
-    public void toDataString_descriptionWithQuotes_escapesAndQuotesDescription() {
+    public void serialize_descriptionWithQuotes_escapesAndQuotesDescription() {
         Task task = new Task("read \"Dune\"");
 
-        assertEquals("T,0,\"read \"\"Dune\"\"\"", task.toDataString());
+        assertEquals("T,0,\"read \"\"Dune\"\"\"", task.serialize());
     }
 
     @Test

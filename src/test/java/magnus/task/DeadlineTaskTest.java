@@ -45,11 +45,11 @@ public class DeadlineTaskTest {
     }
 
     @Test
-    public void toDataString_completedTaskWithComma_escapesDescription() {
+    public void serialize_completedTaskWithComma_escapesDescription() {
         DeadlineTask task = new DeadlineTask("submit report, appendix", "20/09/2026 1730");
         task.markAsDone();
 
-        assertEquals("D,1,\"submit report, appendix\",20/09/2026 1730", task.toDataString());
+        assertEquals("D,1,\"submit report, appendix\",20/09/2026 1730", task.serialize());
     }
 
     @Test

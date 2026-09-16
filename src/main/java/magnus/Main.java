@@ -37,27 +37,27 @@ import magnus.ui.Ui;
 public class Main extends Application {
     private static final int WINDOW_WIDTH = 720;
     private static final int WINDOW_HEIGHT = 620;
-    private static final int MINIMUM_WINDOW_WIDTH = 420;
-    private static final int MINIMUM_WINDOW_HEIGHT = 460;
-    private static final int BOT_AVATAR_SIZE = 34;
-    private static final int USER_AVATAR_SIZE = 26;
-    private static final int HEADER_AVATAR_SIZE = 40;
+    private static final int WINDOW_MINIMUM_WIDTH = 420;
+    private static final int WINDOW_MINIMUM_HEIGHT = 460;
+    private static final int AVATAR_SIZE_BOT = 34;
+    private static final int AVATAR_SIZE_USER = 26;
+    private static final int AVATAR_SIZE_HEADER = 40;
     private static final int AVATAR_BORDER_ALLOWANCE = 4;
     private static final int MESSAGE_ROW_SPACING = 10;
-    private static final int MINIMUM_MESSAGE_WIDTH = 180;
-    private static final double USER_MESSAGE_WIDTH_RATIO = 0.70;
-    private static final double BOT_MESSAGE_WIDTH_RATIO = 0.84;
+    private static final int MESSAGE_MINIMUM_WIDTH = 180;
+    private static final double MESSAGE_WIDTH_RATIO_USER = 0.70;
+    private static final double MESSAGE_WIDTH_RATIO_BOT = 0.84;
     private static final double BOTTOM_SCROLL_POSITION = 1.0;
     private static final double EXIT_DELAY_SECONDS = 2.0;
-    private static final String DISPLAY_DATE_TIME_PATTERN =
+    private static final String PATTERN_DISPLAY_DATE_TIME =
             "[A-Z][a-z]{2} \\d{2}, \\d{4} \\d{2}:\\d{2}";
-    private static final Pattern TASK_LINE_PATTERN = Pattern.compile(
+    private static final Pattern PATTERN_TASK_LINE = Pattern.compile(
             "^(?:\\d+\\.\\s+)?\\[[TDE]\\]\\[[X ]\\]\\s+.+");
-    private static final Pattern EVENT_TIME_PATTERN = Pattern.compile(
-            "\\s*\\(from:\\s*(?<from>" + DISPLAY_DATE_TIME_PATTERN
-                    + ")\\s+to:\\s*(?<to>" + DISPLAY_DATE_TIME_PATTERN + ")\\)$");
-    private static final Pattern DEADLINE_TIME_PATTERN = Pattern.compile(
-            "\\s*\\(by:\\s*(?<by>" + DISPLAY_DATE_TIME_PATTERN + ")\\)$");
+    private static final Pattern PATTERN_EVENT_TIME = Pattern.compile(
+            "\\s*\\(from:\\s*(?<from>" + PATTERN_DISPLAY_DATE_TIME
+                    + ")\\s+to:\\s*(?<to>" + PATTERN_DISPLAY_DATE_TIME + ")\\)$");
+    private static final Pattern PATTERN_DEADLINE_TIME = Pattern.compile(
+            "\\s*\\(by:\\s*(?<by>" + PATTERN_DISPLAY_DATE_TIME + ")\\)$");
 
     private final VBox messageList = new VBox();
     private final ScrollPane chatScroll = new ScrollPane();
@@ -66,6 +66,12 @@ public class Main extends Application {
     private Magnus magnus;
     private Image magnusAvatar;
     private Image userAvatar;
+
+    /**
+     * Creates the application instance whose chat controls are configured when JavaFX starts it.
+     */
+    public Main() {
+    }
 
     /**
      * Creates and displays the chat interface.
@@ -88,8 +94,8 @@ public class Main extends Application {
 
         stage.setTitle("Magnus");
         stage.setResizable(true);
-        stage.setMinWidth(MINIMUM_WINDOW_WIDTH);
-        stage.setMinHeight(MINIMUM_WINDOW_HEIGHT);
+        stage.setMinWidth(WINDOW_MINIMUM_WIDTH);
+        stage.setMinHeight(WINDOW_MINIMUM_HEIGHT);
         stage.setScene(scene);
         showWelcomeMessage();
         if (startupError != null) {
@@ -171,7 +177,7 @@ public class Main extends Application {
      * @return Header containing the Magnus portrait and app description.
      */
     private HBox createHeader() {
-        StackPane avatar = createAvatar(false, HEADER_AVATAR_SIZE);
+        StackPane avatar = createAvatar(false, AVATAR_SIZE_HEADER);
         avatar.getStyleClass().add("header-avatar");
 
         Label appName = new Label("Magnus");
@@ -306,11 +312,11 @@ public class Main extends Application {
     private HBox createUserMessageRow(String message) {
         Label messageBubble = createMessageLabel(message, "user-message");
         messageBubble.maxWidthProperty().bind(
-                Bindings.max(MINIMUM_MESSAGE_WIDTH,
-                        chatScroll.widthProperty().multiply(USER_MESSAGE_WIDTH_RATIO)
-                                .subtract(USER_AVATAR_SIZE + AVATAR_BORDER_ALLOWANCE)));
+                Bindings.max(MESSAGE_MINIMUM_WIDTH,
+                        chatScroll.widthProperty().multiply(MESSAGE_WIDTH_RATIO_USER)
+                                .subtract(AVATAR_SIZE_USER + AVATAR_BORDER_ALLOWANCE)));
 
-        StackPane avatar = createAvatar(true, USER_AVATAR_SIZE);
+        StackPane avatar = createAvatar(true, AVATAR_SIZE_USER);
         HBox messageRow = new HBox(messageBubble, avatar);
         messageRow.setSpacing(MESSAGE_ROW_SPACING);
         messageRow.setAlignment(Pos.TOP_RIGHT);
@@ -343,14 +349,14 @@ public class Main extends Application {
         }
         messageBubble.getStyleClass().addAll(additionalStyleClasses);
         messageBubble.maxWidthProperty().bind(
-                Bindings.max(MINIMUM_MESSAGE_WIDTH,
-                        chatScroll.widthProperty().multiply(BOT_MESSAGE_WIDTH_RATIO)
-                                .subtract(BOT_AVATAR_SIZE + AVATAR_BORDER_ALLOWANCE)));
+                Bindings.max(MESSAGE_MINIMUM_WIDTH,
+                        chatScroll.widthProperty().multiply(MESSAGE_WIDTH_RATIO_BOT)
+                                .subtract(AVATAR_SIZE_BOT + AVATAR_BORDER_ALLOWANCE)));
 
         VBox responseContent = new VBox(senderLabel, messageBubble);
         responseContent.getStyleClass().add("response-content");
 
-        StackPane avatar = createAvatar(false, BOT_AVATAR_SIZE);
+        StackPane avatar = createAvatar(false, AVATAR_SIZE_BOT);
         HBox messageRow = new HBox(avatar, responseContent);
         messageRow.setSpacing(MESSAGE_ROW_SPACING);
         messageRow.setAlignment(Pos.TOP_LEFT);
@@ -391,7 +397,7 @@ public class Main extends Application {
             return paragraphSpacer;
         }
 
-        Matcher eventTimeMatcher = EVENT_TIME_PATTERN.matcher(messageLine);
+        Matcher eventTimeMatcher = PATTERN_EVENT_TIME.matcher(messageLine);
         if (eventTimeMatcher.find()) {
             String taskText = messageLine.substring(0, eventTimeMatcher.start()).stripTrailing();
             return createTaskItem(taskText,
@@ -399,14 +405,14 @@ public class Main extends Application {
                     createTimeChip("to", eventTimeMatcher.group("to")));
         }
 
-        Matcher deadlineTimeMatcher = DEADLINE_TIME_PATTERN.matcher(messageLine);
+        Matcher deadlineTimeMatcher = PATTERN_DEADLINE_TIME.matcher(messageLine);
         if (deadlineTimeMatcher.find()) {
             String taskText = messageLine.substring(0, deadlineTimeMatcher.start()).stripTrailing();
             return createTaskItem(taskText,
                     createTimeChip("by", deadlineTimeMatcher.group("by")));
         }
 
-        if (TASK_LINE_PATTERN.matcher(messageLine).matches()) {
+        if (PATTERN_TASK_LINE.matcher(messageLine).matches()) {
             return createTaskItem(messageLine);
         }
         return createWrappingLabel(messageLine, "message-line");
@@ -494,7 +500,7 @@ public class Main extends Application {
 
     /**
      * Creates a compact circular avatar containing the user or Magnus image.
-     * Landscape images are cropped to a centred square before being displayed.
+     * Landscape images are cropped to a centered square before being displayed.
      *
      * @param isUserMessage Whether the avatar belongs to the user.
      * @param imageSize Diameter of the displayed image in pixels.

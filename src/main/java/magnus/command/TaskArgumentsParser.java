@@ -9,11 +9,11 @@ import java.util.regex.Pattern;
  * are not accidentally interpreted as task fields.
  */
 final class TaskArgumentsParser {
-    private static final Pattern FIELD_DELIMITER_PATTERN = Pattern.compile(
+    private static final Pattern PATTERN_FIELD_DELIMITER = Pattern.compile(
             "(?<!\\S)/(?:by|from|to)(?!\\S)");
-    private static final Pattern DEADLINE_ARGUMENTS_PATTERN = Pattern.compile(
+    private static final Pattern PATTERN_DEADLINE_ARGUMENTS = Pattern.compile(
             "^(?<description>.+?)\\s+/by\\s+(?<deadline>.+)$");
-    private static final Pattern EVENT_ARGUMENTS_PATTERN = Pattern.compile(
+    private static final Pattern PATTERN_EVENT_ARGUMENTS = Pattern.compile(
             "^(?<description>.+?)\\s+/from\\s+(?<start>.+?)\\s+/to\\s+(?<end>.+)$");
 
     private TaskArgumentsParser() {
@@ -28,7 +28,7 @@ final class TaskArgumentsParser {
      */
     static DeadlineArguments parseDeadline(String input) {
         String normalizedInput = requireSingleLineInput(input);
-        Matcher matcher = DEADLINE_ARGUMENTS_PATTERN.matcher(normalizedInput);
+        Matcher matcher = PATTERN_DEADLINE_ARGUMENTS.matcher(normalizedInput);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("A deadline requires exactly one /by field");
         }
@@ -50,7 +50,7 @@ final class TaskArgumentsParser {
      */
     static EventArguments parseEvent(String input) {
         String normalizedInput = requireSingleLineInput(input);
-        Matcher matcher = EVENT_ARGUMENTS_PATTERN.matcher(normalizedInput);
+        Matcher matcher = PATTERN_EVENT_ARGUMENTS.matcher(normalizedInput);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("An event requires /from followed by /to");
         }
@@ -73,7 +73,7 @@ final class TaskArgumentsParser {
      * @return {@code true} if a standalone reserved delimiter is present.
      */
     static boolean containsFieldDelimiter(String text) {
-        return text != null && FIELD_DELIMITER_PATTERN.matcher(text).find();
+        return text != null && PATTERN_FIELD_DELIMITER.matcher(text).find();
     }
 
     /**

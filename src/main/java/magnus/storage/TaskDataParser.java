@@ -12,15 +12,15 @@ import magnus.task.ToDoTask;
  * Converts serialized task records into task objects.
  */
 public class TaskDataParser {
-    private static final int MINIMUM_FIELD_COUNT = 2;
-    private static final int TODO_FIELD_COUNT = 3;
-    private static final int DATED_TASK_FIELD_COUNT = 4;
-    private static final int TASK_TYPE_INDEX = 0;
-    private static final int STATUS_INDEX = 1;
-    private static final int DESCRIPTION_INDEX = 2;
-    private static final int DATE_TIME_INDEX = 3;
-    private static final String INCOMPLETE_STATUS = "0";
-    private static final String COMPLETE_STATUS = "1";
+    private static final int FIELD_COUNT_MINIMUM = 2;
+    private static final int FIELD_COUNT_TODO = 3;
+    private static final int FIELD_COUNT_DATED = 4;
+    private static final int FIELD_INDEX_TASK_TYPE = 0;
+    private static final int FIELD_INDEX_STATUS = 1;
+    private static final int FIELD_INDEX_DESCRIPTION = 2;
+    private static final int FIELD_INDEX_DATE_TIME = 3;
+    private static final String STATUS_INCOMPLETE = "0";
+    private static final String STATUS_COMPLETE = "1";
     private static final char EVENT_TIME_DELIMITER = '-';
     private static final char ESCAPE_CHARACTER = '\\';
 
@@ -39,11 +39,11 @@ public class TaskDataParser {
      */
     public Task parseTask(String line) {
         List<String> taskDataFields = CsvFieldParser.parseFields(line);
-        if (taskDataFields.size() < MINIMUM_FIELD_COUNT) {
+        if (taskDataFields.size() < FIELD_COUNT_MINIMUM) {
             throw new IllegalArgumentException("missing task type or status");
         }
 
-        boolean isDone = parseCompletionStatus(taskDataFields.get(STATUS_INDEX));
+        boolean isDone = isCompleteStatus(taskDataFields.get(FIELD_INDEX_STATUS));
         Task task = createTask(taskDataFields);
         if (isDone) {
             task.markAsDone();
@@ -59,22 +59,22 @@ public class TaskDataParser {
      * @throws IllegalArgumentException If the task type or its fields are invalid.
      */
     private Task createTask(List<String> taskDataFields) {
-        TaskType taskType = TaskType.fromStorageCode(taskDataFields.get(TASK_TYPE_INDEX));
+        TaskType taskType = TaskType.parseStorageCode(taskDataFields.get(FIELD_INDEX_TASK_TYPE));
         return switch (taskType) {
             case TODO -> {
-                requireFieldCount(taskDataFields, TODO_FIELD_COUNT, "to-do");
+                requireFieldCount(taskDataFields, FIELD_COUNT_TODO, "to-do");
                 yield new ToDoTask(requireDescription(taskDataFields));
             }
             case DEADLINE -> {
-                requireFieldCount(taskDataFields, DATED_TASK_FIELD_COUNT, "deadline");
+                requireFieldCount(taskDataFields, FIELD_COUNT_DATED, "deadline");
                 yield new DeadlineTask(
                         requireDescription(taskDataFields),
-                        requireNonBlank(taskDataFields.get(DATE_TIME_INDEX), "deadline"));
+                        requireNonBlank(taskDataFields.get(FIELD_INDEX_DATE_TIME), "deadline"));
             }
             case EVENT -> {
-                requireFieldCount(taskDataFields, DATED_TASK_FIELD_COUNT, "event");
+                requireFieldCount(taskDataFields, FIELD_COUNT_DATED, "event");
                 EventTimes eventTimes = parseEventTimes(
-                        requireNonBlank(taskDataFields.get(DATE_TIME_INDEX), "event time"));
+                        requireNonBlank(taskDataFields.get(FIELD_INDEX_DATE_TIME), "event time"));
                 yield new EventTask(
                         requireDescription(taskDataFields),
                         eventTimes.start(), eventTimes.end());
@@ -91,7 +91,7 @@ public class TaskDataParser {
      * @throws IllegalArgumentException If the description is blank.
      */
     private String requireDescription(List<String> taskDataFields) {
-        return requireNonBlank(taskDataFields.get(DESCRIPTION_INDEX), "description");
+        return requireNonBlank(taskDataFields.get(FIELD_INDEX_DESCRIPTION), "description");
     }
 
     /**
@@ -101,11 +101,11 @@ public class TaskDataParser {
      * @return {@code true} for a completed task; {@code false} for an incomplete task.
      * @throws IllegalArgumentException If the status is not supported.
      */
-    private boolean parseCompletionStatus(String status) {
-        if (status.equals(COMPLETE_STATUS)) {
+    private boolean isCompleteStatus(String status) {
+        if (status.equals(STATUS_COMPLETE)) {
             return true;
         }
-        if (status.equals(INCOMPLETE_STATUS)) {
+        if (status.equals(STATUS_INCOMPLETE)) {
             return false;
         }
         throw new IllegalArgumentException("invalid task status '" + status + "'");

@@ -11,16 +11,16 @@ import org.junit.jupiter.api.Test;
  */
 public class MagnusResponseTest {
     @Test
-    public void success_message_returnsNonErrorResponse() {
-        MagnusResponse response = MagnusResponse.success("Task added");
+    public void createSuccess_message_returnsNonErrorResponse() {
+        MagnusResponse response = MagnusResponse.createSuccess("Task added");
 
         assertEquals("Task added", response.message());
         assertFalse(response.isError());
     }
 
     @Test
-    public void error_message_returnsErrorResponse() {
-        MagnusResponse response = MagnusResponse.error("Invalid command");
+    public void createError_message_returnsErrorResponse() {
+        MagnusResponse response = MagnusResponse.createError("Invalid command");
 
         assertEquals("Invalid command", response.message());
         assertTrue(response.isError());

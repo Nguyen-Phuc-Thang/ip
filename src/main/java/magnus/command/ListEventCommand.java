@@ -60,7 +60,7 @@ public class ListEventCommand implements Command {
                 : "A validated date range must be ordered before filtering";
 
         TaskList filteredTasks = this.tasks.filterEventsWithinDateRange(startDate, endDate);
-        if (filteredTasks.size() == 0) {
+        if (filteredTasks.getTaskCount() == 0) {
             return "\tBoard surveyed - there are no Event tasks in that date range.";
         }
         return "\tBoard surveyed - here are your Event tasks in that date range:\n\n"

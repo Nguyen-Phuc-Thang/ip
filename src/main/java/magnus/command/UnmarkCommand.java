@@ -32,7 +32,7 @@ public class UnmarkCommand implements Command {
      */
     @Override
     public String execute(String... args) throws MagnusException {
-        int taskIndex = TaskIndexParser.parseTaskIndex(args, "unmark", this.tasks.size());
+        int taskIndex = TaskIndexParser.parseTaskIndex(args, "unmark", this.tasks.getTaskCount());
 
         this.tasks.markTaskAsUndone(taskIndex);
         return "\tThis piece is back in play - I've marked the task as incomplete:\n\n\t"

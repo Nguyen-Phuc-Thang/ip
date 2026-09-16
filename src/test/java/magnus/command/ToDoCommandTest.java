@@ -24,7 +24,7 @@ public class ToDoCommandTest {
 
         assertEquals("\tOpening move complete - I've added this To-Do task:\n\n\t[T][ ] read a book\n\n"
                 + "\tYou now have 1 task in the list.", response);
-        assertEquals(1, tasks.size());
+        assertEquals(1, tasks.getTaskCount());
         assertEquals("read a book", tasks.getTask(0).getDescription());
     }
 
@@ -64,7 +64,7 @@ public class ToDoCommandTest {
 
         assertThrows(CommandSyntaxException.class, () -> command.execute("read", "book"));
 
-        assertEquals(0, tasks.size());
+        assertEquals(0, tasks.getTaskCount());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class ToDoCommandTest {
 
         assertThrows(CommandSyntaxException.class, () -> command.execute("read /by Friday"));
 
-        assertEquals(0, tasks.size());
+        assertEquals(0, tasks.getTaskCount());
     }
 
     @Test
@@ -88,6 +88,6 @@ public class ToDoCommandTest {
 
         assertEquals("\tThat piece is already on the board - an identical task already exists.",
                 exception.getMessage());
-        assertEquals(1, tasks.size());
+        assertEquals(1, tasks.getTaskCount());
     }
 }

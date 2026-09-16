@@ -29,7 +29,7 @@ public class EventCommandTest {
                 + "\tYou now have 1 task in the list.", response);
         assertInstanceOf(EventTask.class, tasks.getTask(0));
         assertEquals("E,0,project meeting,20/09/2026 0900-20/09/2026 1030",
-                tasks.getTask(0).toDataString());
+                tasks.getTask(0).serialize());
     }
 
     @Test
@@ -55,7 +55,7 @@ public class EventCommandTest {
         assertThrows(CommandSyntaxException.class, () ->
                 command.execute("meeting /from 20/09/2026 0900"));
 
-        assertEquals(0, tasks.size());
+        assertEquals(0, tasks.getTaskCount());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class EventCommandTest {
         assertThrows(CommandSyntaxException.class, () -> command.execute(
                 "meeting /from 20/09/2026 1030 /to 20/09/2026 0900"));
 
-        assertEquals(0, tasks.size());
+        assertEquals(0, tasks.getTaskCount());
     }
 
     @Test
@@ -78,6 +78,6 @@ public class EventCommandTest {
 
         assertThrows(DuplicateTaskException.class, () -> command.execute(arguments));
 
-        assertEquals(1, tasks.size());
+        assertEquals(1, tasks.getTaskCount());
     }
 }

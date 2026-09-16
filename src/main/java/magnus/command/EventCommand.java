@@ -27,8 +27,8 @@ public class EventCommand implements Command {
     /**
      * Adds an event task using its description, start time, and end time from the command arguments.
      *
-     * @param args The command arguments, with the description at index 0, start time at index 1,
-     *             and end time at index 2.
+     * @param args The command arguments, containing the description, {@code /from} field,
+     *             and {@code /to} field together at index 0.
      * @return A message describing the event task that was added and the current task total.
      * @throws CommandSyntaxException If the description, start time, or end time is missing.
      */
@@ -63,6 +63,6 @@ public class EventCommand implements Command {
         tasks.addTask(newTask);
 
         return "\tThe position is prepared - I've added this Event task:\n\n\t" + newTask
-                + "\n\n" + TaskCountMessage.formatTotal(this.tasks.size());
+                + "\n\n" + TaskCountMessage.formatTotal(this.tasks.getTaskCount());
     }
 }

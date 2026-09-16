@@ -15,8 +15,8 @@ import magnus.task.TaskList;
  * Recognized command words are matched to their corresponding commands.
  */
 public class CommandRouter {
-    private static final int COMMAND_KEYWORD_INDEX = 0;
-    private static final int FIRST_ARGUMENT_INDEX = 1;
+    private static final int COMMAND_PART_INDEX_KEYWORD = 0;
+    private static final int COMMAND_PART_INDEX_ARGUMENTS = 1;
 
     private final Map<CommandType, Command> commands;
     private final CommandParser parser;
@@ -70,9 +70,9 @@ public class CommandRouter {
         if (parsedCommandParts.length == 0) {
             throw new CommandSyntaxException("\tYour move - please enter a command.");
         }
-        String commandKeyword = parsedCommandParts[COMMAND_KEYWORD_INDEX];
+        String commandKeyword = parsedCommandParts[COMMAND_PART_INDEX_KEYWORD];
         String[] commandArguments = Arrays.copyOfRange(
-                parsedCommandParts, FIRST_ARGUMENT_INDEX, parsedCommandParts.length);
+                parsedCommandParts, COMMAND_PART_INDEX_ARGUMENTS, parsedCommandParts.length);
 
         CommandType commandType;
         try {

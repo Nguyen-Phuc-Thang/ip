@@ -13,7 +13,7 @@ public record MagnusResponse(String message, boolean isError) {
      * @param message The successful response text.
      * @return A non-error response.
      */
-    public static MagnusResponse success(String message) {
+    public static MagnusResponse createSuccess(String message) {
         return new MagnusResponse(message, false);
     }
 
@@ -23,7 +23,7 @@ public record MagnusResponse(String message, boolean isError) {
      * @param message The error text.
      * @return An error response.
      */
-    public static MagnusResponse error(String message) {
+    public static MagnusResponse createError(String message) {
         return new MagnusResponse(message, true);
     }
 }

@@ -22,7 +22,7 @@ public class TaskDataParserTest {
         Task task = this.parser.parseTask("T,0,read book");
 
         assertInstanceOf(ToDoTask.class, task);
-        assertEquals("T,0,read book", task.toDataString());
+        assertEquals("T,0,read book", task.serialize());
     }
 
     @Test
@@ -48,7 +48,7 @@ public class TaskDataParserTest {
         Task task = this.parser.parseTask(
                 "E,0,meeting,02/09/2026 15\\00-02/09/2026 1600");
 
-        assertEquals("E,0,meeting,02/09/2026 1500-02/09/2026 1600", task.toDataString());
+        assertEquals("E,0,meeting,02/09/2026 1500-02/09/2026 1600", task.serialize());
     }
 
     @Test

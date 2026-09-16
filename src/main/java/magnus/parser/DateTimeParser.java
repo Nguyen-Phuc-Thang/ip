@@ -9,8 +9,8 @@ import java.time.format.DateTimeParseException;
  */
 public class DateTimeParser {
     private static final int DATE_RANGE_ARGUMENT_COUNT = 2;
-    private static final int START_DATE_INDEX = 0;
-    private static final int END_DATE_INDEX = 1;
+    private static final int DATE_INDEX_START = 0;
+    private static final int DATE_INDEX_END = 1;
 
     /**
      * Creates a parser for Magnus's supported date and date-time formats.
@@ -26,7 +26,7 @@ public class DateTimeParser {
      * @throws DateTimeParseException If the text is malformed or does not represent a valid date.
      */
     public LocalDate parseDate(String date) {
-        return LocalDate.parse(date, DateTimeFormats.DATE_FORMATTER);
+        return LocalDate.parse(date, DateTimeFormats.FORMATTER_DATE);
     }
 
     /**
@@ -45,8 +45,8 @@ public class DateTimeParser {
         assert dateArguments.length == 2
                 : "A validated date range must contain exactly two dates";
 
-        LocalDate startDate = parseDate(dateArguments[START_DATE_INDEX]);
-        LocalDate endDate = parseDate(dateArguments[END_DATE_INDEX]);
+        LocalDate startDate = parseDate(dateArguments[DATE_INDEX_START]);
+        LocalDate endDate = parseDate(dateArguments[DATE_INDEX_END]);
         return new DateRange(startDate, endDate);
     }
 
@@ -64,7 +64,7 @@ public class DateTimeParser {
         }
 
         try {
-            return LocalDateTime.parse(dateTime, DateTimeFormats.DATE_TIME_FORMATTER);
+            return LocalDateTime.parse(dateTime, DateTimeFormats.FORMATTER_DATE_TIME);
         } catch (DateTimeParseException exception) {
             throw new IllegalArgumentException(
                     fieldName + " must use format dd/MM/yyyy HHmm and contain a valid date and time",

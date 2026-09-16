@@ -70,7 +70,7 @@ public class EventTask extends Task {
      * @return The formatted event time.
      */
     private String formatForStorage(LocalDateTime eventTime) {
-        return eventTime.format(DateTimeFormats.DATE_TIME_FORMATTER);
+        return eventTime.format(DateTimeFormats.FORMATTER_DATE_TIME);
     }
 
     /**
@@ -80,7 +80,7 @@ public class EventTask extends Task {
      * @return The display-formatted event time.
      */
     private String formatForDisplay(LocalDateTime eventTime) {
-        return eventTime.format(DateTimeFormats.DISPLAY_DATE_TIME_FORMATTER);
+        return eventTime.format(DateTimeFormats.FORMATTER_DISPLAY_DATE_TIME);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class EventTask extends Task {
      * @return The serialized event-task data.
      */
     @Override
-    public String toDataString() {
+    public String serialize() {
         String eventTime = formatForStorage(this.start)
                 + EVENT_TIME_DELIMITER + formatForStorage(this.end);
         return String.format("%s,%d,%s,%s",

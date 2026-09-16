@@ -10,10 +10,10 @@ import org.junit.jupiter.api.Test;
  */
 public class TaskTypeTest {
     @Test
-    public void fromStorageCode_supportedCodes_returnsMatchingTaskTypes() {
-        assertEquals(TaskType.TODO, TaskType.fromStorageCode("T"));
-        assertEquals(TaskType.DEADLINE, TaskType.fromStorageCode("D"));
-        assertEquals(TaskType.EVENT, TaskType.fromStorageCode("E"));
+    public void parseStorageCode_supportedCodes_returnsMatchingTaskTypes() {
+        assertEquals(TaskType.TODO, TaskType.parseStorageCode("T"));
+        assertEquals(TaskType.DEADLINE, TaskType.parseStorageCode("D"));
+        assertEquals(TaskType.EVENT, TaskType.parseStorageCode("E"));
     }
 
     @Test
@@ -24,8 +24,8 @@ public class TaskTypeTest {
     }
 
     @Test
-    public void fromStorageCode_unknownCode_throwsIllegalArgumentException() {
+    public void parseStorageCode_unknownCode_throwsIllegalArgumentException() {
         assertThrows(
-                IllegalArgumentException.class, () -> TaskType.fromStorageCode("X"));
+                IllegalArgumentException.class, () -> TaskType.parseStorageCode("X"));
     }
 }

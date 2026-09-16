@@ -50,7 +50,7 @@ public class DeadlineTask extends Task {
      * @return The formatted deadline.
      */
     private String formatDeadlineForStorage() {
-        return this.deadline.format(DateTimeFormats.DATE_TIME_FORMATTER);
+        return this.deadline.format(DateTimeFormats.FORMATTER_DATE_TIME);
     }
 
     /**
@@ -59,7 +59,7 @@ public class DeadlineTask extends Task {
      * @return The display-formatted deadline.
      */
     private String formatDeadlineForDisplay() {
-        return this.deadline.format(DateTimeFormats.DISPLAY_DATE_TIME_FORMATTER);
+        return this.deadline.format(DateTimeFormats.FORMATTER_DISPLAY_DATE_TIME);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class DeadlineTask extends Task {
      * @return The serialized deadline-task data.
      */
     @Override
-    public String toDataString() {
+    public String serialize() {
         return String.format("%s,%d,%s,%s",
                 getTaskType().getStorageCode(),
                 getCompletionStatusCode(), encodeDataField(getDescription()),

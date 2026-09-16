@@ -22,7 +22,7 @@ public class TaskListTest {
     public void constructor_noTasks_createsEmptyTaskList() {
         TaskList tasks = new TaskList();
 
-        assertEquals(0, tasks.size());
+        assertEquals(0, tasks.getTaskCount());
     }
 
     @Test
@@ -34,7 +34,7 @@ public class TaskListTest {
         TaskList tasks = new TaskList(originalTasks);
         originalTasks.clear();
 
-        assertEquals(2, tasks.size());
+        assertEquals(2, tasks.getTaskCount());
         assertSame(task1, tasks.getTask(0));
         assertSame(task2, tasks.getTask(1));
     }
@@ -82,7 +82,7 @@ public class TaskListTest {
         TaskList filteredTasks = tasks.filterDeadlinesOnDate(LocalDate.of(2026, 8, 27));
 
         assertIterableEquals(List.of(matchingTask), filteredTasks.getTasks());
-        assertEquals(3, tasks.size());
+        assertEquals(3, tasks.getTaskCount());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class TaskListTest {
                 LocalDate.of(2026, 8, 10), LocalDate.of(2026, 8, 20));
 
         assertIterableEquals(List.of(boundaryTask, insideRangeTask), filteredTasks.getTasks());
-        assertEquals(5, tasks.size());
+        assertEquals(5, tasks.getTaskCount());
     }
 
     @Test
@@ -122,7 +122,7 @@ public class TaskListTest {
         TaskList filteredTasks = tasks.filterTasksByDescription("book");
 
         assertIterableEquals(List.of(firstMatch, secondMatch), filteredTasks.getTasks());
-        assertEquals(3, tasks.size());
+        assertEquals(3, tasks.getTaskCount());
     }
 
     @Test
@@ -149,7 +149,7 @@ public class TaskListTest {
 
         tasks.addTask(task2);
 
-        assertEquals(2, tasks.size());
+        assertEquals(2, tasks.getTaskCount());
         assertSame(task2, tasks.getTask(1));
     }
 
@@ -203,7 +203,7 @@ public class TaskListTest {
         tasks.addTask(new ToDoTask("write essay"));
         tasks.restoreSnapshot(snapshot);
 
-        assertEquals(1, tasks.size());
+        assertEquals(1, tasks.getTaskCount());
         assertSame(originalTask, tasks.getTask(0));
         assertEquals("[T][ ] read book", originalTask.toString());
     }
@@ -236,7 +236,7 @@ public class TaskListTest {
         Task removedTask = tasks.removeTask(1);
 
         assertSame(task2, removedTask);
-        assertEquals(2, tasks.size());
+        assertEquals(2, tasks.getTaskCount());
         assertSame(task1, tasks.getTask(0));
         assertSame(task3, tasks.getTask(1));
     }

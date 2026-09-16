@@ -71,17 +71,17 @@ public class Magnus {
         try {
             CommandResult commandResult = this.router.route(userInput);
             CommandType commandType = commandResult.commandType();
-            if (commandResult.taskListChanged()) {
+            if (commandResult.hasTaskListChanged()) {
                 this.storage.saveTasks(this.tasks.getTasks());
             }
             this.isExitRequested = commandType == CommandType.BYE;
-            return MagnusResponse.success(commandResult.message());
+            return MagnusResponse.createSuccess(commandResult.message());
         } catch (StorageException exception) {
             this.tasks.restoreSnapshot(taskSnapshot);
-            return MagnusResponse.error(exception.getMessage()
+            return MagnusResponse.createError(exception.getMessage()
                     + "\n\tThe move was rolled back, so your in-memory task list is unchanged.");
         } catch (MagnusException exception) {
-            return MagnusResponse.error(exception.getMessage());
+            return MagnusResponse.createError(exception.getMessage());
         }
     }
 

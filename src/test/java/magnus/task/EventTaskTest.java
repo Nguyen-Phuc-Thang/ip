@@ -73,13 +73,13 @@ public class EventTaskTest {
     }
 
     @Test
-    public void toDataString_completedTaskWithQuote_escapesDescription() {
+    public void serialize_completedTaskWithQuote_escapesDescription() {
         EventTask task = new EventTask(
                 "meet \"Alice\"", "20/09/2026 0900", "20/09/2026 1030");
         task.markAsDone();
 
         assertEquals("E,1,\"meet \"\"Alice\"\"\",20/09/2026 0900-20/09/2026 1030",
-                task.toDataString());
+                task.serialize());
     }
 
     @Test

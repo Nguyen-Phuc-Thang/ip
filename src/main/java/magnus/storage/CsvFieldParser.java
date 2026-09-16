@@ -93,7 +93,7 @@ final class CsvFieldParser {
             this.currentField.append(currentCharacter);
             return;
         }
-        if (nextCharacterIsQuotationMark()) {
+        if (isNextCharacterQuotationMark()) {
             this.currentField.append(QUOTATION_MARK);
             this.currentPosition++;
             return;
@@ -118,7 +118,7 @@ final class CsvFieldParser {
      *
      * @return {@code true} if the current quotation mark is followed by another one.
      */
-    private boolean nextCharacterIsQuotationMark() {
+    private boolean isNextCharacterQuotationMark() {
         int nextPosition = this.currentPosition + 1;
         return nextPosition < this.serializedData.length()
                 && this.serializedData.charAt(nextPosition) == QUOTATION_MARK;
