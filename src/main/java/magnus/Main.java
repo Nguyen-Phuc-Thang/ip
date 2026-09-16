@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -26,6 +27,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import magnus.exception.MagnusException;
 import magnus.ui.Ui;
 
@@ -46,6 +48,7 @@ public class Main extends Application {
     private static final double USER_MESSAGE_WIDTH_RATIO = 0.70;
     private static final double BOT_MESSAGE_WIDTH_RATIO = 0.84;
     private static final double BOTTOM_SCROLL_POSITION = 1.0;
+    private static final double EXIT_DELAY_SECONDS = 2.0;
     private static final String DISPLAY_DATE_TIME_PATTERN =
             "[A-Z][a-z]{2} \\d{2}, \\d{4} \\d{2}:\\d{2}";
     private static final Pattern TASK_LINE_PATTERN = Pattern.compile(
@@ -259,6 +262,10 @@ public class Main extends Application {
      * Sends the user's command to Magnus and displays the returned response.
      */
     private void submitCommand() {
+        if (commandInput.isDisabled()) {
+            return;
+        }
+
         String command = commandInput.getText().trim();
         if (command.isEmpty()) {
             return;
@@ -268,12 +275,24 @@ public class Main extends Application {
         commandInput.clear();
 
         MagnusResponse response = this.magnus.getResponseResult(command);
-        if (this.magnus.isExitRequested()) {
-            Platform.exit();
-            return;
-        }
-
         messageList.getChildren().add(createBotMessageRow(response.message(), response.isError()));
+
+        if (this.magnus.isExitRequested()) {
+            exitAfterFarewell();
+        }
+    }
+
+    /**
+     * Gives the farewell time to render and be read before closing the application.
+     * Command entry is disabled while the JavaFX timer keeps the window responsive.
+     */
+    private void exitAfterFarewell() {
+        commandInput.setDisable(true);
+        sendButton.setDisable(true);
+
+        PauseTransition exitDelay = new PauseTransition(Duration.seconds(EXIT_DELAY_SECONDS));
+        exitDelay.setOnFinished(event -> Platform.exit());
+        exitDelay.play();
     }
 
     /**

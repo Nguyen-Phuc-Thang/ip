@@ -4,11 +4,17 @@
 
 ![Magnus chat interface](Ui.png)
 
+---
+
+## Table of contents
+
 - [Quick start](#quick-start)
 - [Command basics](#command-basics)
 - [Features](#features)
 - [Saving your data](#saving-your-data)
 - [Command summary](#command-summary)
+
+---
 
 ## Quick start
 
