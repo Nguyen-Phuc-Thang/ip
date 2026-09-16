@@ -38,10 +38,12 @@
 
 - Words in `UPPER_CASE` are values that you supply. For example, replace `DESCRIPTION` with `prepare tutorial notes`.
 - Enter every command on one line.
+- Command words are not case-sensitive: `LIST` and `list` work the same way.
 - Dates use `dd/MM/yyyy`. Date and time values use `dd/MM/yyyy HHmm`, with a 24-hour time and no colon. For example, `18/09/2026 1600` means 4:00 PM on 18 September 2026.
 - Type `/by`, `/from`, and `/to` exactly as shown. An event must have `/from` before `/to`.
+- `/by`, `/from`, and `/to` are reserved when written as standalone words. They cannot appear in a description or search query, and each required field must appear exactly once.
 - `TASK_NUMBER` is the positive number shown by `list`. Run `list` before using `mark`, `unmark`, `update`, or `delete`, as numbers in filtered results can differ from the full list.
-- Magnus rejects an exact duplicate of an existing task.
+- Magnus rejects a task with the same type, description, and dates/times as an existing task, even if their completion states differ. Descriptions are case-sensitive for duplicate detection.
 
 ## Features
 
@@ -132,6 +134,8 @@ Updates a task in two steps:
 1. Enter `update TASK_NUMBER`, such as `update 2`.
 1. When Magnus prompts you, enter the complete replacement details without the `todo`, `deadline`, or `event` command word.
 
+The next message is always treated as replacement details, so finish this step before entering another command.
+
 Use the replacement format for the selected task's existing type:
 
 | Task type | Replacement format                                                |
@@ -140,7 +144,7 @@ Use the replacement format for the selected task's existing type:
 | Deadline  | `NEW_DESCRIPTION /by NEW_DATE_TIME`                               |
 | Event     | `NEW_DESCRIPTION /from NEW_START_DATE_TIME /to NEW_END_DATE_TIME` |
 
-For example, after `update 2`, you could enter:
+For example, if task 2 is a deadline, after `update 2` you could enter:
 
 ```text
 submit final project report /by 20/09/2026 1700

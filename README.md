@@ -2,6 +2,8 @@
 
 Magnus is a chatbot developed as a greenfield Java project. Given below are instructions on how to use it.
 
+See the [published user guide](https://nguyen-phuc-thang.github.io/ip/) for installation and all commands.
+
 ## Setting up in Intellij
 
 Prerequisites: JDK 25, update Intellij to the most recent version.
@@ -13,7 +15,7 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    1. If there are any further prompts, accept the defaults.
 1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
    In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/Magnus.java` file, right-click it, and choose `Run Magnus.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see the following output:
+1. After that, locate `src/main/java/magnus/Launcher.java`, right-click it, and choose `Run Launcher.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, the Magnus chat window should open with this greeting:
    ```
    Greetings! I'm Magnus, your task tactician.
    ```
@@ -27,7 +29,7 @@ Ensure that JDK 25 is active, then run the Shadow plugin's `shadowJar` task from
 - macOS/Linux: `./gradlew shadowJar`
 - Windows: `gradlew.bat shadowJar`
 
-The task creates `build/libs/magnus.jar`. This is a fat JAR: it contains the application and its runtime dependencies, and its manifest identifies `magnus.Magnus` as the entry point.
+The task creates `build/libs/magnus.jar`. This is a fat JAR: it contains the application and its runtime dependencies, and its manifest identifies `magnus.Launcher` as the entry point for the graphical interface.
 
 Run it from the project root with:
 
