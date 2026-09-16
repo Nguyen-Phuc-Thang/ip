@@ -27,7 +27,7 @@ public class ToDoCommand implements Command {
      * Adds a to-do task whose description is the first command argument.
      *
      * @param args The command arguments, with the task description at index 0.
-     * @return A message describing the task that was added.
+     * @return A message describing the task that was added and the current task total.
      * @throws CommandSyntaxException If the task description is missing or blank.
      */
     @Override

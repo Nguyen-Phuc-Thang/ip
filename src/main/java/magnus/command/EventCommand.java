@@ -29,7 +29,7 @@ public class EventCommand implements Command {
      *
      * @param args The command arguments, with the description at index 0, start time at index 1,
      *             and end time at index 2.
-     * @return A message describing the event task that was added.
+     * @return A message describing the event task that was added and the current task total.
      * @throws CommandSyntaxException If the description, start time, or end time is missing.
      */
     @Override

@@ -28,7 +28,7 @@ public class DeadlineCommand implements Command {
      * Adds a deadline task using its description and deadline from the command arguments.
      *
      * @param args The command arguments, with the description at index 0 and deadline at index 1.
-     * @return A message describing the deadline task that was added.
+     * @return A message describing the deadline task that was added and the current task total.
      * @throws CommandSyntaxException If either the task description or deadline is missing.
      */
     @Override

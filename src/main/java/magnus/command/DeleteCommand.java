@@ -25,7 +25,7 @@ public class DeleteCommand implements Command {
      * Deletes the task identified by the one-based task number in the first command argument.
      *
      * @param args The command arguments, with the one-based task number at index 0.
-     * @return A message describing the task that was deleted.
+     * @return A message describing the task that was deleted and the current task total.
      * @throws CommandSyntaxException If the task number is missing, non-numeric, or accompanied
      *                                by extra arguments.
      * @throws TaskNotFoundException If the task number does not identify a task in the list.
