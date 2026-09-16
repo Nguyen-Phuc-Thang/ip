@@ -177,6 +177,17 @@ public class TaskList {
     }
 
     /**
+     * Returns the number of completed tasks in this task list.
+     *
+     * @return The number of tasks marked as completed.
+     */
+    public long countCompletedTasks() {
+        return this.tasks.stream()
+                .filter(Task::isDone)
+                .count();
+    }
+
+    /**
      * Adds a task to the end of this task list.
      *
      * @param task The task to add.

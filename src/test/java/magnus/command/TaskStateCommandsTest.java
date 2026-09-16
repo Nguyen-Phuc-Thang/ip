@@ -28,9 +28,22 @@ public class TaskStateCommandsTest {
 
         String response = new MarkCommand(tasks).execute("2");
 
-        assertEquals("\tCheckmate for this task - I've marked it as completed:\n\n\t[T][X] write notes", response);
+        assertEquals("\tCheckmate for this task - I've marked it as completed:\n\n\t[T][X] write notes\n\n"
+                + "\tYou have completed 1 task.", response);
         assertFalse(firstTask.isDone());
         assertTrue(secondTask.isDone());
+    }
+
+    @Test
+    public void markExecute_secondCompletedTask_reportsPluralCompletedCount() throws MagnusException {
+        Task firstTask = new ToDoTask("read book");
+        firstTask.markAsDone();
+        TaskList tasks = new TaskList(List.of(firstTask, new ToDoTask("write notes")));
+
+        String response = new MarkCommand(tasks).execute("2");
+
+        assertEquals("\tCheckmate for this task - I've marked it as completed:\n\n\t[T][X] write notes\n\n"
+                + "\tYou have completed 2 tasks.", response);
     }
 
     @Test
@@ -44,9 +57,23 @@ public class TaskStateCommandsTest {
         String response = new UnmarkCommand(tasks).execute("1");
 
         assertEquals("\tThis piece is back in play - I've marked the task as incomplete:\n\n"
-                + "\t[T][ ] read book", response);
+                + "\t[T][ ] read book\n\n"
+                + "\tYou have completed 1 task.", response);
         assertFalse(firstTask.isDone());
         assertTrue(secondTask.isDone());
+    }
+
+    @Test
+    public void unmarkExecute_onlyCompletedTask_reportsZeroCompletedTasks() throws MagnusException {
+        Task task = new ToDoTask("read book");
+        task.markAsDone();
+        TaskList tasks = new TaskList(List.of(task));
+
+        String response = new UnmarkCommand(tasks).execute("1");
+
+        assertEquals("\tThis piece is back in play - I've marked the task as incomplete:\n\n"
+                + "\t[T][ ] read book\n\n"
+                + "\tYou have completed 0 tasks.", response);
     }
 
     @Test

@@ -25,7 +25,7 @@ public class UnmarkCommand implements Command {
      * as incomplete.
      *
      * @param args The command arguments, with the one-based task number at index 0.
-     * @return A message describing the task that was marked as incomplete.
+     * @return A message describing the task that was unmarked and the completed-task total.
      * @throws CommandSyntaxException If the task number is missing, non-numeric, or accompanied
      *                                by extra arguments.
      * @throws TaskNotFoundException If the task number does not identify a task in the list.
@@ -36,6 +36,7 @@ public class UnmarkCommand implements Command {
 
         this.tasks.markTaskAsUndone(taskIndex);
         return "\tThis piece is back in play - I've marked the task as incomplete:\n\n\t"
-                + this.tasks.getTask(taskIndex);
+                + this.tasks.getTask(taskIndex) + "\n\n"
+                + TaskCountMessage.formatCompleted(this.tasks.countCompletedTasks());
     }
 }

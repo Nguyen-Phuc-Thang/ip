@@ -126,6 +126,22 @@ public class TaskListTest {
     }
 
     @Test
+    public void countCompletedTasks_mixedCompletionStates_returnsCompletedCount() {
+        Task completedTask = new ToDoTask("read book");
+        completedTask.markAsDone();
+        TaskList tasks = new TaskList(List.of(completedTask, new ToDoTask("write notes")));
+
+        long completedTaskCount = tasks.countCompletedTasks();
+
+        assertEquals(1, completedTaskCount);
+    }
+
+    @Test
+    public void countCompletedTasks_emptyTaskList_returnsZero() {
+        assertEquals(0, new TaskList().countCompletedTasks());
+    }
+
+    @Test
     public void addTask_newTask_addsTaskAtEnd() {
         Task task1 = new ToDoTask("read book");
         Task task2 = new ToDoTask("return book");

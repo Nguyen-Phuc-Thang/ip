@@ -45,10 +45,12 @@ public class MagnusPersonalityTest {
                         + "(from: Sep 21, 2026 09:00 to: Sep 21, 2026 10:30)",
                 magnus.getResponse("list_event 21/09/2026 21/09/2026"));
         assertEquals("\tCheckmate for this task - I've marked it as completed:\n\n"
-                        + "\t[D][X] submit report (by: Sep 20, 2026 15:00)",
+                        + "\t[D][X] submit report (by: Sep 20, 2026 15:00)\n\n"
+                        + "\tYou have completed 1 task.",
                 magnus.getResponse("mark 1"));
         assertEquals("\tThis piece is back in play - I've marked the task as incomplete:\n\n"
-                        + "\t[D][ ] submit report (by: Sep 20, 2026 15:00)",
+                        + "\t[D][ ] submit report (by: Sep 20, 2026 15:00)\n\n"
+                        + "\tYou have completed 0 tasks.",
                 magnus.getResponse("unmark 1"));
         assertEquals("\tPiece captured and cleared - I've deleted this task:\n\n"
                         + "\t[E][ ] team meeting (from: Sep 21, 2026 09:00 to: Sep 21, 2026 10:30)\n\n"
