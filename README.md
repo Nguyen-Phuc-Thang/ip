@@ -38,3 +38,9 @@ java -jar build/libs/magnus.jar
 ```
 
 Running from the project root also ensures that Magnus reads and writes its task data at `data/magnus.txt`.
+
+## Acknowledgement of AI use
+
+AI assistance was used during the development of Magnus at a level between **AI-4 (Think and compare)** and **AI-5 (AI codes, you review)**. This involved considering implementation approaches before comparing them with AI-generated solutions, as well as using AI to generate implementations followed by human review of the code, tests, and application behaviour.
+
+AI-generated work was evaluated and refined where needed to meet the project requirements. Responsibility for the final implementation and understanding of the code remains with the project author.
